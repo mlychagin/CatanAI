@@ -1,4 +1,4 @@
-package backend;
+package engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,12 +6,11 @@ import java.util.Comparator;
 
 public class BoardState {
   /*
-   * 0 = backend.Player 1
-   * 1 = backend.Player 2
+   * 0 = Player 1
+   * 1 = Player 2
    * ...
    */
   ArrayList<Player> playerList = new ArrayList<>();
-  public VertexNode[] vertexes = new VertexNode[54];
   int[] devCardPool = new int[] {14, 5, 2, 2, 2};
   int playerTurn = 0;
   int robberTile;
@@ -21,28 +20,8 @@ public class BoardState {
   BoardState() {}
 
   public void initBoard() {
-    initVertexes();
     setVertexResources();
-    setVertexDependencies();
     setResourceScarcity();
-  }
-
-  public void initVertexes() {
-    for (int i = 0; i < vertexes.length; i++) {
-      VertexNode node = new VertexNode();
-      vertexes[i] = node;
-    }
-  }
-
-  public void setVertexDependencies() {
-    for (int[] numberSet : GameEngine.vertexDependencies) {
-      VertexNode currentVertex = vertexes[numberSet[0]];
-      for (int i = 1; i < numberSet.length; i++) {
-        MutablePair pair = new MutablePair();
-        pair.set(-1, numberSet[i]);
-        currentVertex.listEdges.add(pair);
-      }
-    }
   }
 
   public void setVertexResources() {
@@ -71,9 +50,6 @@ public class BoardState {
       int currentTile = numberSet[0];
       MutablePair tile = new MutablePair();
       tile.set(GameEngine.tilesResource[currentTile], GameEngine.tilesNumber[currentTile]);
-      for (int i = 1; i < numberSet.length; i++) {
-        vertexes[numberSet[i]].resources.add(tile);
-      }
     }
   }
 
@@ -97,26 +73,27 @@ public class BoardState {
   public void initPlayers(int playerSize) {
     for (int i = 0; i < playerSize; i++) {
       playerList.add(new Player());
-      playerList.get(i).playerNumber = i;
     }
   }
 
-  public void startSettlement(int playerID) {
-    ArrayList<MutablePair> topSettles = topSettles();
+  public void startSettlement(Player player) {
+    // TODO:
+    /*ArrayList<MutablePair> topSettles = topSettles();
     topSettles.sort(Comparator.comparing(MutablePair::getFirst));
     int slot = topSettles.get(topSettles.size() - 1).getSecond();
-    int roadSlot = vertexes[slot].getRandomAdjNode();
+    int roadSlot = vertices[slot].getRandomAdjNode();
     playerList.get(playerID).buildSettlement(this, slot, false);
     if (roadSlot != -1) {
       playerList.get(playerID).buildRoad(this, slot, roadSlot);
-    }
+    }*/
   }
 
   public ArrayList<MutablePair> topSettles() {
-    Player currentPlayer = playerList.get(playerTurn);
+    //TODO:
+      /*Player currentPlayer = playerList.get(playerTurn);
     ArrayList<MutablePair> returnArray = new ArrayList<>();
-    for (int i = 0; i < vertexes.length; i++) {
-      VertexNode node = vertexes[i];
+    for (int i = 0; i < vertices.length; i++) {
+      VertexNode node = vertices[i];
       if (!node.canBuildCity(this)) {
         continue;
       }
@@ -124,7 +101,6 @@ public class BoardState {
       double total = 0;
 
       int[] production = currentPlayer.production.clone();
-
       for (MutablePair resource : node.resources) {
         if (resourceScarcity[resource.getFirst()] != 0) {
           double rarity = GameEngine.getRarity(resource.getSecond());
@@ -137,7 +113,8 @@ public class BoardState {
       pair.set((int) (total * 100), i);
       returnArray.add(pair);
     }
-    return returnArray;
+    return returnArray;*/
+      return null;
   }
 
   public void applyDice(int dieRoll) {
@@ -151,9 +128,6 @@ public class BoardState {
     return "{ "
         + "\"playerList\" : {"
         + playerListToString()
-        + "}, "
-        + "\"vertexList\" : {"
-        + vertexListToString()
         + "}, \"devCardPool\" : "
         + Arrays.toString(devCardPool)
         + ", \"playerTurn\" : "
@@ -178,29 +152,13 @@ public class BoardState {
     return returnString.toString();
   }
 
-  private String vertexListToString() {
-    StringBuilder returnString = new StringBuilder();
-    boolean first = true;
-    for (int i = 0; i < vertexes.length; i++) {
-      if (!first) {
-        returnString.append(",");
-      }
-      returnString.append("\"").append(i).append("\": ").append(vertexes[i].toString());
-      first = false;
-    }
-    return returnString.toString();
-  }
-
   public void clone(BoardState blankState) {
     for (Player player : playerList) {
       blankState.playerList.add(player.clone(new Player()));
     }
-    for (int i = 0; i < vertexes.length; i++) {
-      blankState.vertexes[i] = vertexes[i].clone(new VertexNode());
-    }
     blankState.playerTurn = playerTurn;
     blankState.robberTile = robberTile;
-    System.arraycopy(devCardPool, 0, blankState.devCardPool, 0, Player.DEV_LENGTH);
+    System.arraycopy(devCardPool, 0, blankState.devCardPool, 0, Util.DEV_LENGTH);
   }
 
   // TODO----------------------------------------------------------------------

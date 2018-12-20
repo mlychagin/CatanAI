@@ -1,4 +1,4 @@
-package backend;
+package engine;
 
 import java.util.ArrayList;
 
@@ -47,14 +47,15 @@ public class VertexNode {
   public VertexNode() {}
 
   public boolean canBuildCity(BoardState boardState) {
-    if (city.getSecond() > 0) {
+    // TODO:
+    /*if (city.getSecond() > 0) {
       return false;
     }
     for (MutablePair pair : listEdges) {
-      if (boardState.vertexes[pair.getSecond()].city.getSecond() > 0) {
+      if (boardState.vertices[pair.getSecond()].city.getSecond() > 0) {
         return false;
       }
-    }
+    }*/
     return true;
   }
 

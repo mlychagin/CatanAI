@@ -1,4 +1,4 @@
-package backend;
+package engine;
 
 public class MutablePair implements Comparable<MutablePair> {
   private int first;
@@ -44,6 +44,24 @@ public class MutablePair implements Comparable<MutablePair> {
   @Override
   public String toString() {
     return "[" + first + "," + second + "]";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    MutablePair that = (MutablePair) o;
+
+    if (first != that.first) return false;
+    return second == that.second;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = first;
+    result = 31 * result + second;
+    return result;
   }
 
   @Override

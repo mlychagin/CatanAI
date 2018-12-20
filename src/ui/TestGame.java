@@ -1,8 +1,8 @@
-package frontend;
+package ui;
 
-import backend.GameEngine;
-import backend.MutablePair;
-import backend.VertexNode;
+import engine.GameEngine;
+import engine.MutablePair;
+import engine.VertexNode;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -170,11 +170,11 @@ public class TestGame extends Application {
     }
   }
 
-  // Method loops over all vertexes and draws a settlement with the player's color if it exists
+  // Method loops over all vertices and draws a settlement with the player's color if it exists
   private void drawSettlements(GraphicsContext gc) {
     int size = 20;
-    for (int i = 0; i < scenario.boardState.vertexes.length; i++) {
-      VertexNode node = scenario.boardState.vertexes[i];
+    for (int i = 0; i < scenario.boardState.vertices.length; i++) {
+      VertexNode node = scenario.boardState.vertices[i];
       if (node.city.getSecond() > 0) {
         Point location = findPoint(i);
         switch (node.city.getFirst()) {
@@ -274,8 +274,8 @@ public class TestGame extends Application {
   // Method goes through each vertex's edges and changes color of edges where there is a road.
   // Method does not draw the edges/road. drawHexagons() draws the edges/roads.
   private void updateRoads() {
-    for (int i = 0; i < scenario.boardState.vertexes.length; i++) { // i is also the Node #
-      VertexNode node = scenario.boardState.vertexes[i];
+    for (int i = 0; i < scenario.boardState.vertices.length; i++) { // i is also the Node #
+      VertexNode node = scenario.boardState.vertices[i];
       for (MutablePair pair : node.listEdges) {
         if (pair.getFirst() != -1) { // There is a road on edge
           updateRoadColor(pair.getFirst(), i, pair.getSecond());
@@ -286,7 +286,7 @@ public class TestGame extends Application {
 
   private Point findPoint(int slot) {
     for (Hexagon tile : tiles) {
-      for (int i = 0; i < 6; i++) { // 6 points for each frontend.Hexagon
+      for (int i = 0; i < 6; i++) { // 6 points for each ui.Hexagon
         Point temp = tile.getPoints()[i];
         if (temp.getSlot() == slot) {
           return temp;

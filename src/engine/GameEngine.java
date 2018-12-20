@@ -1,8 +1,6 @@
-package backend;
+package engine;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Random;
 
 public class GameEngine {
@@ -89,29 +87,45 @@ public class GameEngine {
         new int[] {17, 41, 42, 43, 49, 50, 51},
         new int[] {18, 43, 44, 45, 51, 52, 53},
       };
-
-  private static ArrayList<Integer> playerOrder = new ArrayList<>();
+  public VertexNode[] vertices = new VertexNode[54];
   static Random randomGen = new Random();
   public BoardState boardState;
+  int nextPlayer = 0;
+
+  public void initVertexes() {
+    for (int i = 0; i < vertices.length; i++) {
+      VertexNode node = new VertexNode();
+      vertices[i] = node;
+    }
+  }
+
+  public void setVertexDependencies() {
+    for (int[] numberSet : GameEngine.vertexDependencies) {
+      VertexNode currentVertex = vertices[numberSet[0]];
+      for (int i = 1; i < numberSet.length; i++) {
+        MutablePair pair = new MutablePair();
+        pair.set(-1, numberSet[i]);
+        currentVertex.listEdges.add(pair);
+      }
+    }
+  }
 
   public void initGame(int playerSize) {
     BoardState.randomizeArray(tilesResource);
     BoardState.randomizeArray(tilesNumber);
+    initVertexes();
+    setVertexDependencies();
     boardState = new BoardState();
     boardState.initBoard();
     boardState.initPlayers(playerSize);
-    for (int i = 0; i < playerSize; i++) {
-      playerOrder.add(i);
-    }
-    Collections.shuffle(playerOrder);
   }
 
   public void settlementPhase() {
-    for (Integer playerID : playerOrder) {
-      boardState.startSettlement(playerID);
+    for (Player p : boardState.playerList) {
+      boardState.startSettlement(p);
     }
-    for (int i = playerOrder.size() - 1; i >= 0; i--) {
-      boardState.startSettlement(playerOrder.get(i));
+    for (int i = boardState.playerList.size() - 1; i >= 0; i--) {
+      boardState.startSettlement(boardState.playerList.get(i));
     }
   }
 
@@ -119,14 +133,11 @@ public class GameEngine {
     if (!getWinner(boardState)) {
       int dieRoll = rollDice();
       System.out.println("DieRoll(" + dieRoll + ")");
-      boardState.applyDice(dieRoll); // Adds resources to each player's hand
-      for (Player player : boardState.playerList) {
-        player.victoryPoints += 1;
-      }
+      boardState.applyDice(dieRoll);
       nextPlayer(boardState);
       return true;
     }
-    return false; // game over
+    return false;
   }
 
   public void playGame() {
@@ -140,26 +151,20 @@ public class GameEngine {
   }
 
   public static void nextPlayer(BoardState boardState) {
-    if (boardState.playerTurn == playerOrder.size() - 1) {
-      boardState.playerTurn = 0;
-    } else {
-      boardState.playerTurn += 1;
-    }
+
   }
 
   public static boolean getWinner(BoardState boardState) {
-    return boardState.playerList.get(boardState.playerTurn).victoryPoints >= 10;
+    return boardState.playerList.get(boardState.playerTurn).getVictoryPoints() >= 10;
   }
 
   @Override
   public String toString() {
-    return "{\"backend.GameEngine\" : {"
+    return "{\"GameEngine\" : {"
         + "\"tilesResource\" : "
         + Arrays.toString(tilesResource)
         + ", \"tilesNumber\" : "
         + Arrays.toString(tilesNumber)
-        + ", \"playerOrder\" : "
-        + Arrays.toString(playerOrder.toArray())
         + ", \"boardState\" : "
         + boardState
         + "}}";
