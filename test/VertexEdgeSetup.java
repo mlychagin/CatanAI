@@ -8,13 +8,11 @@ public class VertexEdgeSetup {
     public static void main(String args[]){
         System.out.print("VertexEdgeSetup: ");
         scenario.initGame(4);
-        VertexNode[] vertices = scenario.boardState.vertices;
+        VertexNode[] vertices = GameEngine.vertices;
         for(int i = 0; i < vertices.length; i++){
             VertexNode v = vertices[i];
             for(MutablePair p : v.listEdges){
-                MutablePair pComp = new MutablePair(p.getFirst(), i);
-                if(!vertices[p.getSecond()].listEdges.contains(pComp)){
-                    VertexNode compNode = vertices[p.getSecond()];
+                if(!vertices[p.getSecond()].listEdges.contains(new MutablePair(p.getFirst(), i))){
                     System.out.println("Failure");
                     System.exit(1);
                 }

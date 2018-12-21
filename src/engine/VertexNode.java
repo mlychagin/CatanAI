@@ -32,18 +32,6 @@ public class VertexNode {
    */
   public ArrayList<MutablePair> listEdges = new ArrayList<>();
 
-  /*
-   * first = player
-   *      0 = Player 0 city
-   *      1 = Player 1 city
-   *      2 = Player 2 city
-   *      ...
-   * second = strength
-   *      1 = Settlement
-   *      2 = City
-   */
-  public MutablePair city = new MutablePair();
-
   public VertexNode() {}
 
   public boolean canBuildCity(BoardState boardState) {
@@ -52,7 +40,7 @@ public class VertexNode {
       return false;
     }
     for (MutablePair pair : listEdges) {
-      if (boardState.vertices[pair.getSecond()].city.getSecond() > 0) {
+      if (root.vertices[pair.getSecond()].city.getSecond() > 0) {
         return false;
       }
     }*/
@@ -68,14 +56,11 @@ public class VertexNode {
         + port
         + ", \"listEdges\" : "
         + listEdges
-        + ", \"city\" : "
-        + city
         + "}";
   }
 
   public VertexNode clone(VertexNode blankNode) {
     port.clone(blankNode.port);
-    city.clone(blankNode.city);
     for (MutablePair pair : resources) {
       blankNode.resources.add(pair.clone(new MutablePair()));
     }

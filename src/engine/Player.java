@@ -19,7 +19,7 @@ public class Player {
    * 1 = Settlements
    * 2 = Cities
    */
-  int[] buildMaterials = new int[] {20, 5, 4};
+  int[] buildMaterials = new int[] {15, 5, 4};
 
   /*
    * 0 = Knight
@@ -30,49 +30,49 @@ public class Player {
    */
   int[] devCardsHolding = new int[] {0, 0, 0, 0, 0};
   int[] devCardsSeen = new int[] {0, 0, 0, 0, 0};
-  ArrayList<Integer> currentCities = new ArrayList<>();
-  ArrayList<Integer> currentRoads = new ArrayList<>();
+
+  /*
+   * First = Vertex Number
+   * Second = Strength
+   */
+  ArrayList<MutablePair> currentCities = new ArrayList<>();
+  ArrayList<MutablePair> currentRoads = new ArrayList<>();
 
   int currentRoad;
-  int currentArmy;
 
   Player() {
     currentRoad = 0;
-    currentArmy = 0;
   }
 
-  public void addResources(BoardState boardState, int dieRoll) {
-    // TODO:
-    /*boolean robbed = false;
-    int[] robbedTiles = GameEngine.resourceDependencies[boardState.robberTile];
-    for (Integer slot : currentCities) {
-      for (int i = 1; i < robbedTiles.length; i++) {
-        if (robbedTiles[i] == slot) {
-          robbed = true;
-        }
+  private boolean isRobbed(int[] robbedTiles, int slot) {
+    for (int i = 1; i < robbedTiles.length; i++) {
+      if (robbedTiles[i] == slot) {
+        return true;
       }
-      if (robbed) {
-        robbed = false;
+    }
+    return false;
+  }
+
+  public void addResources(int robberTile, int dieRoll) {
+    int[] robbedTiles = Util.resourceDependencies[robberTile];
+    for (MutablePair p : currentCities) {
+      if (isRobbed(robbedTiles, p.getFirst())) {
         continue;
       }
-      VertexNode node = boardState.vertices[slot];
-      int strength = node.city.getSecond();
+      VertexNode node = GameEngine.vertices[p.getFirst()];
       for (MutablePair pair : node.resources) {
         if (pair.getSecond() == dieRoll) {
-          materials[pair.getFirst()] += strength;
+          materials[pair.getFirst()] += p.getSecond();
         }
       }
-    }*/
+    }
   }
 
-  public int getVictoryPoints(){
-      return 0;
+  public int getVictoryPoints() {
+    return 0;
   }
 
-  // Todo: Add error checking
-  public void buildSettlement(BoardState boardState, int slot, boolean pay) {
-    // TODO:
-    /*VertexNode node = boardState.vertices[slot];
+  public void buildSettlement(int slot, boolean pay) {
     if (pay) {
       materials[1] = -1;
       materials[2] = -1;
@@ -80,34 +80,37 @@ public class Player {
       materials[4] = -1;
     }
     buildMaterials[1] -= 1;
-    addProduction(node);
-    node.city.set(playerNumber, 1);
-    currentCities.add(slot);
-    System.out.println("Player(" + playerNumber + ") : BuildSettlement(" + slot + ")");*/
+    currentCities.add(new MutablePair(slot, 1));
   }
 
-  // Todo: Add error checking
-  public void buildCity(BoardState boardState, int slot) {
-    // TODO:
-    /*VertexNode node = boardState.vertices[slot];
+  MutablePair getSettlement(int slot) {
+    for (MutablePair p : currentCities) {
+      if (p.getFirst() == slot && p.getSecond() == 1) {
+        return p;
+      }
+    }
+    return null;
+  }
+
+  public void buildCity(int slot) {
+    MutablePair p = getSettlement(slot);
+    assert p != null;
     materials[4] = -2;
     materials[5] = -3;
-    addProduction(node);
-    node.city.setSecond(2);*/
-  }
-
-  private void addProduction(VertexNode node) {
-    // TODO
-    /*for (MutablePair pair : node.resources) {
-      production[pair.getFirst()] += GameEngine.getRarity(pair.getSecond());
-    }
-    production[0] = 0;*/
+    p.setSecond(2);
   }
 
   public void buyDevCard(int kind) {
+    // TODO Random Draw
     materials[3] = -1;
     materials[4] = -1;
     materials[5] = -1;
+  }
+
+  public void buildRoad(int startSlot, int endSlot) {
+    materials[1] -= 1;
+    materials[2] -= 2;
+    currentRoads.add(new MutablePair(startSlot, endSlot));
   }
 
   @Override
@@ -125,8 +128,6 @@ public class Player {
         + Arrays.toString(currentCities.toArray())
         + ", \"currentRoad\" : "
         + currentRoad
-        + ", \"currentArmy\" : "
-        + currentArmy
         + "}";
   }
 
@@ -137,45 +138,10 @@ public class Player {
     System.arraycopy(devCardsSeen, 0, player.devCardsSeen, 0, Util.DEV_LENGTH);
     player.currentCities.addAll(currentCities);
     player.currentRoad = currentRoad;
-    player.currentArmy = currentArmy;
     return player;
   }
 
   // TODO----------------------------------------------------------------------
-
-  // Ideas: Error check to see if buildRoad/buildSettlement/buildCity can actually build
-
-  /*
-   * Builds a road given two Vertexes
-   */
-  /*public void buildRoad(BoardState boardState, int startSlot, int endSlot) {
-    materials[1] -= 1;
-    materials[2] -= 2;
-    VertexNode node1 = boardState.vertices[startSlot];
-    VertexNode node2 = boardState.vertices[endSlot];
-
-    for (MutablePair pair : node1.listEdges) {
-      if (pair.getSecond() == endSlot && pair.getFirst() == -1) {
-        pair.setFirst(playerNumber);
-      }
-    }
-
-    for (MutablePair pair : node2.listEdges) {
-      if (pair.getSecond() == startSlot && pair.getFirst() == -1) {
-        pair.setFirst(playerNumber);
-      }
-    }
-  }*/
-
-  /*
-   * Draws a dev card from the bank and adds it to current player's hand
-   *    True = Draw successful
-   *    False = Draw unsuccessful
-   */
-  public boolean drawDevCard(int[] devCardPool) {
-    return false;
-  }
-
   /*
    * Calculate longestRoad that the player has
    */

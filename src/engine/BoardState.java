@@ -2,7 +2,6 @@ package engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 
 public class BoardState {
   /*
@@ -11,54 +10,51 @@ public class BoardState {
    * ...
    */
   ArrayList<Player> playerList = new ArrayList<>();
-  int[] devCardPool = new int[] {14, 5, 2, 2, 2};
+  private int[] devCardPool = new int[] {14, 5, 2, 2, 2};
   int playerTurn = 0;
   int robberTile;
-
-  int[] resourceScarcity = new int[] {0, 0, 0, 0, 0, 0};
 
   BoardState() {}
 
   public void initBoard() {
     setVertexResources();
-    setResourceScarcity();
+  }
+
+  public static int getRobberResourceSlot() {
+    for (int i = 0; i < Util.tilesResource.length; i++) {
+      if (Util.tilesResource[i] == 0) {
+        return i;
+      }
+    }
+    System.out.println("Invalid Robber Resource Slot");
+    System.exit(1);
+    return 0;
+  }
+
+  public static int getRobberNumberSlot() {
+    for (int i = 0; i < Util.tilesNumber.length; i++) {
+      if (Util.tilesNumber[i] == 7) {
+        return i;
+      }
+    }
+    System.out.println("Invalid Robber Number Slot");
+    System.exit(1);
+    return 0;
   }
 
   public void setVertexResources() {
-    int[] tilesResource = GameEngine.tilesResource;
-    int[] tilesNumber = GameEngine.tilesNumber;
-    int slotResource = 0;
-    int slotNumber = 0;
-    for (int i = 0; i < tilesResource.length; i++) {
-      if (tilesResource[i] == 0) {
-        slotResource = i;
-        break;
-      }
-    }
-    for (int i = 0; i < tilesNumber.length; i++) {
-      if (tilesNumber[i] == 7) {
-        slotNumber = i;
-        break;
-      }
-    }
-    int save = tilesResource[slotNumber];
-    tilesResource[slotNumber] = 0;
-    tilesResource[slotResource] = save;
+    int slotResource = getRobberResourceSlot();
+    int slotNumber = getRobberNumberSlot();
+    int save = Util.tilesResource[slotNumber];
+    Util.tilesResource[slotNumber] = 0;
+    Util.tilesResource[slotResource] = save;
     robberTile = slotNumber;
 
-    for (int[] numberSet : GameEngine.resourceDependencies) {
+    for (int[] numberSet : Util.resourceDependencies) {
       int currentTile = numberSet[0];
-      MutablePair tile = new MutablePair();
-      tile.set(GameEngine.tilesResource[currentTile], GameEngine.tilesNumber[currentTile]);
+      GameEngine.vertices[currentTile].resources.add(
+          new MutablePair(Util.tilesResource[currentTile], Util.tilesNumber[currentTile]));
     }
-  }
-
-  public void setResourceScarcity() {
-    for (int i = 0; i < GameEngine.tilesNumber.length; i++) {
-      resourceScarcity[GameEngine.tilesResource[i]] +=
-          GameEngine.getRarity(GameEngine.tilesNumber[i]);
-    }
-    resourceScarcity[0] = 0;
   }
 
   public static void randomizeArray(int[] array) {
@@ -89,8 +85,8 @@ public class BoardState {
   }
 
   public ArrayList<MutablePair> topSettles() {
-    //TODO:
-      /*Player currentPlayer = playerList.get(playerTurn);
+    // TODO:
+    /*Player currentPlayer = playerList.get(playerTurn);
     ArrayList<MutablePair> returnArray = new ArrayList<>();
     for (int i = 0; i < vertices.length; i++) {
       VertexNode node = vertices[i];
@@ -114,28 +110,26 @@ public class BoardState {
       returnArray.add(pair);
     }
     return returnArray;*/
-      return null;
+    return null;
   }
 
   public void applyDice(int dieRoll) {
     for (Player player : playerList) {
-      player.addResources(this, dieRoll);
+      player.addResources(robberTile, dieRoll);
     }
   }
 
   @Override
   public String toString() {
     return "{ "
-        + "\"playerList\" : {"
+        + "\"playerList\" : ["
         + playerListToString()
-        + "}, \"devCardPool\" : "
+        + "], \"devCardPool\" : "
         + Arrays.toString(devCardPool)
         + ", \"playerTurn\" : "
         + playerTurn
         + ", \"robberTile\" : "
         + robberTile
-        + ", \"resourceScarcity\" : "
-        + Arrays.toString(resourceScarcity)
         + "}";
   }
 
@@ -159,6 +153,13 @@ public class BoardState {
     blankState.playerTurn = playerTurn;
     blankState.robberTile = robberTile;
     System.arraycopy(devCardPool, 0, blankState.devCardPool, 0, Util.DEV_LENGTH);
+  }
+
+  public void nextPlayer() {
+    playerTurn++;
+    if (playerTurn == playerList.size()) {
+      playerTurn = 0;
+    }
   }
 
   // TODO----------------------------------------------------------------------

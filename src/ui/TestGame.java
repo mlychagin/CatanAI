@@ -2,6 +2,7 @@ package ui;
 
 import engine.GameEngine;
 import engine.MutablePair;
+import engine.Util;
 import engine.VertexNode;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -86,7 +87,7 @@ public class TestGame extends Application {
     gc.setTextAlign(TextAlignment.LEFT);
     int tileNumber = 0;
     Image toDraw = null;
-    for (int resource : GameEngine.tilesResource) {
+    for (int resource : Util.tilesResource) {
       String toPrint = "";
       switch (resource) {
         case 0:
@@ -118,7 +119,7 @@ public class TestGame extends Application {
       int yPos = tiles[tileNumber].getCenterY();
       gc.drawImage(
           toDraw, xPos - TILE_RADIUS, yPos - TILE_RADIUS, TILE_RADIUS * 2, TILE_RADIUS * 2);
-      int tileDiceNumber = GameEngine.tilesNumber[tileNumber];
+      int tileDiceNumber = Util.tilesNumber[tileNumber];
       toPrint = Integer.toString(tileDiceNumber);
       if (tileDiceNumber == 7) {
         toPrint = "";
@@ -145,7 +146,7 @@ public class TestGame extends Application {
     for (Hexagon tile : tiles) {
       int xPos = tile.getCenterX();
       int yPos = tile.getCenterY();
-      int tileDiceNumber = GameEngine.tilesNumber[tileNumber];
+      int tileDiceNumber = Util.tilesNumber[tileNumber];
 
       gc.setFill(Color.BLACK);
       gc.setTextAlign(TextAlignment.LEFT);
@@ -172,9 +173,9 @@ public class TestGame extends Application {
 
   // Method loops over all vertices and draws a settlement with the player's color if it exists
   private void drawSettlements(GraphicsContext gc) {
-    int size = 20;
-    for (int i = 0; i < scenario.boardState.vertices.length; i++) {
-      VertexNode node = scenario.boardState.vertices[i];
+    /*int size = 20;
+    for (int i = 0; i < scenario.root.vertices.length; i++) {
+      VertexNode node = scenario.root.vertices[i];
       if (node.city.getSecond() > 0) {
         Point location = findPoint(i);
         switch (node.city.getFirst()) {
@@ -194,7 +195,7 @@ public class TestGame extends Application {
         gc.fillRect(location.getX() - (size / 2), location.getY() - size / 2, size, size);
         gc.setFill(Color.BLACK);
       }
-    }
+    }*/
   }
 
   private void initHexagons() {
@@ -274,14 +275,14 @@ public class TestGame extends Application {
   // Method goes through each vertex's edges and changes color of edges where there is a road.
   // Method does not draw the edges/road. drawHexagons() draws the edges/roads.
   private void updateRoads() {
-    for (int i = 0; i < scenario.boardState.vertices.length; i++) { // i is also the Node #
-      VertexNode node = scenario.boardState.vertices[i];
+    /*for (int i = 0; i < scenario.root.vertices.length; i++) { // i is also the Node #
+      VertexNode node = scenario.root.vertices[i];
       for (MutablePair pair : node.listEdges) {
         if (pair.getFirst() != -1) { // There is a road on edge
           updateRoadColor(pair.getFirst(), i, pair.getSecond());
         }
       }
-    }
+    }*/
   }
 
   private Point findPoint(int slot) {
