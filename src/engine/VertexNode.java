@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class VertexNode {
   /*
-   * first = recourse type
+   * first = resource type
    *      0 = Desert
    *      1 = Wood
    *      2 = Brick

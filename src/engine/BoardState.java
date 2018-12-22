@@ -10,9 +10,19 @@ public class BoardState {
    * ...
    */
   ArrayList<Player> playerList = new ArrayList<>();
-  private int[] devCardPool = new int[] {14, 5, 2, 2, 2};
+
+  // -1 if no player, updated after every dev card drawn
+  int playerWithLargestArmy = -1;
   int playerTurn = 0;
   int robberTile;
+  /*
+   * 0 = Knight
+   * 1 = Victory
+   * 2 = Road Building
+   * 3 = Monopoly
+   * 4 = Year of Plenty
+   */
+  private int[] devCardPool = new int[] {14, 5, 2, 2, 2};
 
   BoardState() {}
 
@@ -162,14 +172,48 @@ public class BoardState {
     }
   }
 
+  public Player getPlayer(int playerNumber) {
+    if (playerNumber > playerList.size() || playerNumber < 0) {
+      return null;
+    }
+    return playerList.get(playerNumber);
+  }
+
   // TODO----------------------------------------------------------------------
   public void setRobber(int tileNumber) {}
 
   public void playerRobber() {}
 
-  public void applyRobber(int tile, int person, int resource) {}
+  public void applyRobber(int tile, int player, int resource) {
+  }
 
   public void shortestPath(VertexNode nodeStart, VertexNode nodeEnd) {}
+
+  /**
+   * Compares dev cards of current holder and player who just played card
+   *
+   * @param player who just played dev card
+   */
+  private void updateLargestArmy(int player) {
+    int contenderNumKnightCards = playerList.get(player).devCardsSeen[0];
+    if (playerWithLargestArmy == -1) {
+      if (contenderNumKnightCards > 1) {
+        playerWithLargestArmy = player;
+        return;
+      }
+      return;
+    }
+    int currNumKnightCards = playerList.get(playerWithLargestArmy).devCardsSeen[0];
+    if (contenderNumKnightCards > currNumKnightCards) {
+      playerWithLargestArmy = player;
+    }
+  }
+
+  public void playDevCard(int player, int cardToPlay) {
+    playerList.get(player).playDevCard(cardToPlay);
+    // TODO: dev card action
+    updateLargestArmy(player);
+  }
 
   /*
    * Initialize the ports

@@ -44,9 +44,9 @@ public class Player {
     currentRoad = 0;
   }
 
-  private boolean isRobbed(int[] robbedTiles, int slot) {
-    for (int i = 1; i < robbedTiles.length; i++) {
-      if (robbedTiles[i] == slot) {
+  private boolean isRobbed(int[] robbedVertices, int slot) {
+    for (int i = 1; i < robbedVertices.length; i++) {
+      if (robbedVertices[i] == slot) {
         return true;
       }
     }
@@ -54,12 +54,13 @@ public class Player {
   }
 
   public void addResources(int robberTile, int dieRoll) {
-    int[] robbedTiles = Util.resourceDependencies[robberTile];
+    int[] robbedVertices = Util.resourceDependencies[robberTile];
     for (MutablePair p : currentCities) {
-      if (isRobbed(robbedTiles, p.getFirst())) {
+      if (isRobbed(robbedVertices, p.getFirst())) {
         continue;
       }
       VertexNode node = GameEngine.vertices[p.getFirst()];
+      // Look at resources adjacent to city nodes and add to player resources
       for (MutablePair pair : node.resources) {
         if (pair.getSecond() == dieRoll) {
           materials[pair.getFirst()] += p.getSecond();
@@ -147,5 +148,16 @@ public class Player {
    */
   public int calculateLongestRoad() {
     return -1;
+  }
+
+  public void playDevCard(int cardToPlay) {
+    if (cardToPlay > 5 || cardToPlay < 0) {
+      return;
+    }
+    if (devCardsHolding[cardToPlay] == 0) {
+      return;
+    }
+    devCardsHolding[cardToPlay]--;
+    devCardsSeen[cardToPlay]++;
   }
 }
