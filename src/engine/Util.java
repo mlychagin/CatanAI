@@ -1,7 +1,8 @@
 package engine;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.ArrayList;
 
 public class Util {
   public static int MATERIALS_LENGTH = 6;
@@ -15,8 +16,6 @@ public class Util {
      * 3 = Monopoly
      * 4 = Year of Plenty
      */
-  static int[] devCardsSeen = new int[] {0, 0, 0, 0, 0};
-
   private static ArrayList<Integer> devCards = new ArrayList<Integer>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4));
 
   public static int drawDevCard(){
@@ -27,11 +26,6 @@ public class Util {
       int devCard = devCards.remove(randomNum);
       return devCard;
   }
-
-  public static void devCardPlayed(int devCard){
-      devCardsSeen[devCard] += 1;
-  }
-
 
   public static int[] tilesResource =
       new int[] {0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5};

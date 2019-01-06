@@ -30,6 +30,9 @@ public class Player {
    */
   int[] devCardsHolding = new int[] {0, 0, 0, 0, 0};
 
+  // The devCards played by player
+  int[] devCardsSeen = new int[]{0, 0, 0, 0, 0};
+
   /*
    * First = Vertex Number
    * Second = Strength
@@ -46,7 +49,7 @@ public class Player {
     for (int i = 1; i < robbedVertices.length; i++) {
       if (robbedVertices[i] == slot) {
         return true;
-     }
+      }
     }
     return false;
   }
@@ -110,9 +113,15 @@ public class Player {
     devCardsHolding[devCard] += 1;
   }
 
-  public void playDevCard(int devCard){
-    devCardsHolding[devCard] -= 1;
-    Util.devCardPlayed(devCard);
+  public void playDevCard(int cardToPlay) {
+    if (cardToPlay > 5 || cardToPlay < 0) {
+      return;
+    }
+    if (devCardsHolding[cardToPlay] == 0) {
+      return;
+    }
+    devCardsHolding[cardToPlay]--;
+    devCardsSeen[cardToPlay]++;
   }
 
   public void buildRoad(int startSlot, int endSlot) {
@@ -130,6 +139,8 @@ public class Player {
         + Arrays.toString(buildMaterials)
         + ", \"devCardsHolding\" : "
         + Arrays.toString(devCardsHolding)
+            + ", \"devCardsSeen\" : "
+            + Arrays.toString(devCardsSeen)
         + ", \"currentCities\" : "
         + Arrays.toString(currentCities.toArray())
         + ", \"currentRoad\" : "
@@ -141,6 +152,7 @@ public class Player {
     System.arraycopy(materials, 0, player.materials, 0, Util.MATERIALS_LENGTH);
     System.arraycopy(buildMaterials, 0, player.buildMaterials, 0, Util.BUILD_LENGTH);
     System.arraycopy(devCardsHolding, 0, player.devCardsHolding, 0, Util.DEV_LENGTH);
+    System.arraycopy(devCardsSeen, 0, player.devCardsSeen, 0, Util.DEV_LENGTH);
     player.currentCities.addAll(currentCities);
     player.currentRoad = currentRoad;
     return player;
@@ -154,14 +166,4 @@ public class Player {
     return -1;
   }
 
-  public void playDevCard(int cardToPlay) {
-    if (cardToPlay > 5 || cardToPlay < 0) {
-      return;
-    }
-    if (devCardsHolding[cardToPlay] == 0) {
-      return;
-    }
-    devCardsHolding[cardToPlay]--;
-    devCardsSeen[cardToPlay]++;
-  }
 }
