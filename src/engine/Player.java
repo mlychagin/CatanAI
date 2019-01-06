@@ -29,7 +29,6 @@ public class Player {
    * 4 = Year of Plenty
    */
   int[] devCardsHolding = new int[] {0, 0, 0, 0, 0};
-  int[] devCardsSeen = new int[] {0, 0, 0, 0, 0};
 
   /*
    * First = Vertex Number
@@ -38,17 +37,16 @@ public class Player {
   ArrayList<MutablePair> currentCities = new ArrayList<>();
   ArrayList<MutablePair> currentRoads = new ArrayList<>();
 
-  int currentRoad;
+  int currentRoad = 0;
+  private int victoryPoints = 0;
 
-  Player() {
-    currentRoad = 0;
-  }
+  Player(){}
 
   private boolean isRobbed(int[] robbedTiles, int slot) {
     for (int i = 1; i < robbedTiles.length; i++) {
       if (robbedTiles[i] == slot) {
         return true;
-      }
+     }
     }
     return false;
   }
@@ -69,15 +67,15 @@ public class Player {
   }
 
   public int getVictoryPoints() {
-    return 0;
+    return this.victoryPoints;
   }
 
   public void buildSettlement(int slot, boolean pay) {
     if (pay) {
-      materials[1] = -1;
-      materials[2] = -1;
-      materials[3] = -1;
-      materials[4] = -1;
+      materials[1] -=1;
+      materials[2] -=1;
+      materials[3] -=1;
+      materials[4] -=1;
     }
     buildMaterials[1] -= 1;
     currentCities.add(new MutablePair(slot, 1));
@@ -95,16 +93,25 @@ public class Player {
   public void buildCity(int slot) {
     MutablePair p = getSettlement(slot);
     assert p != null;
-    materials[4] = -2;
-    materials[5] = -3;
+    materials[4] -=2;
+    materials[5] -=3;
     p.setSecond(2);
   }
 
   public void buyDevCard(int kind) {
-    // TODO Random Draw
-    materials[3] = -1;
-    materials[4] = -1;
-    materials[5] = -1;
+    // Draw the devCard using the Util Class
+    int devCard = Util.drawDevCard();
+    materials[3] -=1;
+    materials[4] -=1;
+    materials[5] -=1;
+
+    // Increment the devCard location
+    devCardsHolding[devCard] += 1;
+  }
+
+  public void playDevCard(int devCard){
+    devCardsHolding[devCard] -= 1;
+    Util.devCardPlayed(devCard);
   }
 
   public void buildRoad(int startSlot, int endSlot) {
@@ -122,8 +129,6 @@ public class Player {
         + Arrays.toString(buildMaterials)
         + ", \"devCardsHolding\" : "
         + Arrays.toString(devCardsHolding)
-        + ", \"devCardsSeen\" : "
-        + Arrays.toString(devCardsSeen)
         + ", \"currentCities\" : "
         + Arrays.toString(currentCities.toArray())
         + ", \"currentRoad\" : "
@@ -135,7 +140,6 @@ public class Player {
     System.arraycopy(materials, 0, player.materials, 0, Util.MATERIALS_LENGTH);
     System.arraycopy(buildMaterials, 0, player.buildMaterials, 0, Util.BUILD_LENGTH);
     System.arraycopy(devCardsHolding, 0, player.devCardsHolding, 0, Util.DEV_LENGTH);
-    System.arraycopy(devCardsSeen, 0, player.devCardsSeen, 0, Util.DEV_LENGTH);
     player.currentCities.addAll(currentCities);
     player.currentRoad = currentRoad;
     return player;
