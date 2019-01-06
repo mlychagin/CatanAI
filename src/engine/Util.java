@@ -1,9 +1,37 @@
 package engine;
+import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.ArrayList;
 
 public class Util {
   public static int MATERIALS_LENGTH = 6;
   public static int BUILD_LENGTH = 3;
   public static int DEV_LENGTH = 5;
+
+    /*
+     * 0 = Knight
+     * 1 = Victory
+     * 2 = Road Building
+     * 3 = Monopoly
+     * 4 = Year of Plenty
+     */
+  static int[] devCardsSeen = new int[] {0, 0, 0, 0, 0};
+
+  private static ArrayList<Integer> devCards = new ArrayList<Integer>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4));
+
+  public static int drawDevCard(){
+      // Draw a number from 0->devCards.length that matches an index in the devCards
+      int randomNum = ThreadLocalRandom.current().nextInt(0,devCards.size());
+
+      // Save the dev card from the correct index, and return the randomNumber
+      int devCard = devCards.remove(randomNum);
+      return devCard;
+  }
+
+  public static void devCardPlayed(int devCard){
+      devCardsSeen[devCard] += 1;
+  }
+
 
   public static int[] tilesResource =
       new int[] {0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5};
