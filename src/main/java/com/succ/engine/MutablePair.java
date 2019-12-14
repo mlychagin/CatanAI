@@ -1,4 +1,4 @@
-package engine;
+package com.succ.engine;
 
 public class MutablePair implements Comparable<MutablePair> {
   private int first;

@@ -1,4 +1,4 @@
-package engine;
+package com.succ.engine;
 
 import java.util.Random;
 

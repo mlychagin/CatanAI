@@ -1,4 +1,4 @@
-package ui;
+package com.succ.ui;
 
 public class Point {
 

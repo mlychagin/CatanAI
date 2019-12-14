@@ -1,3 +1,5 @@
+package com.succ.engineTests;
+
 // import engine.*;
 //
 public class BuildCity {

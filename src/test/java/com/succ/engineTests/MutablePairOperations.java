@@ -1,4 +1,6 @@
-import engine.MutablePair;
+package com.succ.engineTests;
+
+import com.succ.engine.MutablePair;
 
 import java.util.Random;
 
@@ -6,7 +8,7 @@ public class MutablePairOperations {
   private static Random random = new Random();
 
   public static void main(String[] args) {
-    System.out.print("MutablePairOperations: ");
+    System.out.print("com.succ.engineTests.MutablePairOperations: ");
     MutablePair p1 = new MutablePair(random.nextInt(1000), random.nextInt(1000));
     MutablePair p2 = new MutablePair(random.nextInt(1000), random.nextInt(1000));
     MutablePair p1Copy = new MutablePair();

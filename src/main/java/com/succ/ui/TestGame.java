@@ -1,19 +1,17 @@
-package ui;
+package com.succ.ui;
 
-import engine.GameEngine;
-import engine.MutablePair;
-import engine.Util;
-import engine.VertexNode;
+import com.succ.engine.GameEngine;
+import com.succ.engine.Util;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
 import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.text.*;
 import javafx.scene.paint.Color;
-import javafx.animation.AnimationTimer;
+import javafx.scene.text.*;
+import javafx.stage.Stage;
 
 public class TestGame extends Application {
   private Image brickTile;
@@ -33,12 +31,12 @@ public class TestGame extends Application {
 
   @Override
   public void init() {
-    brickTile = new Image("resources/brick.png");
-    desertTile = new Image("resources/desert.png");
-    oreTile = new Image("resources/ore.png");
-    wheatTile = new Image("resources/wheat.png");
-    pastureTile = new Image("resources/pasture.png");
-    forestTile = new Image("resources/forest.png");
+    brickTile = new Image("brick.png");
+    desertTile = new Image("desert.png");
+    oreTile = new Image("ore.png");
+    wheatTile = new Image("wheat.png");
+    pastureTile = new Image("pasture.png");
+    forestTile = new Image("forest.png");
 
     initHexagons();
   }
