@@ -1,7 +1,7 @@
 package com.succ.ui;
 
 import com.succ.engine.GameEngine;
-import com.succ.engine.Util;
+import com.succ.engine.util.Util;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
