@@ -43,13 +43,12 @@ public class BoardState {
         return playerTurn;
     }
 
-    private boolean devCardAvailable(){
+    private byte devCardsAvailable(){
+        byte total = 0;
         for(byte amount : devCardPool){
-            if(amount > 0){
-                return true;
-            }
+            total += amount;
         }
-        return false;
+        return total;
     }
 
     public void initBoard(int numPlayers) {
@@ -119,9 +118,25 @@ public class BoardState {
 
     public byte buyDevCard(byte playerId){
         Player p = playerList.get(playerId);
-        if(!p.canBuyDevCard() || !devCardAvailable()){
-            throw new RuntimeException("");
+        byte totalDevCards = devCardsAvailable();
+        if(!p.canBuyDevCard() || totalDevCards == 0){
+            throw new RuntimeException("Invalid Dev Card Purchase");
         }
+        byte cardSelection = (byte) randomGen.nextInt(totalDevCards);
+        byte cardType = 0;
+        boolean found = false;
+        for(int i = 0; i < devCardPool.length; i++){
+            int amountAvailable = devCardPool[i];
+            cardSelection -= amountAvailable;
+            if(cardSelection <= 0){
+                cardType = (byte) i;
+                found = true;
+            }
+        }
+        if(!found){
+            throw new RuntimeException("Dev Card algorithm failed");
+        }
+        return cardType;
     }
 
     public void advanceTurn() {
@@ -152,7 +167,7 @@ public class BoardState {
         return playerList.get(playerId).getKnightsPlayed();
     }
 
-    private byte computeVictoryPoints(byte playerId) {
+    public byte computeVictoryPoints(byte playerId) {
         byte points = playerList.get(playerId).getNumVictoryPoints();
         if (playerWithLargestArmy == playerId) {
             points += 2;
@@ -178,5 +193,35 @@ public class BoardState {
     private void updateLargestRoad() {
 
     }
+
+    public ArrayList<BoardState> availableOptions(){
+        return null;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
