@@ -1,6 +1,6 @@
-package com.succ.engine.board;
+package com.SpringField.engine.board;
 
-import static com.succ.engine.util.Util.*;
+import static com.SpringField.engine.util.Util.*;
 
 public class Player {
     private byte[] resources = new byte[] { 0, 0, 0, 0, 0, 0 };
@@ -9,6 +9,22 @@ public class Player {
     private byte knightsPlayed = 0;
 
     public Player() {
+    }
+
+    public byte[] getResources() {
+        return resources;
+    }
+
+    public byte[] getStructures() {
+        return structures;
+    }
+
+    public byte[] getDevCards() {
+        return devCards;
+    }
+
+    public byte getKnightsPlayed() {
+        return knightsPlayed;
     }
 
     public void addResource(byte type, byte amount) {
@@ -82,7 +98,7 @@ public class Player {
             throw new RuntimeException("Invalid Transaction");
         }
         devCards[type]--;
-        if(type == KNIGHT){
+        if (type == KNIGHT) {
             knightsPlayed++;
         }
     }
@@ -92,10 +108,7 @@ public class Player {
      */
     public byte getNumVictoryPoints() {
         return (byte) ((DEFAULT_SETTLEMENT_COUNT -= structures[SETTLEMENT]) + (DEFAULT_CITY_COUNT -= structures[CITY])
-                        + devCards[VICTORY]);
+                + devCards[VICTORY]);
     }
 
-    public byte getKnightsPlayed() {
-        return knightsPlayed;
-    }
 }

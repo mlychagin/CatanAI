@@ -1,23 +1,24 @@
-package com.succ.engine;
+package com.SpringField.engine;
 
-import com.succ.engine.board.Player;
-import com.succ.engine.board.Tile;
-import com.succ.engine.board.Vertex;
+import com.SpringField.engine.board.Player;
+import com.SpringField.engine.board.Tile;
+import com.SpringField.engine.board.Vertex;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.succ.engine.util.Util.*;
+import static com.SpringField.engine.util.Util.*;
 
 public class BoardState {
     private ArrayList<Vertex> vertices = new ArrayList<>();
     private ArrayList<Byte> edges = new ArrayList<>();
     private ArrayList<Player> playerList = new ArrayList<>();
-    private byte[] devCardPool =
-            new byte[] { DEFAULT_NUM_KNIGHT, DEFAULT_NUM_VICTORY, DEFAULT_NUM_ROAD_BUILDING, DEFAULT_NUM_MONOPOLY,
-                    DEFAULT_NUM_YEAR_OF_PLENTY };
+    private byte[] devCardPool = new byte[] { DEFAULT_NUM_KNIGHT, DEFAULT_NUM_VICTORY, DEFAULT_NUM_ROAD_BUILDING,
+            DEFAULT_NUM_MONOPOLY, DEFAULT_NUM_YEAR_OF_PLENTY };
     private byte playerWithLargestArmy = UNASSIGNED_PLAYER;
     private byte playerWithLongestRoad = UNASSIGNED_PLAYER;
+    private byte longestRoadCount;
+
     private byte playerTurn = UNASSIGNED_PLAYER;
     private byte robberTile;
 
@@ -43,9 +44,9 @@ public class BoardState {
         return playerTurn;
     }
 
-    private byte devCardsAvailable(){
+    private byte numDevCardsAvailable() {
         byte total = 0;
-        for(byte amount : devCardPool){
+        for (byte amount : devCardPool) {
             total += amount;
         }
         return total;
@@ -116,24 +117,24 @@ public class BoardState {
         }
     }
 
-    public byte buyDevCard(byte playerId){
+    public byte buyDevCard(byte playerId) {
         Player p = playerList.get(playerId);
-        byte totalDevCards = devCardsAvailable();
-        if(!p.canBuyDevCard() || totalDevCards == 0){
+        byte totalDevCards = numDevCardsAvailable();
+        if (!p.canBuyDevCard() || totalDevCards == 0) {
             throw new RuntimeException("Invalid Dev Card Purchase");
         }
         byte cardSelection = (byte) randomGen.nextInt(totalDevCards);
         byte cardType = 0;
         boolean found = false;
-        for(int i = 0; i < devCardPool.length; i++){
+        for (int i = 0; i < devCardPool.length; i++) {
             int amountAvailable = devCardPool[i];
             cardSelection -= amountAvailable;
-            if(cardSelection <= 0){
+            if (cardSelection <= 0) {
                 cardType = (byte) i;
                 found = true;
             }
         }
-        if(!found){
+        if (!found) {
             throw new RuntimeException("Dev Card algorithm failed");
         }
         return cardType;
@@ -186,42 +187,21 @@ public class BoardState {
         return 0;
     }
 
-    private void updateLargestArmy() {
+    private void updateLargestArmy(byte playerId) {
+        if (playerId == playerWithLargestArmy) {
+            return;
+        }
+        if (playerList.get(playerId).getKnightsPlayed() > playerList.get(playerWithLargestArmy).getKnightsPlayed()) {
+            playerWithLargestArmy = playerId;
+        }
+    }
+
+    private void updateLargestRoad(byte playerId, byte edgeId) {
 
     }
 
-    private void updateLargestRoad() {
-
-    }
-
-    public ArrayList<BoardState> availableOptions(){
+    public ArrayList<BoardState> getAllPossibleMoves() {
         return null;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

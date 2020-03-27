@@ -1,10 +1,10 @@
-package com.succ.engine.board;
+package com.SpringField.engine.board;
 
 public class Port {
     public final byte resource;
     public final byte exchangeRate;
 
-    public Port(byte resource, byte exchangeRate){
+    public Port(byte resource, byte exchangeRate) {
         this.resource = resource;
         this.exchangeRate = exchangeRate;
     }
