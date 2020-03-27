@@ -4,24 +4,24 @@ import static com.succ.engine.util.Util.STATUS_EMPTY;
 import static com.succ.engine.util.Util.UNASSIGNED_PLAYER;
 
 public class Vertex {
-  private byte playerNumber;
+  private byte playerId;
   private byte building;
 
   public Vertex() {
-    playerNumber = UNASSIGNED_PLAYER;
+    playerId = UNASSIGNED_PLAYER;
     building = STATUS_EMPTY;
   }
 
-  public void setPlayerNumber(byte playerNumber) {
-    this.playerNumber = playerNumber;
+  public void setPlayerId(byte playerNumber) {
+    this.playerId = playerNumber;
   }
 
   public void setBuilding(byte building) {
     this.building = building;
   }
 
-  public byte getPlayerNumber() {
-    return playerNumber;
+  public byte getPlayerId() {
+    return playerId;
   }
 
   public byte getBuilding() {
@@ -29,6 +29,6 @@ public class Vertex {
   }
 
   public boolean isAssigned(){
-    return playerNumber != UNASSIGNED_PLAYER;
+    return playerId != UNASSIGNED_PLAYER;
   }
 }

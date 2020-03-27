@@ -10,20 +10,21 @@ import java.util.Random;
 import static com.succ.engine.util.Util.*;
 
 public class BoardState {
-  private ArrayList<Vertex> vertices = new ArrayList<>();
-  private ArrayList<Byte> edges = new ArrayList<>();
-  private ArrayList<Player> playerList = new ArrayList<>();
-  private byte[] devCardPool =
+    private ArrayList<Vertex> vertices = new ArrayList<>();
+    private ArrayList<Byte> edges = new ArrayList<>();
+    private ArrayList<Player> playerList = new ArrayList<>();
+    private byte[] devCardPool =
             new byte[] { DEFAULT_NUM_KNIGHT, DEFAULT_NUM_VICTORY, DEFAULT_NUM_ROAD_BUILDING, DEFAULT_NUM_MONOPOLY,
                     DEFAULT_NUM_YEAR_OF_PLENTY };
-  private byte playerWithLargestArmy = UNASSIGNED_PLAYER;
-  private byte playerWithLongestRoad = UNASSIGNED_PLAYER;
-  private byte playerTurn = UNASSIGNED_PLAYER;
-  private byte robberTile;
+    private byte playerWithLargestArmy = UNASSIGNED_PLAYER;
+    private byte playerWithLongestRoad = UNASSIGNED_PLAYER;
+    private byte playerTurn = UNASSIGNED_PLAYER;
+    private byte robberTile;
 
-  private Random randomGen = new Random();
+    private Random randomGen = new Random();
 
-    BoardState() {
+    BoardState(int numPlayers) {
+        initBoard(numPlayers);
     }
 
     public ArrayList<Vertex> getVertices() {
@@ -36,6 +37,19 @@ public class BoardState {
 
     public ArrayList<Player> getPlayerList() {
         return playerList;
+    }
+
+    public byte getPlayerTurn() {
+        return playerTurn;
+    }
+
+    private boolean devCardAvailable(){
+        for(byte amount : devCardPool){
+            if(amount > 0){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void initBoard(int numPlayers) {
@@ -57,6 +71,66 @@ public class BoardState {
         }
     }
 
+    public void placeSettlement(byte playerId, byte vertexId, boolean pay) {
+        Player p = playerList.get(playerId);
+        if (pay && !p.canBuySettlement()) {
+            throw new RuntimeException("Insufficient Resources");
+        }
+        Vertex v = vertices.get(vertexId);
+        v.setPlayerId(playerId);
+        v.setBuilding(STATUS_SETTLEMENT);
+        if (pay) {
+            p.buySettlement();
+        }
+    }
+
+    public void placeRoad(byte playerId, byte edgeId, boolean pay) {
+        Player p = playerList.get(playerId);
+        if (pay && !p.canBuyRoad()) {
+            throw new RuntimeException("Insufficient Resources");
+        }
+        if (edges.get(edgeId) != UNASSIGNED_PLAYER) {
+            throw new RuntimeException("Edge already has road");
+        }
+        edges.set(edgeId, playerId);
+        if (pay) {
+            p.buyRoad();
+        }
+    }
+
+    public void placeCity(byte playerId, byte vertexId, boolean pay) {
+        Player p = playerList.get(playerId);
+        if (pay && !p.canBuyCity()) {
+            throw new RuntimeException("Insufficient Resources");
+        }
+        Vertex v = vertices.get(vertexId);
+        if (v.getBuilding() != STATUS_SETTLEMENT) {
+            throw new RuntimeException("City not placed on settlement");
+        }
+        if (v.getPlayerId() != playerId) {
+            throw new RuntimeException("Settlement not owned by player");
+        }
+        v.setPlayerId(playerId);
+        v.setBuilding(STATUS_CITY);
+        if (pay) {
+            p.buyCity();
+        }
+    }
+
+    public byte buyDevCard(byte playerId){
+        Player p = playerList.get(playerId);
+        if(!p.canBuyDevCard() || !devCardAvailable()){
+            throw new RuntimeException("");
+        }
+    }
+
+    public void advanceTurn() {
+        playerTurn++;
+        if (playerTurn == playerList.size()) {
+            playerTurn = 0;
+        }
+    }
+
     private byte rollDice() {
         byte roll = (byte) (randomGen.nextInt(6) + randomGen.nextInt(6) + 2);
         for (int tileNum = 0; tileNum < tiles.size(); tileNum++) {
@@ -65,7 +139,7 @@ public class BoardState {
                 for (int vertexNum : tileDependencies[tileNum]) {
                     Vertex v = vertices.get(vertexNum);
                     if (v.isAssigned()) {
-                        Player p = playerList.get(v.getPlayerNumber());
+                        Player p = playerList.get(v.getPlayerId());
                         p.addResource(t.getResourceType(), v.getBuilding());
                     }
                 }
