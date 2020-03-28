@@ -107,7 +107,7 @@ public class Player {
      * Note: This does not include victory points from LargestArmy or LongestRoad
      */
     public byte getNumVictoryPoints() {
-        return (byte) ((DEFAULT_SETTLEMENT_COUNT -= structures[SETTLEMENT]) + (DEFAULT_CITY_COUNT -= structures[CITY])
+        return (byte) ((DEFAULT_SETTLEMENT_COUNT -= structures[SETTLEMENT]) + 2*(DEFAULT_CITY_COUNT -= structures[CITY])
                 + devCards[VICTORY]);
     }
 
