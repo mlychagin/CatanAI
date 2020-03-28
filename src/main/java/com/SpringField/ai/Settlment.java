@@ -19,6 +19,7 @@ public class Settlment {
         return null;
     }
 
-    private ArrayList<BoardState> getAllPossibleSettles(BoardState b) { return b.getAllPossibleMoves();
+    private ArrayList<BoardState> getAllPossibleSettles(BoardState b) {
+        return b.getAllPossibleMoves();
     }
 }

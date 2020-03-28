@@ -5,13 +5,10 @@ import org.junit.*;
 
 import static com.SpringField.engine.util.Util.*;
 
-
-
 public class PlayerTest {
 
-
     @Test
-    public void canBuySettlementTest(){
+    public void canBuySettlementTest() {
         Player p = new Player();
         p.addResource(WOOD, (byte) 1);
         p.addResource(BRICK, (byte) 1);
@@ -19,134 +16,132 @@ public class PlayerTest {
         p.addResource(HAY, (byte) 1);
         assert p.canBuySettlement();
         p.buySettlement();
-        try{
+        try {
             p.buySettlement();
             assert false;
-        }
-        catch(Exception e ){
+        } catch (Exception e) {
             assert e.getMessage().equals("Invalid Transaction");
         }
     }
+
     @Test
-    public void canBuyRoadTest(){
+    public void canBuyRoadTest() {
         Player p = new Player();
         p.addResource(WOOD, (byte) 1);
         p.addResource(BRICK, (byte) 1);
         assert p.canBuyRoad();
         p.buyRoad();
-        try{
+        try {
             p.buyRoad();
             assert false;
-        }
-       catch(Exception e ){
+        } catch (Exception e) {
             assert e.getMessage().equals("Invalid Transaction");
-       }
+        }
     }
+
     @Test
-    public void canBuyCityTest(){
+    public void canBuyCityTest() {
         Player p = new Player();
         p.addResource(ROCK, (byte) 3);
         p.addResource(HAY, (byte) 2);
         assert p.canBuyCity();
         p.buyCity();
-        try{
+        try {
             p.buyCity();
             assert false;
-        }
-        catch(Exception e ){
+        } catch (Exception e) {
             assert e.getMessage().equals("Invalid Transaction");
         }
     }
+
     @Test
-    public void canBuyDevCardTest(){
+    public void canBuyDevCardTest() {
         Player p = new Player();
         p.addResource(SHEEP, (byte) 1);
         p.addResource(ROCK, (byte) 1);
         p.addResource(HAY, (byte) 1);
         assert p.canBuyDevCard();
         p.buyDevCard(KNIGHT);
-        try{
+        try {
             p.buyDevCard(KNIGHT);
             assert false;
-        }
-        catch(Exception e ){
+        } catch (Exception e) {
             assert e.getMessage().equals("Invalid Transaction");
         }
     }
+
     @Test
-    public void settlementStructuresTest(){
+    public void settlementStructuresTest() {
         Player p = new Player();
-        p.addResource(WOOD, (byte) (1+DEFAULT_SETTLEMENT_COUNT));
-        p.addResource(BRICK, (byte) (1+DEFAULT_SETTLEMENT_COUNT));
-        p.addResource(SHEEP, (byte) (1+DEFAULT_SETTLEMENT_COUNT));
-        p.addResource(HAY, (byte) (1+DEFAULT_SETTLEMENT_COUNT));
+        p.addResource(WOOD, (byte) (1 + DEFAULT_SETTLEMENT_COUNT));
+        p.addResource(BRICK, (byte) (1 + DEFAULT_SETTLEMENT_COUNT));
+        p.addResource(SHEEP, (byte) (1 + DEFAULT_SETTLEMENT_COUNT));
+        p.addResource(HAY, (byte) (1 + DEFAULT_SETTLEMENT_COUNT));
         int i = 0;
-        while(true) {
-            if(!p.canBuySettlement()){
-                try{
+        while (true) {
+            if (!p.canBuySettlement()) {
+                try {
                     p.buySettlement();
                     assert false;
-                }
-                catch(Exception e ){
+                } catch (Exception e) {
                     assert e.getMessage().equals("Invalid Transaction");
                 }
-                assert(i==DEFAULT_SETTLEMENT_COUNT);
+                assert (i == DEFAULT_SETTLEMENT_COUNT);
                 break;
             }
             p.buySettlement();
             i += 1;
         }
-
-
     }
+
     @Test
-    public void cityStructuresTest(){
+    public void cityStructuresTest() {
         Player p = new Player();
         int i = 0;
-        p.addResource(ROCK, (byte) (1+DEFAULT_CITY_COUNT*3));
-        p.addResource(HAY, (byte) (1+DEFAULT_CITY_COUNT*2));
-        while(true) {
-            if(!p.canBuyCity()){
-                try{
+        p.addResource(ROCK, (byte) (1 + DEFAULT_CITY_COUNT * 3));
+        p.addResource(HAY, (byte) (1 + DEFAULT_CITY_COUNT * 2));
+        while (true) {
+            if (!p.canBuyCity()) {
+                try {
                     p.buyCity();
                     assert false;
-                }
-                catch(Exception e ){
+                } catch (Exception e) {
                     assert e.getMessage().equals("Invalid Transaction");
                 }
-                assert(i==DEFAULT_CITY_COUNT);
+                assert (i == DEFAULT_CITY_COUNT);
                 break;
             }
             p.buyCity();
             i += 1;
         }
     }
+
     @Test
-    public void roadStructuresTest(){
+    public void roadStructuresTest() {
         Player p = new Player();
-        int i=0;
-        p.addResource(WOOD, (byte) (1+DEFAULT_ROAD_COUNT));
-        p.addResource(BRICK, (byte) (1+DEFAULT_ROAD_COUNT));
-        while(true) {
-            if(!p.canBuyRoad()){
-                try{
+        int i = 0;
+        p.addResource(WOOD, (byte) (1 + DEFAULT_ROAD_COUNT));
+        p.addResource(BRICK, (byte) (1 + DEFAULT_ROAD_COUNT));
+        while (true) {
+            if (!p.canBuyRoad()) {
+                try {
                     p.buyRoad();
                     assert false;
-                }
-                catch(Exception e ){
+                } catch (Exception e) {
                     assert e.getMessage().equals("Invalid Transaction");
                 }
-                assert(i==DEFAULT_ROAD_COUNT);
+                assert (i == DEFAULT_ROAD_COUNT);
                 break;
             }
             p.buyRoad();
             i += 1;
         }
     }
+
     @Test
-    public void canPlayDevCardTest(){
+    public void canPlayDevCardTest() {
         Player p = new Player();
-        for(byte i = 0; i < 5; i++){
+        for (byte i = 0; i < 5; i++) {
             assert !p.canPlayDevCard(i);
         }
         p.addResource(SHEEP, (byte) 1);
@@ -155,41 +150,40 @@ public class PlayerTest {
         try {
             p.playDevCard(VICTORY);
             assert false;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             assert e.getMessage().equals("Invalid Transaction");
         }
     }
+
     @Test
-    public void playDevCardTest(){
+    public void playDevCardTest() {
         Player p = new Player();
-        for(byte i = 0; i < 5; i++){
-            try{
-             p.playDevCard(i);
-             assert false;
-            }
-            catch(Exception e){
+        for (byte i = 0; i < 5; i++) {
+            try {
+                p.playDevCard(i);
+                assert false;
+            } catch (Exception e) {
                 assert e.getMessage().equals("Invalid Transaction");
             }
         }
-        for(byte i = 0; i < 5; i++) {
+        for (byte i = 0; i < 5; i++) {
             p.addResource(SHEEP, (byte) 1);
             p.addResource(ROCK, (byte) 1);
             p.addResource(HAY, (byte) 1);
             p.buyDevCard(i);
             p.playDevCard(i);
-            try{
-               p.playDevCard(i);
-               assert false;
-            }
-            catch(Exception e){
+            try {
+                p.playDevCard(i);
+                assert false;
+            } catch (Exception e) {
                 assert e.getMessage().equals("Invalid Transaction");
             }
         }
 
     }
+
     @Test
-    public void getNumVictoryPointsTest(){
+    public void getNumVictoryPointsTest() {
         Player p = new Player();
         p.addResource(WOOD, (byte) (1));
         p.addResource(SHEEP, (byte) (1));
@@ -205,6 +199,6 @@ public class PlayerTest {
         p.addResource(SHEEP, (byte) (1));
         p.addResource(HAY, (byte) (1));
         p.buyDevCard(VICTORY);
-        assert (p.getNumVictoryPoints() == 4);
+        assert (p.getNumVictoryPoints() == 3);
     }
 }

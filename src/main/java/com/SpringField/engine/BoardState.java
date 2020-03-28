@@ -1,5 +1,6 @@
 package com.SpringField.engine;
 
+
 import com.SpringField.engine.board.Player;
 import com.SpringField.engine.board.Tile;
 import com.SpringField.engine.board.Vertex;
@@ -208,14 +209,24 @@ public class BoardState {
 
     }
 
-    private int transverseNode(HashSet<Byte> seenEdges, byte playerId, byte nodeId, byte roadLength){
+    private int transverseNode(HashSet<Byte> seenEdges, byte playerId, byte nodeId, byte roadLength) {
         byte maxRoadLength = roadLength;
         byte[] outgoingEdges = nodeToEdge[nodeId];
-        for(byte edgeId : outgoingEdges){
-            if(seenEdges.contains(edgeId)){
+        for (byte edgeId : outgoingEdges) {
+            if (seenEdges.contains(edgeId)) {
                 continue;
             }
-            if(edges.get(edgeId) == playerId){
+            if (edges.get(edgeId) == playerId) {
+                byte nextNodeId = -1;
+                for (byte n : edgeToVertex[edgeId]) {
+                    if (n != nodeId) {
+                        nextNodeId = n;
+                    }
+                }
+                if (nextNodeId == -1) {
+                    throw new RuntimeException("Next Node not found");
+                }
+                // byte roadLength = transverseNode(seenEdges, playerId, nextNodeId, ++roadLength);
             }
         }
         return 0;

@@ -31,6 +31,13 @@ public class Player {
         resources[type] += amount;
     }
 
+    public void removeResource(byte type, byte amount) {
+        if (resources[type] < amount) {
+            throw new RuntimeException("Invalid Resource reduction");
+        }
+        resources[type] -= amount;
+    }
+
     public boolean canBuyRoad() {
         return resources[WOOD] >= 1 && resources[BRICK] >= 1 && structures[ROAD] >= 1;
     }
@@ -90,7 +97,7 @@ public class Player {
     }
 
     public boolean canPlayDevCard(byte type) {
-        return devCards[type] > 0;
+        return devCards[type] > 0 && type != VICTORY;
     }
 
     public void playDevCard(byte type) {
@@ -107,7 +114,7 @@ public class Player {
      * Note: This does not include victory points from LargestArmy or LongestRoad
      */
     public byte getNumVictoryPoints() {
-        return (byte) ((DEFAULT_SETTLEMENT_COUNT -= structures[SETTLEMENT]) + 2*(DEFAULT_CITY_COUNT -= structures[CITY])
+        return (byte) ((DEFAULT_SETTLEMENT_COUNT - structures[SETTLEMENT]) + 2 * (DEFAULT_CITY_COUNT - structures[CITY])
                 + devCards[VICTORY]);
     }
 
