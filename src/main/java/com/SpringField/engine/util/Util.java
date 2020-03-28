@@ -9,50 +9,55 @@ public class Util {
     /*
      * Materials
      */
-    public static byte DESERT = 0;
-    public static byte WOOD = 1;
-    public static byte BRICK = 2;
-    public static byte SHEEP = 3;
-    public static byte HAY = 4;
-    public static byte ROCK = 5;
-    public static byte ANY = 6;
+    public static final byte INVALID_RESOURCE = -1;
+    public static final byte DESERT = 0;
+    public static final byte WOOD = 1;
+    public static final byte BRICK = 2;
+    public static final byte SHEEP = 3;
+    public static final byte HAY = 4;
+    public static final byte ROCK = 5;
 
     /*
      * Structures
      */
-    public static byte ROAD = 0;
-    public static byte SETTLEMENT = 1;
-    public static byte CITY = 2;
+    public static final byte ROAD = 0;
+    public static final byte SETTLEMENT = 1;
+    public static final byte CITY = 2;
+
+    public static final byte DEFAULT_ROAD_COUNT = 15;
+    public static final byte DEFAULT_SETTLEMENT_COUNT = 5;
+    public static final byte DEFAULT_CITY_COUNT = 4;
 
     /*
      * Dev Cards
      */
-    public static byte KNIGHT = 0;
-    public static byte VICTORY = 1;
-    public static byte ROAD_BUILDING = 2;
-    public static byte MONOPOLY = 3;
-    public static byte YEAR_OF_PLENTY = 4;
+    public static final byte KNIGHT = 0;
+    public static final byte VICTORY = 1;
+    public static final byte ROAD_BUILDING = 2;
+    public static final byte MONOPOLY = 3;
+    public static final byte YEAR_OF_PLENTY = 4;
 
-    public static byte DEFAULT_NUM_KNIGHT = 15;
-    public static byte DEFAULT_NUM_VICTORY = 5;
-    public static byte DEFAULT_NUM_ROAD_BUILDING = 2;
-    public static byte DEFAULT_NUM_MONOPOLY = 2;
-    public static byte DEFAULT_NUM_YEAR_OF_PLENTY = 2;
+    public static final byte DEFAULT_NUM_KNIGHT = 15;
+    public static final byte DEFAULT_NUM_VICTORY = 5;
+    public static final byte DEFAULT_NUM_ROAD_BUILDING = 2;
+    public static final byte DEFAULT_NUM_MONOPOLY = 2;
+    public static final byte DEFAULT_NUM_YEAR_OF_PLENTY = 2;
 
     /*
      * Building Status
      */
-    public static byte STATUS_EMPTY = 0;
-    public static byte STATUS_SETTLEMENT = 1;
-    public static byte STATUS_CITY = 2;
+    public static final byte STATUS_EMPTY = 0;
+    public static final byte STATUS_SETTLEMENT = 1;
+    public static final byte STATUS_CITY = 2;
 
     /*
      * Player
      */
-    public static byte UNASSIGNED_PLAYER = -1;
-    public static byte DEFAULT_ROAD_COUNT = 15;
-    public static byte DEFAULT_SETTLEMENT_COUNT = 5;
-    public static byte DEFAULT_CITY_COUNT = 4;
+    public static final byte UNASSIGNED_PLAYER = -1;
+    public static final byte UNASSIGNED_EDGE = -1;
+    public static final byte UNASSIGNED_VERTEX = -1;
+
+    private static Random randomGen = new Random();
 
     /*
      * Board
@@ -148,6 +153,28 @@ public class Util {
                 nodeToEdge[i][j] = list.get(j);
             }
         }
+    }
+
+    public static byte getRandomSlot(byte[] a) {
+        byte total = 0;
+        for (byte amount : a) {
+            total += amount;
+        }
+        byte randomNumber = (byte) randomGen.nextInt(total);
+        byte slot = 0;
+        boolean found = false;
+        for (int i = 0; i < a.length; i++) {
+            int amountAvailable = a[i];
+            randomNumber -= amountAvailable;
+            if (randomNumber <= 0) {
+                slot = (byte) i;
+                found = true;
+            }
+        }
+        if (!found) {
+            throw new RuntimeException("Algorithm Failure");
+        }
+        return slot;
     }
 
 }

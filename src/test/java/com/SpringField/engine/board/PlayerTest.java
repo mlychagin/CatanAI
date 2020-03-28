@@ -15,9 +15,9 @@ public class PlayerTest {
         p.addResource(SHEEP, (byte) 1);
         p.addResource(HAY, (byte) 1);
         assert p.canBuySettlement();
-        p.buySettlement();
+        p.buySettlement(true);
         try {
-            p.buySettlement();
+            p.buySettlement(true);
             assert false;
         } catch (Exception e) {
             assert e.getMessage().equals("Invalid Transaction");
@@ -30,9 +30,9 @@ public class PlayerTest {
         p.addResource(WOOD, (byte) 1);
         p.addResource(BRICK, (byte) 1);
         assert p.canBuyRoad();
-        p.buyRoad();
+        p.buyRoad(true);
         try {
-            p.buyRoad();
+            p.buyRoad(true);
             assert false;
         } catch (Exception e) {
             assert e.getMessage().equals("Invalid Transaction");
@@ -81,7 +81,7 @@ public class PlayerTest {
         while (true) {
             if (!p.canBuySettlement()) {
                 try {
-                    p.buySettlement();
+                    p.buySettlement(true);
                     assert false;
                 } catch (Exception e) {
                     assert e.getMessage().equals("Invalid Transaction");
@@ -89,7 +89,7 @@ public class PlayerTest {
                 assert (i == DEFAULT_SETTLEMENT_COUNT);
                 break;
             }
-            p.buySettlement();
+            p.buySettlement(true);
             i += 1;
         }
     }
@@ -125,7 +125,7 @@ public class PlayerTest {
         while (true) {
             if (!p.canBuyRoad()) {
                 try {
-                    p.buyRoad();
+                    p.buyRoad(true);
                     assert false;
                 } catch (Exception e) {
                     assert e.getMessage().equals("Invalid Transaction");
@@ -133,7 +133,7 @@ public class PlayerTest {
                 assert (i == DEFAULT_ROAD_COUNT);
                 break;
             }
-            p.buyRoad();
+            p.buyRoad(true);
             i += 1;
         }
     }
@@ -189,7 +189,7 @@ public class PlayerTest {
         p.addResource(SHEEP, (byte) (1));
         p.addResource(HAY, (byte) (1));
         p.addResource(BRICK, (byte) (1));
-        p.buySettlement();
+        p.buySettlement(true);
         assert (p.getNumVictoryPoints() == 1);
         p.addResource(ROCK, (byte) (3));
         p.addResource(HAY, (byte) (2));

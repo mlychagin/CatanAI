@@ -1,6 +1,5 @@
 package com.SpringField.engine;
 
-
 import com.SpringField.engine.board.Player;
 import com.SpringField.engine.board.Tile;
 import com.SpringField.engine.board.Vertex;
@@ -14,12 +13,12 @@ import static com.SpringField.engine.util.Util.*;
 public class BoardState {
     private ArrayList<Vertex> vertices = new ArrayList<>();
     private ArrayList<Byte> edges = new ArrayList<>();
-    private ArrayList<Player> playerList = new ArrayList<>();
+    private ArrayList<Player> players = new ArrayList<>();
     private byte[] devCardPool = new byte[] { DEFAULT_NUM_KNIGHT, DEFAULT_NUM_VICTORY, DEFAULT_NUM_ROAD_BUILDING,
             DEFAULT_NUM_MONOPOLY, DEFAULT_NUM_YEAR_OF_PLENTY };
     private byte playerWithLargestArmy = UNASSIGNED_PLAYER;
     private byte playerWithLongestRoad = UNASSIGNED_PLAYER;
-    private byte longestRoadCount;
+    private byte currentLongestRoad;
 
     private byte playerTurn = UNASSIGNED_PLAYER;
     private byte robberTile;
@@ -38,8 +37,8 @@ public class BoardState {
         return edges;
     }
 
-    public ArrayList<Player> getPlayerList() {
-        return playerList;
+    public ArrayList<Player> getPlayers() {
+        return players;
     }
 
     public byte getPlayerTurn() {
@@ -62,7 +61,7 @@ public class BoardState {
             edges.add(UNASSIGNED_PLAYER);
         }
         for (int i = 0; i < numPlayers; i++) {
-            playerList.add(new Player());
+            players.add(new Player());
         }
         for (int i = 0; i < tiles.size(); i++) {
             Tile t = tiles.get(i);
@@ -74,34 +73,28 @@ public class BoardState {
     }
 
     public void placeSettlement(byte playerId, byte vertexId, boolean pay) {
-        Player p = playerList.get(playerId);
-        if (pay && !p.canBuySettlement()) {
-            throw new RuntimeException("Insufficient Resources");
-        }
+        Player p = players.get(playerId);
         Vertex v = vertices.get(vertexId);
+        if (v.getPlayerId() != UNASSIGNED_PLAYER) {
+            throw new RuntimeException("Invalid Transaction");
+        }
+        p.buySettlement(pay);
         v.setPlayerId(playerId);
         v.setBuilding(STATUS_SETTLEMENT);
-        if (pay) {
-            p.buySettlement();
-        }
     }
 
     public void placeRoad(byte playerId, byte edgeId, boolean pay) {
-        Player p = playerList.get(playerId);
-        if (pay && !p.canBuyRoad()) {
-            throw new RuntimeException("Insufficient Resources");
-        }
+        Player p = players.get(playerId);
         if (edges.get(edgeId) != UNASSIGNED_PLAYER) {
-            throw new RuntimeException("Edge already has road");
+            throw new RuntimeException("Invalid Transaction");
         }
         edges.set(edgeId, playerId);
-        if (pay) {
-            p.buyRoad();
-        }
+        p.buyRoad(pay);
+        updateLargestRoad(playerId, edgeId);
     }
 
     public void placeCity(byte playerId, byte vertexId, boolean pay) {
-        Player p = playerList.get(playerId);
+        Player p = players.get(playerId);
         if (pay && !p.canBuyCity()) {
             throw new RuntimeException("Insufficient Resources");
         }
@@ -120,44 +113,87 @@ public class BoardState {
     }
 
     public byte buyDevCard(byte playerId) {
-        Player p = playerList.get(playerId);
-        byte totalDevCards = numDevCardsAvailable();
-        if (!p.canBuyDevCard() || totalDevCards == 0) {
-            throw new RuntimeException("Invalid Dev Card Purchase");
+        Player p = players.get(playerId);
+        if (numDevCardsAvailable() == 0) {
+            throw new RuntimeException("No Available Dev Cards");
         }
-        byte cardSelection = (byte) randomGen.nextInt(totalDevCards);
-        byte cardType = 0;
-        boolean found = false;
-        for (int i = 0; i < devCardPool.length; i++) {
-            int amountAvailable = devCardPool[i];
-            cardSelection -= amountAvailable;
-            if (cardSelection <= 0) {
-                cardType = (byte) i;
-                found = true;
+        byte type = getRandomSlot(devCardPool);
+        p.buyDevCard(type);
+        return type;
+    }
+
+    public byte playKnightCard(byte playerId, byte tileId, byte playerIdSteal) {
+        Player p = players.get(playerId);
+        p.playDevCard(KNIGHT);
+        robberTile = tileId;
+        byte type = players.get(playerIdSteal).stealResource();
+        p.addResource(type, (byte) 1);
+        return type;
+    }
+
+    public void playRoadBuilding(byte playerId, byte e1, byte e2) {
+        Player p = players.get(playerId);
+        if (edges.get(e1) != UNASSIGNED_PLAYER && edges.get(e2) != UNASSIGNED_PLAYER) {
+            throw new RuntimeException("Invalid Transaction");
+        }
+        p.playDevCard(ROAD_BUILDING);
+        if (e1 != UNASSIGNED_EDGE) {
+            placeRoad(playerId, e1, false);
+        }
+        if (e2 != UNASSIGNED_EDGE) {
+            placeRoad(playerId, e1, false);
+        }
+    }
+
+    /*
+     * Currently returns total amount stolen. For proper info we should return the amount stolen from each player as
+     * well.
+     */
+    public byte playMonopoly(byte playerId, byte resourceType) {
+        Player p = players.get(playerId);
+        p.playDevCard(MONOPOLY);
+        byte totalStolen = 0;
+        for (int i = 0; i < players.size(); i++) {
+            if (playerId == i) {
+                break;
             }
+            totalStolen += players.get(i).stealAllResource(resourceType);
         }
-        if (!found) {
-            throw new RuntimeException("Dev Card algorithm failed");
-        }
-        return cardType;
+        return totalStolen;
+    }
+
+    /*
+     * Concept of a transaction addResource() could fail because of bank restrictions. Bank has yet to be implemented.
+     */
+    public void playYearOfPlenty(byte playerId, byte r1, byte r2) {
+        Player p = players.get(playerId);
+        p.playDevCard(YEAR_OF_PLENTY);
+        p.addResource(r1, (byte) 1);
+        p.addResource(r2, (byte) 1);
     }
 
     public void advanceTurn() {
         playerTurn++;
-        if (playerTurn == playerList.size()) {
+        if (playerTurn == players.size()) {
             playerTurn = 0;
         }
     }
 
     private byte rollDice() {
         byte roll = (byte) (randomGen.nextInt(6) + randomGen.nextInt(6) + 2);
+        if (roll == 7) {
+            return roll;
+        }
         for (int tileNum = 0; tileNum < tiles.size(); tileNum++) {
+            if (tileNum == robberTile) {
+                continue;
+            }
             Tile t = tiles.get(tileNum);
             if (roll == t.getRollNumber()) {
                 for (int vertexNum : tileToVertex[tileNum]) {
                     Vertex v = vertices.get(vertexNum);
                     if (v.isAssigned()) {
-                        Player p = playerList.get(v.getPlayerId());
+                        Player p = players.get(v.getPlayerId());
                         p.addResource(t.getResourceType(), v.getBuilding());
                     }
                 }
@@ -167,50 +203,36 @@ public class BoardState {
     }
 
     private byte computeArmy(byte playerId) {
-        return playerList.get(playerId).getKnightsPlayed();
-    }
-
-    public byte computeVictoryPoints(byte playerId) {
-        byte points = playerList.get(playerId).getNumVictoryPoints();
-        if (playerWithLargestArmy == playerId) {
-            points += 2;
-        }
-        if (playerWithLongestRoad == playerId) {
-            points += 2;
-        }
-        return points;
-    }
-
-    /*
-     * Todo
-     */
-
-    private byte computeRoad(byte playerId) {
-        return 0;
+        return players.get(playerId).getKnightsPlayed();
     }
 
     private void updateLargestArmy(byte playerId) {
         if (playerId == playerWithLargestArmy) {
             return;
         }
-        if (playerList.get(playerId).getKnightsPlayed() > playerList.get(playerWithLargestArmy).getKnightsPlayed()) {
+        if (computeArmy(playerId) > computeArmy(playerWithLargestArmy)) {
             playerWithLargestArmy = playerId;
         }
-    }
-
-    public ArrayList<BoardState> getAllPossibleMoves() {
-        return null;
     }
 
     /*
      * Longest Road Algorithm
      */
     private void updateLargestRoad(byte playerId, byte edgeId) {
-
+        HashSet<Byte> seenEdges = new HashSet<>();
+        seenEdges.add(edgeId);
+        byte maxRoadLength = 1;
+        for (byte n : edgeToVertex[edgeId]) {
+            maxRoadLength += transverseNode(seenEdges, playerId, n, maxRoadLength);
+        }
+        if (maxRoadLength > currentLongestRoad) {
+            currentLongestRoad = maxRoadLength;
+            playerWithLongestRoad = playerId;
+        }
     }
 
-    private int transverseNode(HashSet<Byte> seenEdges, byte playerId, byte nodeId, byte roadLength) {
-        byte maxRoadLength = roadLength;
+    private byte transverseNode(HashSet<Byte> seenEdges, byte playerId, byte nodeId, byte currentRoadLength) {
+        byte maxRoadLength = currentRoadLength;
         byte[] outgoingEdges = nodeToEdge[nodeId];
         for (byte edgeId : outgoingEdges) {
             if (seenEdges.contains(edgeId)) {
@@ -226,10 +248,32 @@ public class BoardState {
                 if (nextNodeId == -1) {
                     throw new RuntimeException("Next Node not found");
                 }
-                // byte roadLength = transverseNode(seenEdges, playerId, nextNodeId, ++roadLength);
+                byte roadLength = transverseNode(seenEdges, playerId, nextNodeId, ++currentRoadLength);
+                if (roadLength > maxRoadLength) {
+                    maxRoadLength = roadLength;
+                }
             }
         }
-        return 0;
+        return maxRoadLength;
+    }
+
+    public byte computeVictoryPoints(byte playerId) {
+        byte points = players.get(playerId).getNumVictoryPoints();
+        if (playerWithLargestArmy == playerId) {
+            points += 2;
+        }
+        if (playerWithLongestRoad == playerId) {
+            points += 2;
+        }
+        return points;
+    }
+
+    /*
+     * Todo
+     */
+
+    public ArrayList<BoardState> getAllPossibleMoves() {
+        return null;
     }
 
 }
