@@ -216,9 +216,9 @@ public class BoardState {
                 continue;
             }
             if(edges.get(edgeId) == playerId){
-                transverseNode(seenEdges, playerId, )
             }
         }
+        return 0;
     }
 
 }
