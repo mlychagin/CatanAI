@@ -14,6 +14,8 @@ public class BoardState {
     private ArrayList<Vertex> vertices = new ArrayList<>();
     private ArrayList<Byte> edges = new ArrayList<>();
     private ArrayList<Player> players = new ArrayList<>();
+    private byte[] resourceCardPool = new byte[] { DEFAULT_DESERT_COUNT, DEFAULT_WOOD_COUNT, DEFAULT_BRICK_COUNT,
+            DEFAULT_SHEEP_COUNT, DEFAULT_HAY_COUNT, DEFAULT_ROCK_COUNT };
     private byte[] devCardPool = new byte[] { DEFAULT_NUM_KNIGHT, DEFAULT_NUM_VICTORY, DEFAULT_NUM_ROAD_BUILDING,
             DEFAULT_NUM_MONOPOLY, DEFAULT_NUM_YEAR_OF_PLENTY };
     private byte playerWithLargestArmy = UNASSIGNED_PLAYER;
@@ -45,6 +47,12 @@ public class BoardState {
         return playerTurn;
     }
 
+    private void checkPlayerTurn(byte playerId) {
+        if (playerTurn != playerId) {
+            throw new RuntimeException("Invalid Transaction");
+        }
+    }
+
     private byte numDevCardsAvailable() {
         byte total = 0;
         for (byte amount : devCardPool) {
@@ -73,6 +81,7 @@ public class BoardState {
     }
 
     public void placeSettlement(byte playerId, byte vertexId, boolean pay) {
+        checkPlayerTurn(playerId);
         Player p = players.get(playerId);
         Vertex v = vertices.get(vertexId);
         if (v.getPlayerId() != UNASSIGNED_PLAYER) {
@@ -81,9 +90,14 @@ public class BoardState {
         p.buySettlement(pay);
         v.setPlayerId(playerId);
         v.setBuilding(STATUS_SETTLEMENT);
+        resourceCardPool[WOOD]++;
+        resourceCardPool[BRICK]++;
+        resourceCardPool[SHEEP]++;
+        resourceCardPool[HAY]++;
     }
 
     public void placeRoad(byte playerId, byte edgeId, boolean pay) {
+        checkPlayerTurn(playerId);
         Player p = players.get(playerId);
         if (edges.get(edgeId) != UNASSIGNED_PLAYER) {
             throw new RuntimeException("Invalid Transaction");
@@ -91,47 +105,54 @@ public class BoardState {
         edges.set(edgeId, playerId);
         p.buyRoad(pay);
         updateLargestRoad(playerId, edgeId);
+        resourceCardPool[WOOD]++;
+        resourceCardPool[BRICK]++;
     }
 
-    public void placeCity(byte playerId, byte vertexId, boolean pay) {
-        Player p = players.get(playerId);
-        if (pay && !p.canBuyCity()) {
-            throw new RuntimeException("Insufficient Resources");
-        }
+    public void placeCity(byte playerId, byte vertexId) {
+        checkPlayerTurn(playerId);
         Vertex v = vertices.get(vertexId);
         if (v.getBuilding() != STATUS_SETTLEMENT) {
-            throw new RuntimeException("City not placed on settlement");
+            throw new RuntimeException("Invalid Transaction");
         }
         if (v.getPlayerId() != playerId) {
-            throw new RuntimeException("Settlement not owned by player");
+            throw new RuntimeException("Invalid Transaction");
         }
+        Player p = players.get(playerId);
+        p.buyCity();
         v.setPlayerId(playerId);
         v.setBuilding(STATUS_CITY);
-        if (pay) {
-            p.buyCity();
-        }
+        resourceCardPool[HAY] += 2;
+        resourceCardPool[ROCK] += 3;
     }
 
     public byte buyDevCard(byte playerId) {
+        checkPlayerTurn(playerId);
         Player p = players.get(playerId);
         if (numDevCardsAvailable() == 0) {
-            throw new RuntimeException("No Available Dev Cards");
+            throw new RuntimeException("Invalid Transaction");
         }
         byte type = getRandomSlot(devCardPool);
         p.buyDevCard(type);
+        resourceCardPool[SHEEP]++;
+        resourceCardPool[HAY]++;
+        resourceCardPool[ROCK]++;
         return type;
     }
 
     public byte playKnightCard(byte playerId, byte tileId, byte playerIdSteal) {
+        checkPlayerTurn(playerId);
         Player p = players.get(playerId);
         p.playDevCard(KNIGHT);
         robberTile = tileId;
         byte type = players.get(playerIdSteal).stealResource();
         p.addResource(type, (byte) 1);
+        updateLargestArmy(playerId);
         return type;
     }
 
     public void playRoadBuilding(byte playerId, byte e1, byte e2) {
+        checkPlayerTurn(playerId);
         Player p = players.get(playerId);
         if (edges.get(e1) != UNASSIGNED_PLAYER && edges.get(e2) != UNASSIGNED_PLAYER) {
             throw new RuntimeException("Invalid Transaction");
@@ -150,6 +171,7 @@ public class BoardState {
      * well.
      */
     public byte playMonopoly(byte playerId, byte resourceType) {
+        checkPlayerTurn(playerId);
         Player p = players.get(playerId);
         p.playDevCard(MONOPOLY);
         byte totalStolen = 0;
@@ -166,6 +188,7 @@ public class BoardState {
      * Concept of a transaction addResource() could fail because of bank restrictions. Bank has yet to be implemented.
      */
     public void playYearOfPlenty(byte playerId, byte r1, byte r2) {
+        checkPlayerTurn(playerId);
         Player p = players.get(playerId);
         p.playDevCard(YEAR_OF_PLENTY);
         p.addResource(r1, (byte) 1);
@@ -189,12 +212,30 @@ public class BoardState {
                 continue;
             }
             Tile t = tiles.get(tileNum);
+            if (t.getResourceType() == DESERT) {
+                continue;
+            }
             if (roll == t.getRollNumber()) {
                 for (int vertexNum : tileToVertex[tileNum]) {
                     Vertex v = vertices.get(vertexNum);
                     if (v.isAssigned()) {
                         Player p = players.get(v.getPlayerId());
-                        p.addResource(t.getResourceType(), v.getBuilding());
+                        byte resourceType = t.getResourceType();
+                        byte resourceAmount = 0;
+                        switch (v.getBuilding()) {
+                        case SETTLEMENT:
+                            resourceAmount = 1;
+                            break;
+                        case CITY:
+                            resourceAmount = 2;
+                            break;
+                        default:
+                            throw new RuntimeException("Invalid Transaction");
+                        }
+                        if (resourceCardPool[resourceType] < resourceAmount) {
+                            resourceAmount = resourceCardPool[resourceType];
+                        }
+                        p.addResource(resourceType, resourceAmount);
                     }
                 }
             }

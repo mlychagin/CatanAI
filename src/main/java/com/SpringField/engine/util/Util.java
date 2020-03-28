@@ -10,12 +10,19 @@ public class Util {
      * Materials
      */
     public static final byte INVALID_RESOURCE = -1;
-    public static final byte DESERT = 0;
-    public static final byte WOOD = 1;
-    public static final byte BRICK = 2;
-    public static final byte SHEEP = 3;
-    public static final byte HAY = 4;
-    public static final byte ROCK = 5;
+    public static final byte WOOD = 0;
+    public static final byte BRICK = 1;
+    public static final byte SHEEP = 2;
+    public static final byte HAY = 3;
+    public static final byte ROCK = 4;
+    public static final byte DESERT = 6;
+
+    public static final byte DEFAULT_DESERT_COUNT = 0;
+    public static final byte DEFAULT_WOOD_COUNT = 19;
+    public static final byte DEFAULT_BRICK_COUNT = 19;
+    public static final byte DEFAULT_SHEEP_COUNT = 19;
+    public static final byte DEFAULT_HAY_COUNT = 19;
+    public static final byte DEFAULT_ROCK_COUNT = 19;
 
     /*
      * Structures
