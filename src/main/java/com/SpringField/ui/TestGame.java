@@ -1,6 +1,5 @@
 package com.SpringField.ui;
 
-import com.SpringField.engine.GameEngine;
 import com.SpringField.engine.util.Util;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -23,7 +22,6 @@ public class TestGame extends Application {
 
     private static int TILE_RADIUS = 80;
     private Hexagon[] tiles = new Hexagon[19];
-    private GameEngine scenario = new GameEngine();
 
     public static void main(String[] args) {
         launch(args);
@@ -54,9 +52,9 @@ public class TestGame extends Application {
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        scenario.initGame(4);
+        //scenario.initGame(4);
         System.out.println("Settlement Phase Begin");
-        scenario.settlementPhase();
+        //scenario.settlementPhase();
         System.out.println("Settlement Phase End");
         AnimationTimer gameLoop = new AnimationTimer() {
 
@@ -67,10 +65,10 @@ public class TestGame extends Application {
                 drawSettlements(gc);
                 updateRoads();
                 System.out.println("B");
-                if (!scenario.playRound()) {
+                /*if (!scenario.playRound()) {
                     System.out.println(scenario.toString());
                     stop(); // stops animation timer if winner found
-                }
+                }*/
             }
         };
         gameLoop.start();

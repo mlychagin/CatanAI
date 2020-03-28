@@ -5,6 +5,7 @@ import com.SpringField.engine.board.Tile;
 import com.SpringField.engine.board.Vertex;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 import static com.SpringField.engine.util.Util.*;
@@ -56,7 +57,7 @@ public class BoardState {
         for (int i = 0; i < DEFAULT_NUM_VERTICES; i++) {
             vertices.add(new Vertex());
         }
-        for (int i = 0; i < edgeDependencies.length; i++) {
+        for (int i = 0; i < edgeToVertex.length; i++) {
             edges.add(UNASSIGNED_PLAYER);
         }
         for (int i = 0; i < numPlayers; i++) {
@@ -152,7 +153,7 @@ public class BoardState {
         for (int tileNum = 0; tileNum < tiles.size(); tileNum++) {
             Tile t = tiles.get(tileNum);
             if (roll == t.getRollNumber()) {
-                for (int vertexNum : tileDependencies[tileNum]) {
+                for (int vertexNum : tileToVertex[tileNum]) {
                     Vertex v = vertices.get(vertexNum);
                     if (v.isAssigned()) {
                         Player p = playerList.get(v.getPlayerId());
@@ -196,12 +197,28 @@ public class BoardState {
         }
     }
 
+    public ArrayList<BoardState> getAllPossibleMoves() {
+        return null;
+    }
+
+    /*
+     * Longest Road Algorithm
+     */
     private void updateLargestRoad(byte playerId, byte edgeId) {
 
     }
 
-    public ArrayList<BoardState> getAllPossibleMoves() {
-        return null;
+    private int transverseNode(HashSet<Byte> seenEdges, byte playerId, byte nodeId, byte roadLength){
+        byte maxRoadLength = roadLength;
+        byte[] outgoingEdges = nodeToEdge[nodeId];
+        for(byte edgeId : outgoingEdges){
+            if(seenEdges.contains(edgeId)){
+                continue;
+            }
+            if(edges.get(edgeId) == playerId){
+                transverseNode(seenEdges, playerId, )
+            }
+        }
     }
 
 }
