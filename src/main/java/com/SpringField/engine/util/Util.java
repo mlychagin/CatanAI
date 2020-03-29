@@ -106,6 +106,15 @@ public class Util {
             new byte[] { 39, 40, 41, 47, 48, 49 }, new byte[] { 41, 42, 43, 49, 50, 51 },
             new byte[] { 43, 44, 45, 51, 52, 53 }, };
 
+    public static byte[] vertexToPort = new byte[] { ANY, ANY, UNASSIGNED_PORT, BRICK, BRICK, UNASSIGNED_PORT,
+            UNASSIGNED_PORT, ANY, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT,
+            UNASSIGNED_PORT, WOOD, WOOD, UNASSIGNED_PORT, ANY, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT,
+            UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, ANY, UNASSIGNED_PORT,
+            SHEEP, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT,
+            UNASSIGNED_PORT, UNASSIGNED_PORT, ANY, SHEEP, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT,
+            UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, HAY, HAY, ANY, ANY, UNASSIGNED_PORT, ROCK, ROCK,
+            UNASSIGNED_PORT, UNASSIGNED_PORT };
+
     public static byte DEFAULT_NUM_TILES = (byte) tilesResource.length;
     public static byte DEFAULT_NUM_VERTICES = 54;
     public static byte DEFAULT_NUM_EDGES = (byte) edgeToVertex.length;
@@ -138,18 +147,18 @@ public class Util {
     }
 
     public static void setupNodeToEdge() {
-        ArrayList<Byte>[] nodeToEdgeList = new ArrayList[54];
-        for (int i = 0; i < nodeToEdgeList.length; i++) {
-            nodeToEdgeList[i] = new ArrayList<>();
+        ArrayList<Byte>[] vertexToEdgeList = new ArrayList[54];
+        for (int i = 0; i < vertexToEdgeList.length; i++) {
+            vertexToEdgeList[i] = new ArrayList<>();
         }
         for (int i = 0; i < edgeToVertex.length; i++) {
             byte[] verticies = edgeToVertex[i];
             for (int j = 0; j < verticies.length; j++) {
-                nodeToEdgeList[verticies[j]].add((byte) i);
+                vertexToEdgeList[verticies[j]].add((byte) i);
             }
         }
         for (int i = 0; i < vertexToEdge.length; i++) {
-            ArrayList<Byte> list = nodeToEdgeList[i];
+            ArrayList<Byte> list = vertexToEdgeList[i];
             vertexToEdge[i] = new byte[list.size()];
             for (int j = 0; j < list.size(); j++) {
                 vertexToEdge[i][j] = list.get(j);
