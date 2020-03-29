@@ -1,5 +1,6 @@
 package com.SpringField.ui;
 
+import com.SpringField.engine.BoardState;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -10,12 +11,13 @@ public class Line {
      */
 
     private int color = 4; // defaults to black
-
+    private int edgeNumber;
     private Point p1, p2;
 
-    public Line(Point p1, Point p2) {
+    public Line(Point p1, Point p2, int edgeNumber) {
         this.p1 = p1;
         this.p2 = p2;
+        this.edgeNumber = edgeNumber;
     }
 
     public Point getP1() {
@@ -26,6 +28,8 @@ public class Line {
         return p2;
     }
 
+    public int getEdgeNumber() { return edgeNumber; }
+
     public int getColor() {
         return color;
     }
@@ -34,8 +38,8 @@ public class Line {
         color = newColor;
     }
 
-    public void display(GraphicsContext gc) {
-        switch (color) {
+    public void display(GraphicsContext gc, BoardState currentState) {
+        switch (currentState.getEdges()[edgeNumber]) {
         case 0:
             gc.setStroke(Color.RED);
             gc.setLineWidth(4);
