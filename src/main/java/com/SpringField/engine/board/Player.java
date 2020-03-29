@@ -121,7 +121,7 @@ public class Player {
 
     public boolean canPlayDevCard(byte type) {
         checkDevCard(type);
-        return devCards[type] > 0;
+        return devCards[type] > 0 && type != VICTORY;
     }
 
     public void playDevCard(byte type) {

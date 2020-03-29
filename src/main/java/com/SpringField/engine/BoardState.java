@@ -93,6 +93,9 @@ public class BoardState {
 
     public void placeSettlement(byte playerId, byte vertexId, boolean pay) {
         checkPlayerTurn(playerId);
+        if (!canSettle(vertexId)) {
+            throw new RuntimeException("Invalid Transaction");
+        }
         Player p = players.get(playerId);
         Vertex v = vertices.get(vertexId);
         if (v.getPlayerId() != UNASSIGNED_PLAYER) {
