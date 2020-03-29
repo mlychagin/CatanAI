@@ -1,7 +1,5 @@
 package com.SpringField.engine.util;
 
-import com.SpringField.engine.board.Tile;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -16,13 +14,14 @@ public class Util {
     public static final byte HAY = 3;
     public static final byte ROCK = 4;
     public static final byte DESERT = 6;
+    public static final byte ANY = 6;
 
-    public static final byte DEFAULT_DESERT_COUNT = 0;
     public static final byte DEFAULT_WOOD_COUNT = 19;
     public static final byte DEFAULT_BRICK_COUNT = 19;
     public static final byte DEFAULT_SHEEP_COUNT = 19;
     public static final byte DEFAULT_HAY_COUNT = 19;
     public static final byte DEFAULT_ROCK_COUNT = 19;
+    public static final byte DEFAULT_DESERT_COUNT = 0;
 
     /*
      * Structures
@@ -63,6 +62,7 @@ public class Util {
     public static final byte UNASSIGNED_PLAYER = -1;
     public static final byte UNASSIGNED_EDGE = -1;
     public static final byte UNASSIGNED_VERTEX = -1;
+    public static final byte UNASSIGNED_PORT = -1;
 
     private static Random randomGen = new Random();
 
@@ -110,8 +110,7 @@ public class Util {
     public static byte DEFAULT_NUM_VERTICES = 54;
     public static byte DEFAULT_NUM_EDGES = (byte) edgeToVertex.length;
 
-    public static ArrayList<Tile> tiles;
-    public static byte[][] nodeToEdge = new byte[DEFAULT_NUM_VERTICES][];
+    public static byte[][] vertexToEdge = new byte[DEFAULT_NUM_VERTICES][];
 
     static {
         initializeTiles();
@@ -122,12 +121,8 @@ public class Util {
         if (tilesResource.length != tilesNumber.length) {
             throw new RuntimeException("Resources and Numbers not aligned");
         }
-        tiles = new ArrayList<>();
         shuffleArray(tilesResource);
         shuffleArray(tilesNumber);
-        for (int i = 0; i < tilesResource.length; i++) {
-            tiles.add(new Tile(tilesResource[i], tilesNumber[i]));
-        }
     }
 
     public static void shuffleArray(byte[] a) {
@@ -153,11 +148,11 @@ public class Util {
                 nodeToEdgeList[verticies[j]].add((byte) i);
             }
         }
-        for (int i = 0; i < nodeToEdge.length; i++) {
+        for (int i = 0; i < vertexToEdge.length; i++) {
             ArrayList<Byte> list = nodeToEdgeList[i];
-            nodeToEdge[i] = new byte[list.size()];
+            vertexToEdge[i] = new byte[list.size()];
             for (int j = 0; j < list.size(); j++) {
-                nodeToEdge[i][j] = list.get(j);
+                vertexToEdge[i][j] = list.get(j);
             }
         }
     }

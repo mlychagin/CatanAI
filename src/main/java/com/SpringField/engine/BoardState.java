@@ -1,7 +1,6 @@
 package com.SpringField.engine;
 
 import com.SpringField.engine.board.Player;
-import com.SpringField.engine.board.Tile;
 import com.SpringField.engine.board.Vertex;
 
 import java.util.ArrayList;
@@ -61,9 +60,21 @@ public class BoardState {
         return total;
     }
 
+    public boolean canSettle(byte vertexId) {
+        for (byte e : vertexToEdge[vertexId]) {
+            for (byte v : edgeToVertex[e]) {
+                Vertex adjacentVertex = vertices.get(v);
+                if (adjacentVertex.isAssigned()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public void initBoard(int numPlayers) {
         for (int i = 0; i < DEFAULT_NUM_VERTICES; i++) {
-            vertices.add(new Vertex());
+            vertices.add(new Vertex(UNASSIGNED_PORT));
         }
         for (int i = 0; i < edgeToVertex.length; i++) {
             edges.add(UNASSIGNED_PLAYER);
@@ -71,9 +82,9 @@ public class BoardState {
         for (int i = 0; i < numPlayers; i++) {
             players.add(new Player());
         }
-        for (int i = 0; i < tiles.size(); i++) {
-            Tile t = tiles.get(i);
-            if (t.getResourceType() == DESERT) {
+        for (int i = 0; i < tilesResource.length; i++) {
+            byte r = tilesResource[i];
+            if (r == DESERT) {
                 robberTile = (byte) i;
                 break;
             }
@@ -126,6 +137,15 @@ public class BoardState {
         resourceCardPool[ROCK] += 3;
     }
 
+    public byte playRobber(byte playerId, byte tileId, byte playerIdSteal) {
+        checkPlayerTurn(playerId);
+        Player p = players.get(playerId);
+        robberTile = tileId;
+        byte type = players.get(playerIdSteal).stealResource();
+        p.addResource(type, (byte) 1);
+        return type;
+    }
+
     public byte buyDevCard(byte playerId) {
         checkPlayerTurn(playerId);
         Player p = players.get(playerId);
@@ -144,11 +164,8 @@ public class BoardState {
         checkPlayerTurn(playerId);
         Player p = players.get(playerId);
         p.playDevCard(KNIGHT);
-        robberTile = tileId;
-        byte type = players.get(playerIdSteal).stealResource();
-        p.addResource(type, (byte) 1);
         updateLargestArmy(playerId);
-        return type;
+        return playRobber(playerId, tileId, playerIdSteal);
     }
 
     public void playRoadBuilding(byte playerId, byte e1, byte e2) {
@@ -195,6 +212,10 @@ public class BoardState {
         p.addResource(r2, (byte) 1);
     }
 
+    public void tradeBank(byte playerId, byte playerResource, byte bankResource) {
+
+    }
+
     public void advanceTurn() {
         playerTurn++;
         if (playerTurn == players.size()) {
@@ -207,21 +228,20 @@ public class BoardState {
         if (roll == 7) {
             return roll;
         }
-        for (int tileNum = 0; tileNum < tiles.size(); tileNum++) {
+        for (int tileNum = 0; tileNum < tilesResource.length; tileNum++) {
             if (tileNum == robberTile) {
                 continue;
             }
-            Tile t = tiles.get(tileNum);
-            if (t.getResourceType() == DESERT) {
+            byte resourceType = tilesResource[tileNum];
+            if (resourceType == DESERT) {
                 continue;
             }
-            if (roll == t.getRollNumber()) {
+            if (roll == tilesNumber[tileNum]) {
                 for (int vertexNum : tileToVertex[tileNum]) {
                     Vertex v = vertices.get(vertexNum);
                     if (v.isAssigned()) {
                         Player p = players.get(v.getPlayerId());
-                        byte resourceType = t.getResourceType();
-                        byte resourceAmount = 0;
+                        byte resourceAmount;
                         switch (v.getBuilding()) {
                         case SETTLEMENT:
                             resourceAmount = 1;
@@ -274,7 +294,7 @@ public class BoardState {
 
     private byte transverseNode(HashSet<Byte> seenEdges, byte playerId, byte nodeId, byte currentRoadLength) {
         byte maxRoadLength = currentRoadLength;
-        byte[] outgoingEdges = nodeToEdge[nodeId];
+        byte[] outgoingEdges = vertexToEdge[nodeId];
         for (byte edgeId : outgoingEdges) {
             if (seenEdges.contains(edgeId)) {
                 continue;

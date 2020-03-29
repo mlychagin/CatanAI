@@ -6,10 +6,12 @@ import static com.SpringField.engine.util.Util.UNASSIGNED_PLAYER;
 public class Vertex {
     private byte playerId;
     private byte building;
+    private byte port;
 
-    public Vertex() {
+    public Vertex(byte port) {
         playerId = UNASSIGNED_PLAYER;
         building = STATUS_EMPTY;
+        this.port = port;
     }
 
     public void setPlayerId(byte playerNumber) {
@@ -26,6 +28,10 @@ public class Vertex {
 
     public byte getBuilding() {
         return building;
+    }
+
+    public byte getPort() {
+        return port;
     }
 
     public boolean isAssigned() {

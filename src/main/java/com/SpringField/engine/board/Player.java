@@ -3,9 +3,11 @@ package com.SpringField.engine.board;
 import static com.SpringField.engine.util.Util.*;
 
 public class Player {
-    private byte[] resources = new byte[] { 0, 0, 0, 0, 0, 0 };
+    private byte[] resources = new byte[] { 0, 0, 0, 0, 0 };
     private byte[] structures = new byte[] { DEFAULT_ROAD_COUNT, DEFAULT_SETTLEMENT_COUNT, DEFAULT_CITY_COUNT };
     private byte[] devCards = new byte[] { 0, 0, 0, 0, 0 };
+    private boolean[] ports = new boolean[] { false, false, false, false };
+    private boolean generalPort = false;
     private byte knightsPlayed = 0;
 
     public Player() {
@@ -32,6 +34,14 @@ public class Player {
             throw new RuntimeException("Invalid Transaction");
         }
         resources[type] -= amount;
+    }
+
+    public void addPort(byte type) {
+        if (type == ANY) {
+            generalPort = true;
+        }
+        checkResource(type);
+        ports[type] = true;
     }
 
     public byte getKnightsPlayed() {
