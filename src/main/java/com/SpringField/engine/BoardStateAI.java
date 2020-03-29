@@ -5,10 +5,13 @@ import com.SpringField.engine.board.Vertex;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import static com.SpringField.engine.util.Util.*;
 
 public class BoardStateAI extends BoardState {
+    private byte[][] playerRoadCache;
+    private byte[][] playerSettlementCache;
 
     private BoardStateAI() {
 
@@ -16,19 +19,65 @@ public class BoardStateAI extends BoardState {
 
     BoardStateAI(int numPlayers) {
         super(numPlayers);
+        playerRoadCache = new byte[numPlayers][];
+        playerSettlementCache = new byte[numPlayers][];
+        for(int i = 0; i < numPlayers; i++){
+            playerRoadCache[i] = new byte[DEFAULT_ROAD_COUNT];
+            for(int j = 0; j < DEFAULT_ROAD_COUNT; j++){
+                playerRoadCache[i][j] = UNASSIGNED_EDGE;
+            }
+            playerSettlementCache[i] = new byte[DEFAULT_SETTLEMENT_COUNT];
+            for(int j = 0; j < DEFAULT_SETTLEMENT_COUNT; j++){
+                playerSettlementCache[i][j] = UNASSIGNED_VERTEX;
+            }
+        }
     }
 
-    /*
-     * 1. Knight Card
-     * 2. Player Trades
-     * 3. Monopoly / Year of Plenty
-     * 4. Bank Trades
-     * 5. Road Building (Dev Card)
-     * 6. Build Road
-     * 7. Build Settlement
-     * 8. Build City
-     * 9. Buy Dev Card
-     */
+    private byte[] getCurrentRoadCache(){
+        return playerRoadCache[playerTurn];
+    }
+
+    private byte[] getCurrentSettlementCache(){
+        return playerSettlementCache[playerTurn];
+    }
+
+    @Override public void buildRoad(byte edgeId, boolean pay) {
+        super.buildRoad(edgeId, pay);
+        for(int i = 0; i < playerRoadCache[playerTurn].length; i++){
+            if(playerRoadCache[playerTurn][i] == UNASSIGNED_EDGE){
+                playerRoadCache[playerTurn][i] = edgeId;
+                break;
+            }
+        }
+    }
+
+    @Override public void buildSettlement(byte vertexId, boolean pay) {
+        super.buildSettlement(vertexId, pay);
+        for(int i = 0; i < playerSettlementCache[playerTurn].length; i++){
+            if(playerSettlementCache[playerTurn][i] == UNASSIGNED_VERTEX){
+                playerSettlementCache[playerTurn][i] = vertexId;
+                break;
+            }
+        }
+    }
+
+    @Override public void buildCity(byte vertexId) {
+        super.buildCity(vertexId);
+        int swapIndex = -1;
+        byte[] settlementCache = playerSettlementCache[playerTurn];
+        for(int i = 0; i < settlementCache.length; i++){
+            if(settlementCache[i] == UNASSIGNED_VERTEX){
+                settlementCache[swapIndex] = settlementCache[i-1];
+                settlementCache[i-1] = UNASSIGNED_VERTEX;
+            }
+            if(settlementCache[i] == vertexId){
+                settlementCache[i] = UNASSIGNED_VERTEX;
+                swapIndex = i;
+            }
+        }
+    }
+
+
     public HashSet<BoardStateAI> getAllPossibleMoves() {
         HashSet<BoardStateAI> resultSet = new HashSet<>();
         resultSet.add(this);
@@ -91,8 +140,10 @@ public class BoardStateAI extends BoardState {
         case GENERATE_BUILD_SETTLEMENT:
             break;
         case GENERATE_BUILD_CITY:
+            allPossibleBuildCity(state, states);
             break;
         case GENERATE_BUY_DEV_CARD:
+            allPossibleBuyDevCard(state, states);
             break;
         default:
             throw new RuntimeException("Invalid State Space Generation Type");
@@ -108,11 +159,7 @@ public class BoardStateAI extends BoardState {
             if (p.getResources()[r] + state.getResourceCardPool()[r] < DEFAULT_RESOURCE_COUNT) {
                 BoardStateAI b = state.clone();
                 b.playMonopoly(r);
-                if (!states.contains(b)) {
-                    states.add(b);
-                } else {
-                    // TODO Recycle
-                }
+                addStateToSet(b, states);
             }
         }
     }
@@ -126,11 +173,7 @@ public class BoardStateAI extends BoardState {
                 if (canPlayYearOfPlenty(r1, r2)) {
                     BoardStateAI b = state.clone();
                     b.playYearOfPlenty(r1, r2);
-                    if (!states.contains(b)) {
-                        states.add(b);
-                    } else {
-                        // TODO Recycle
-                    }
+                    addStateToSet(b, states);
                 }
             }
         }
@@ -145,11 +188,7 @@ public class BoardStateAI extends BoardState {
                 if (state.canTradeBank(playerResource, bankResource)) {
                     BoardStateAI b = state.clone();
                     b.tradeBank(playerResource, bankResource);
-                    if (!states.contains(b)) {
-                        states.add(b);
-                    } else {
-                        // TODO Recycle
-                    }
+                    addStateToSet(b, states);
                 }
             }
         }
@@ -162,27 +201,61 @@ public class BoardStateAI extends BoardState {
     }
 
     private void allPossibleBuildRoad(BoardStateAI state, HashSet<BoardStateAI> states) {
-        if (!state.players[state.playerTurn].canBuyRoad()) {
+        if (!state.getCurrentPlayer().canBuyRoad()) {
             return;
+        }
+        for(byte e : state.getCurrentRoadCache()){
+
         }
     }
 
+    /*
+     * Todo Technically this can be optimized because it obviously double checks right now
+     */
     private void allPossibleBuildSettlement(BoardStateAI state, HashSet<BoardStateAI> states) {
-        if (!state.players[state.playerTurn].canBuySettlement()) {
+        if (!state.getCurrentPlayer().canBuySettlement()) {
             return;
+        }
+        for(byte e : state.getCurrentRoadCache()){
+            for(byte v : edgeToVertex[e]){
+                if(!state.vertices[v].isSettled()){
+                    BoardStateAI b = state.clone();
+                    b.buildCity(v);
+                    addStateToSet(b, states);
+                }
+            }
         }
     }
 
     private void allPossibleBuildCity(BoardStateAI state, HashSet<BoardStateAI> states) {
-        if (!state.players[state.playerTurn].canBuyCity()) {
+        if (!state.getCurrentPlayer().canBuyCity()) {
             return;
+        }
+        for(byte v : state.getCurrentSettlementCache()){
+            BoardStateAI b = state.clone();
+            b.buildCity(v);
+            addStateToSet(b, states);
         }
     }
 
+    private void addStateToSet(BoardStateAI state, HashSet<BoardStateAI> states){
+        if (!states.contains(state)) {
+            states.add(state);
+        } else {
+            // TODO Recycle
+        }
+    }
+
+    /*
+     * Note: We can try to implement a Monte Carlo algorithm here. Right now, you only get one roll.
+     */
     private void allPossibleBuyDevCard(BoardStateAI state, HashSet<BoardStateAI> states) {
         if (state.canBuyDevCard()) {
             return;
         }
+        BoardStateAI b = state.clone();
+        b.buyDevCard();
+        addStateToSet(b, states);
     }
 
     public BoardStateAI clone() {
@@ -204,6 +277,8 @@ public class BoardStateAI extends BoardState {
         b.currentLongestRoad = currentLongestRoad;
         b.playerTurn = playerTurn;
         b.robberTile = robberTile;
+        b.playerRoadCache = playerRoadCache.clone();
+        b.playerSettlementCache = playerSettlementCache.clone();
         return b;
     }
 }

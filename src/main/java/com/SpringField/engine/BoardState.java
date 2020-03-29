@@ -65,6 +65,10 @@ public class BoardState {
     public byte getPlayerTurn() {
         return playerTurn;
     }
+    
+    protected Player getCurrentPlayer(){
+        return getCurrentPlayer();
+    }
 
     public void initBoard(int numPlayers) {
         for (int i = 0; i < DEFAULT_NUM_VERTICES; i++) {
@@ -94,7 +98,7 @@ public class BoardState {
     }
 
     public boolean canBuildRoad(byte edgeId, boolean buy) {
-        if (!settlementPhase && !players[playerTurn].canBuyRoad()) {
+        if (!settlementPhase && !getCurrentPlayer().canBuyRoad()) {
             return false;
         }
         return canBuildRoadHelper(edgeId, UNASSIGNED_EDGE);
@@ -121,7 +125,7 @@ public class BoardState {
     }
 
     public boolean canBuildSettlement(byte vertexId) {
-        if (!settlementPhase && !players[playerTurn].canBuySettlement()) {
+        if (!settlementPhase && !getCurrentPlayer().canBuySettlement()) {
             return false;
         }
         if (vertices[vertexId].isSettled()) {
@@ -149,7 +153,7 @@ public class BoardState {
     }
 
     public boolean canBuildCity(byte vertexId) {
-        if (!players[playerTurn].canBuyCity()) {
+        if (!getCurrentPlayer().canBuyCity()) {
             return false;
         }
         Vertex v = vertices[vertexId];
@@ -167,7 +171,7 @@ public class BoardState {
         if (numDevCardsAvailable() == 0) {
             return false;
         }
-        return players[playerTurn].canBuyDevCard();
+        return getCurrentPlayer().canBuyDevCard();
     }
 
     public boolean canPlayKnightCard(byte tileId) {
@@ -202,7 +206,7 @@ public class BoardState {
     }
 
     public boolean canPlayDevCard(byte type) {
-        Player p = players[playerTurn];
+        Player p = getCurrentPlayer();
         if (p.getDevCards()[type] <= devCardsAcquiredThisTurn[type]) {
             return false;
         }
@@ -213,14 +217,14 @@ public class BoardState {
     }
 
     public boolean canTradeBank(byte playerResource, byte bankResource) {
-        return players[playerTurn].canTradeBank(playerResource) && resourceCardPool[bankResource] > 0;
+        return getCurrentPlayer().canTradeBank(playerResource) && resourceCardPool[bankResource] > 0;
     }
 
     public void buildRoad(byte edgeId, boolean pay) {
         if (!canBuildRoad(edgeId, pay)) {
             throw new RuntimeException("Invalid Transaction");
         }
-        Player p = players[playerTurn];
+        Player p = getCurrentPlayer();
         edges[edgeId] = playerTurn;
         p.buyRoad(pay);
         updateLargestRoad(edgeId);
@@ -232,7 +236,7 @@ public class BoardState {
         if (!canBuildSettlement(vertexId)) {
             throw new RuntimeException("Invalid Transaction");
         }
-        Player p = players[playerTurn];
+        Player p = getCurrentPlayer();
         Vertex v = vertices[vertexId];
         p.buySettlement(pay);
         v.setPlayerId(playerTurn);
@@ -251,7 +255,7 @@ public class BoardState {
             throw new RuntimeException("Invalid Transaction");
         }
         Vertex v = vertices[vertexId];
-        Player p = players[playerTurn];
+        Player p = getCurrentPlayer();
         p.buyCity();
         v.setPlayerId(playerTurn);
         v.setBuilding(STATUS_CITY);
@@ -263,7 +267,7 @@ public class BoardState {
         if (!canPlayRobber(tileId)) {
             throw new RuntimeException("Invalid Transaction");
         }
-        Player p = players[playerTurn];
+        Player p = getCurrentPlayer();
         robberTile = tileId;
         byte type = players[playerIdSteal].stealResource();
         if (type != INVALID_RESOURCE) {
@@ -276,7 +280,7 @@ public class BoardState {
         if (!canBuyDevCard()) {
             throw new RuntimeException("Invalid Transaction");
         }
-        Player p = players[playerTurn];
+        Player p = getCurrentPlayer();
         byte type = getRandomSlot(devCardPool);
         p.buyDevCard(type);
         if (type != VICTORY) {
@@ -292,7 +296,7 @@ public class BoardState {
         if (!canPlayKnightCard(tileId)) {
             throw new RuntimeException("Invalid Transaction");
         }
-        Player p = players[playerTurn];
+        Player p = getCurrentPlayer();
         p.playDevCard(KNIGHT);
         updateLargestArmy();
         return playRobber(tileId, playerIdSteal);
@@ -302,7 +306,7 @@ public class BoardState {
         if (!canPlayRoadBuilding(e1, e2)) {
             throw new RuntimeException("Invalid Transaction");
         }
-        Player p = players[playerTurn];
+        Player p = getCurrentPlayer();
         p.playDevCard(ROAD_BUILDING);
         buildRoad(e1, false);
         buildRoad(e1, false);
@@ -316,7 +320,7 @@ public class BoardState {
         if (!canPlayMonopoly()) {
             throw new RuntimeException("Invalid Transaction");
         }
-        Player p = players[playerTurn];
+        Player p = getCurrentPlayer();
         p.playDevCard(MONOPOLY);
         byte totalStolen = 0;
         for (int i = 0; i < players.length; i++) {
@@ -332,14 +336,14 @@ public class BoardState {
         if (!canPlayYearOfPlenty(r1, r2)) {
             throw new RuntimeException("Invalid Transaction");
         }
-        Player p = players[playerTurn];
+        Player p = getCurrentPlayer();
         p.playDevCard(YEAR_OF_PLENTY);
         p.addResource(r1, (byte) 1);
         p.addResource(r2, (byte) 1);
     }
 
     public void tradeBank(byte playerResource, byte bankResource) {
-        players[playerTurn].tradeBank(playerResource, bankResource);
+        getCurrentPlayer().tradeBank(playerResource, bankResource);
     }
 
     public byte advanceTurn() {
