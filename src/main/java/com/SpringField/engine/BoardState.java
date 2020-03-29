@@ -312,7 +312,6 @@ public class BoardState {
     /*
      * Todo
      */
-
     public ArrayList<BoardState> getAllPossibleMoves() {
         return null;
     }
