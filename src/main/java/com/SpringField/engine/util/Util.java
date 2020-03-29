@@ -1,7 +1,5 @@
 package com.SpringField.engine.util;
 
-import com.SpringField.engine.board.Tile;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -9,100 +7,134 @@ public class Util {
     /*
      * Materials
      */
-    public static byte DESERT = 0;
-    public static byte WOOD = 1;
-    public static byte BRICK = 2;
-    public static byte SHEEP = 3;
-    public static byte HAY = 4;
-    public static byte ROCK = 5;
-    public static byte ANY = 6;
+    public static final byte INVALID_RESOURCE = -1;
+    public static final byte WOOD = 0;
+    public static final byte BRICK = 1;
+    public static final byte SHEEP = 2;
+    public static final byte HAY = 3;
+    public static final byte ROCK = 4;
+    public static final byte DESERT = 6;
+    public static final byte ANY = 6;
+
+    public static final byte DEFAULT_RESOURCE_COUNT = 19;
 
     /*
      * Structures
      */
-    public static byte ROAD = 0;
-    public static byte SETTLEMENT = 1;
-    public static byte CITY = 2;
+    public static final byte ROAD = 0;
+    public static final byte SETTLEMENT = 1;
+    public static final byte CITY = 2;
+
+    public static final byte DEFAULT_ROAD_COUNT = 15;
+    public static final byte DEFAULT_SETTLEMENT_COUNT = 5;
+    public static final byte DEFAULT_CITY_COUNT = 4;
 
     /*
      * Dev Cards
      */
-    public static byte KNIGHT = 0;
-    public static byte VICTORY = 1;
-    public static byte ROAD_BUILDING = 2;
-    public static byte MONOPOLY = 3;
-    public static byte YEAR_OF_PLENTY = 4;
+    public static final byte KNIGHT = 0;
+    public static final byte ROAD_BUILDING = 1;
+    public static final byte MONOPOLY = 2;
+    public static final byte YEAR_OF_PLENTY = 3;
+    public static final byte VICTORY = 4;
 
-    public static byte DEFAULT_NUM_KNIGHT = 15;
-    public static byte DEFAULT_NUM_VICTORY = 5;
-    public static byte DEFAULT_NUM_ROAD_BUILDING = 2;
-    public static byte DEFAULT_NUM_MONOPOLY = 2;
-    public static byte DEFAULT_NUM_YEAR_OF_PLENTY = 2;
+    public static final byte DEFAULT_NUM_KNIGHT = 15;
+    public static final byte DEFAULT_NUM_VICTORY = 5;
+    public static final byte DEFAULT_NUM_ROAD_BUILDING = 2;
+    public static final byte DEFAULT_NUM_MONOPOLY = 2;
+    public static final byte DEFAULT_NUM_YEAR_OF_PLENTY = 2;
 
     /*
      * Building Status
      */
-    public static byte STATUS_EMPTY = 0;
-    public static byte STATUS_SETTLEMENT = 1;
-    public static byte STATUS_CITY = 2;
+    public static final byte STATUS_EMPTY = 0;
+    public static final byte STATUS_SETTLEMENT = 1;
+    public static final byte STATUS_CITY = 2;
 
     /*
      * Player
      */
-    public static byte UNASSIGNED_PLAYER = -1;
-    public static byte DEFAULT_ROAD_COUNT = 15;
-    public static byte DEFAULT_SETTLEMENT_COUNT = 5;
-    public static byte DEFAULT_CITY_COUNT = 4;
+    public static final byte UNASSIGNED_PLAYER = -1;
+    public static final byte UNASSIGNED_EDGE = -1;
+    public static final byte UNASSIGNED_VERTEX = -1;
+    public static final byte UNASSIGNED_PORT = -1;
+
+    private static Random randomGen = new Random();
 
     /*
      * Board
      */
-    public static byte[] tilesResource =
-            new byte[] { DESERT, WOOD, WOOD, WOOD, WOOD, BRICK, BRICK, BRICK, SHEEP, SHEEP, SHEEP, SHEEP, HAY, HAY, HAY,
-                    HAY, ROCK, ROCK, ROCK };
+    public static byte[] tilesResource = new byte[] { DESERT, WOOD, WOOD, WOOD, WOOD, BRICK, BRICK, BRICK, SHEEP, SHEEP,
+            SHEEP, SHEEP, HAY, HAY, HAY, HAY, ROCK, ROCK, ROCK };
 
     public static byte[] tilesNumber = new byte[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
 
-    public static int[][] edgeToVertex =
-            new int[][] { new int[] { 0, 1 }, new int[] { 1, 2 }, new int[] { 2, 3 }, new int[] { 3, 4 },
-                    new int[] { 4, 5 }, new int[] { 5, 6 }, new int[] { 0, 8 }, new int[] { 2, 10 },
-                    new int[] { 4, 12 }, new int[] { 6, 14 }, new int[] { 7, 8 }, new int[] { 8, 9 },
-                    new int[] { 9, 10 }, new int[] { 10, 11 }, new int[] { 11, 12 }, new int[] { 13, 14 },
-                    new int[] { 14, 15 }, new int[] { 7, 17 }, new int[] { 9, 19 }, new int[] { 11, 21 },
-                    new int[] { 13, 23 }, new int[] { 15, 25 }, new int[] { 16, 17 }, new int[] { 17, 18 },
-                    new int[] { 18, 19 }, new int[] { 19, 20 }, new int[] { 20, 21 }, new int[] { 21, 22 },
-                    new int[] { 22, 23 }, new int[] { 23, 24 }, new int[] { 24, 25 }, new int[] { 25, 26 },
-                    new int[] { 16, 27 }, new int[] { 18, 29 }, new int[] { 20, 31 }, new int[] { 22, 33 },
-                    new int[] { 24, 35 }, new int[] { 26, 37 }, new int[] { 27, 28 }, new int[] { 28, 29 },
-                    new int[] { 29, 30 }, new int[] { 30, 31 }, new int[] { 31, 32 }, new int[] { 32, 33 },
-                    new int[] { 33, 34 }, new int[] { 34, 35 }, new int[] { 35, 36 }, new int[] { 36, 37 },
-                    new int[] { 28, 38 }, new int[] { 30, 40 }, new int[] { 32, 42 }, new int[] { 34, 44 },
-                    new int[] { 36, 46 }, new int[] { 38, 39 }, new int[] { 39, 40 }, new int[] { 40, 41 },
-                    new int[] { 41, 42 }, new int[] { 42, 43 }, new int[] { 43, 44 }, new int[] { 44, 45 },
-                    new int[] { 45, 46 }, new int[] { 39, 47 }, new int[] { 41, 49 }, new int[] { 43, 51 },
-                    new int[] { 45, 53 }, new int[] { 47, 48 }, new int[] { 48, 49 }, new int[] { 49, 50 },
-                    new int[] { 50, 51 }, new int[] { 51, 52 }, new int[] { 52, 53 },
+    public static final byte[][] edgeToVertex = new byte[][] { new byte[] { 0, 1 }, new byte[] { 1, 2 },
+            new byte[] { 2, 3 }, new byte[] { 3, 4 }, new byte[] { 4, 5 }, new byte[] { 5, 6 }, new byte[] { 0, 8 },
+            new byte[] { 2, 10 }, new byte[] { 4, 12 }, new byte[] { 6, 14 }, new byte[] { 7, 8 }, new byte[] { 8, 9 },
+            new byte[] { 9, 10 }, new byte[] { 10, 11 }, new byte[] { 11, 12 }, new byte[] { 13, 14 },
+            new byte[] { 14, 15 }, new byte[] { 7, 17 }, new byte[] { 9, 19 }, new byte[] { 11, 21 },
+            new byte[] { 13, 23 }, new byte[] { 15, 25 }, new byte[] { 16, 17 }, new byte[] { 17, 18 },
+            new byte[] { 18, 19 }, new byte[] { 19, 20 }, new byte[] { 20, 21 }, new byte[] { 21, 22 },
+            new byte[] { 22, 23 }, new byte[] { 23, 24 }, new byte[] { 24, 25 }, new byte[] { 25, 26 },
+            new byte[] { 16, 27 }, new byte[] { 18, 29 }, new byte[] { 20, 31 }, new byte[] { 22, 33 },
+            new byte[] { 24, 35 }, new byte[] { 26, 37 }, new byte[] { 27, 28 }, new byte[] { 28, 29 },
+            new byte[] { 29, 30 }, new byte[] { 30, 31 }, new byte[] { 31, 32 }, new byte[] { 32, 33 },
+            new byte[] { 33, 34 }, new byte[] { 34, 35 }, new byte[] { 35, 36 }, new byte[] { 36, 37 },
+            new byte[] { 28, 38 }, new byte[] { 30, 40 }, new byte[] { 32, 42 }, new byte[] { 34, 44 },
+            new byte[] { 36, 46 }, new byte[] { 38, 39 }, new byte[] { 39, 40 }, new byte[] { 40, 41 },
+            new byte[] { 41, 42 }, new byte[] { 42, 43 }, new byte[] { 43, 44 }, new byte[] { 44, 45 },
+            new byte[] { 45, 46 }, new byte[] { 39, 47 }, new byte[] { 41, 49 }, new byte[] { 43, 51 },
+            new byte[] { 45, 53 }, new byte[] { 47, 48 }, new byte[] { 48, 49 }, new byte[] { 49, 50 },
+            new byte[] { 50, 51 }, new byte[] { 51, 52 }, new byte[] { 52, 53 },
 
-            };
+    };
 
-    public static int[][] tileToVertex =
-            new int[][] { new int[] { 0, 1, 2, 8, 9, 10 }, new int[] { 2, 3, 4, 10, 11, 12 },
-                    new int[] { 4, 5, 6, 12, 13, 14 }, new int[] { 7, 8, 9, 17, 18, 19 },
-                    new int[] { 9, 10, 11, 19, 20, 21 }, new int[] { 11, 12, 13, 21, 22, 23 },
-                    new int[] { 13, 14, 15, 23, 24, 25 }, new int[] { 16, 17, 18, 27, 28, 29 },
-                    new int[] { 18, 19, 20, 29, 30, 31 }, new int[] { 20, 21, 22, 31, 32, 33 },
-                    new int[] { 22, 23, 24, 33, 34, 35 }, new int[] { 24, 25, 26, 35, 36, 37 },
-                    new int[] { 28, 29, 30, 38, 39, 40 }, new int[] { 30, 31, 32, 40, 41, 42 },
-                    new int[] { 32, 33, 34, 42, 43, 44 }, new int[] { 34, 35, 36, 44, 45, 46 },
-                    new int[] { 39, 40, 41, 47, 48, 49 }, new int[] { 41, 42, 43, 49, 50, 51 },
-                    new int[] { 43, 44, 45, 51, 52, 53 }, };
+    public static final byte[][] tileToVertex = new byte[][] { new byte[] { 0, 1, 2, 8, 9, 10 },
+            new byte[] { 2, 3, 4, 10, 11, 12 }, new byte[] { 4, 5, 6, 12, 13, 14 }, new byte[] { 7, 8, 9, 17, 18, 19 },
+            new byte[] { 9, 10, 11, 19, 20, 21 }, new byte[] { 11, 12, 13, 21, 22, 23 },
+            new byte[] { 13, 14, 15, 23, 24, 25 }, new byte[] { 16, 17, 18, 27, 28, 29 },
+            new byte[] { 18, 19, 20, 29, 30, 31 }, new byte[] { 20, 21, 22, 31, 32, 33 },
+            new byte[] { 22, 23, 24, 33, 34, 35 }, new byte[] { 24, 25, 26, 35, 36, 37 },
+            new byte[] { 28, 29, 30, 38, 39, 40 }, new byte[] { 30, 31, 32, 40, 41, 42 },
+            new byte[] { 32, 33, 34, 42, 43, 44 }, new byte[] { 34, 35, 36, 44, 45, 46 },
+            new byte[] { 39, 40, 41, 47, 48, 49 }, new byte[] { 41, 42, 43, 49, 50, 51 },
+            new byte[] { 43, 44, 45, 51, 52, 53 }, };
 
-    public static byte DEFAULT_NUM_TILES = (byte) tilesResource.length;
-    public static byte DEFAULT_NUM_VERTICES = 54;
-    public static byte DEFAULT_NUM_EDGES = (byte) edgeToVertex.length;
+    public static byte[] vertexToPort = new byte[] { ANY, ANY, UNASSIGNED_PORT, BRICK, BRICK, UNASSIGNED_PORT,
+            UNASSIGNED_PORT, ANY, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT,
+            UNASSIGNED_PORT, WOOD, WOOD, UNASSIGNED_PORT, ANY, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT,
+            UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, ANY, UNASSIGNED_PORT,
+            SHEEP, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT,
+            UNASSIGNED_PORT, UNASSIGNED_PORT, ANY, SHEEP, UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT,
+            UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, HAY, HAY, ANY, ANY, UNASSIGNED_PORT, ROCK, ROCK,
+            UNASSIGNED_PORT, UNASSIGNED_PORT };
 
-    public static ArrayList<Tile> tiles;
-    public static byte[][] nodeToEdge = new byte[DEFAULT_NUM_VERTICES][];
+    public final static byte DEFAULT_NUM_TILES = (byte) tilesResource.length;
+    public final static byte DEFAULT_NUM_VERTICES = 54;
+    public final static byte DEFAULT_NUM_EDGES = (byte) edgeToVertex.length;
+
+    public final static byte[][] vertexToEdge = new byte[DEFAULT_NUM_VERTICES][];
+
+    /*
+     * Game
+     */
+    public final static byte VICTORY_POINTS_REQ_WIN = 12;
+    public final static byte WIN_CONDITION = -1;
+
+    /*
+     * BoardStateAI Space State Generation
+     */
+    public final static byte GENERATE_DEV_KNIGHT = 0;
+    public final static byte GENERATE_PLAYER_TRADES = 1;
+    public final static byte GENERATE_DEV_MONOPOLY = 2;
+    public final static byte GENERATE_DEV_YEAR_OF_PLENTY = 3;
+    public final static byte GENERATE_BANK_TRADES = 4;
+    public final static byte GENERATE_DEV_ROAD_BUILDING = 5;
+    public final static byte GENERATE_BUILD_ROAD = 6;
+    public final static byte GENERATE_BUILD_SETTLEMENT = 7;
+    public final static byte GENERATE_BUILD_CITY = 8;
+    public final static byte GENERATE_BUY_DEV_CARD = 9;
 
     static {
         initializeTiles();
@@ -113,12 +145,8 @@ public class Util {
         if (tilesResource.length != tilesNumber.length) {
             throw new RuntimeException("Resources and Numbers not aligned");
         }
-        tiles = new ArrayList<>();
         shuffleArray(tilesResource);
         shuffleArray(tilesNumber);
-        for (int i = 0; i < tilesResource.length; i++) {
-            tiles.add(new Tile(tilesResource[i], tilesNumber[i]));
-        }
     }
 
     public static void shuffleArray(byte[] a) {
@@ -134,23 +162,45 @@ public class Util {
     }
 
     public static void setupNodeToEdge() {
-        ArrayList<Byte>[] nodeToEdgeList = new ArrayList[54];
-        for (int i = 0; i < nodeToEdgeList.length; i++) {
-            nodeToEdgeList[i] = new ArrayList<>();
+        ArrayList<Byte>[] vertexToEdgeList = new ArrayList[54];
+        for (int i = 0; i < vertexToEdgeList.length; i++) {
+            vertexToEdgeList[i] = new ArrayList<>();
         }
         for (int i = 0; i < edgeToVertex.length; i++) {
-            int[] verticies = edgeToVertex[i];
+            byte[] verticies = edgeToVertex[i];
             for (int j = 0; j < verticies.length; j++) {
-                nodeToEdgeList[verticies[j]].add((byte) i);
+                vertexToEdgeList[verticies[j]].add((byte) i);
             }
         }
-        for (int i = 0; i < nodeToEdge.length; i++) {
-            ArrayList<Byte> list = nodeToEdgeList[i];
-            nodeToEdge[i] = new byte[list.size()];
+        for (int i = 0; i < vertexToEdge.length; i++) {
+            ArrayList<Byte> list = vertexToEdgeList[i];
+            vertexToEdge[i] = new byte[list.size()];
             for (int j = 0; j < list.size(); j++) {
-                nodeToEdge[i][j] = list.get(j);
+                vertexToEdge[i][j] = list.get(j);
             }
         }
+    }
+
+    public static byte getRandomSlot(byte[] a) {
+        byte total = 0;
+        for (byte amount : a) {
+            total += amount;
+        }
+        byte randomNumber = (byte) randomGen.nextInt(total);
+        byte slot = 0;
+        boolean found = false;
+        for (int i = 0; i < a.length; i++) {
+            int amountAvailable = a[i];
+            randomNumber -= amountAvailable;
+            if (randomNumber <= 0) {
+                slot = (byte) i;
+                found = true;
+            }
+        }
+        if (!found) {
+            throw new RuntimeException("Algorithm Failure");
+        }
+        return slot;
     }
 
 }
