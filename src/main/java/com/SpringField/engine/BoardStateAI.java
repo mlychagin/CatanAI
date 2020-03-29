@@ -5,7 +5,6 @@ import com.SpringField.engine.board.Vertex;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import static com.SpringField.engine.util.Util.*;
 
@@ -21,62 +20,64 @@ public class BoardStateAI extends BoardState {
         super(numPlayers);
         playerRoadCache = new byte[numPlayers][];
         playerSettlementCache = new byte[numPlayers][];
-        for(int i = 0; i < numPlayers; i++){
+        for (int i = 0; i < numPlayers; i++) {
             playerRoadCache[i] = new byte[DEFAULT_ROAD_COUNT];
-            for(int j = 0; j < DEFAULT_ROAD_COUNT; j++){
+            for (int j = 0; j < DEFAULT_ROAD_COUNT; j++) {
                 playerRoadCache[i][j] = UNASSIGNED_EDGE;
             }
             playerSettlementCache[i] = new byte[DEFAULT_SETTLEMENT_COUNT];
-            for(int j = 0; j < DEFAULT_SETTLEMENT_COUNT; j++){
+            for (int j = 0; j < DEFAULT_SETTLEMENT_COUNT; j++) {
                 playerSettlementCache[i][j] = UNASSIGNED_VERTEX;
             }
         }
     }
 
-    private byte[] getCurrentRoadCache(){
+    private byte[] getCurrentRoadCache() {
         return playerRoadCache[playerTurn];
     }
 
-    private byte[] getCurrentSettlementCache(){
+    private byte[] getCurrentSettlementCache() {
         return playerSettlementCache[playerTurn];
     }
 
-    @Override public void buildRoad(byte edgeId, boolean pay) {
+    @Override
+    public void buildRoad(byte edgeId, boolean pay) {
         super.buildRoad(edgeId, pay);
-        for(int i = 0; i < playerRoadCache[playerTurn].length; i++){
-            if(playerRoadCache[playerTurn][i] == UNASSIGNED_EDGE){
+        for (int i = 0; i < playerRoadCache[playerTurn].length; i++) {
+            if (playerRoadCache[playerTurn][i] == UNASSIGNED_EDGE) {
                 playerRoadCache[playerTurn][i] = edgeId;
                 break;
             }
         }
     }
 
-    @Override public void buildSettlement(byte vertexId, boolean pay) {
+    @Override
+    public void buildSettlement(byte vertexId, boolean pay) {
         super.buildSettlement(vertexId, pay);
-        for(int i = 0; i < playerSettlementCache[playerTurn].length; i++){
-            if(playerSettlementCache[playerTurn][i] == UNASSIGNED_VERTEX){
+        for (int i = 0; i < playerSettlementCache[playerTurn].length; i++) {
+            if (playerSettlementCache[playerTurn][i] == UNASSIGNED_VERTEX) {
                 playerSettlementCache[playerTurn][i] = vertexId;
                 break;
             }
         }
     }
 
-    @Override public void buildCity(byte vertexId) {
+    @Override
+    public void buildCity(byte vertexId) {
         super.buildCity(vertexId);
         int swapIndex = -1;
         byte[] settlementCache = playerSettlementCache[playerTurn];
-        for(int i = 0; i < settlementCache.length; i++){
-            if(settlementCache[i] == UNASSIGNED_VERTEX){
-                settlementCache[swapIndex] = settlementCache[i-1];
-                settlementCache[i-1] = UNASSIGNED_VERTEX;
+        for (int i = 0; i < settlementCache.length; i++) {
+            if (settlementCache[i] == UNASSIGNED_VERTEX) {
+                settlementCache[swapIndex] = settlementCache[i - 1];
+                settlementCache[i - 1] = UNASSIGNED_VERTEX;
             }
-            if(settlementCache[i] == vertexId){
+            if (settlementCache[i] == vertexId) {
                 settlementCache[i] = UNASSIGNED_VERTEX;
                 swapIndex = i;
             }
         }
     }
-
 
     public HashSet<BoardStateAI> getAllPossibleMoves() {
         HashSet<BoardStateAI> resultSet = new HashSet<>();
@@ -134,10 +135,13 @@ public class BoardStateAI extends BoardState {
             allPossibleBankTrades(state, states);
             break;
         case GENERATE_DEV_ROAD_BUILDING:
+            allPossibleRoadBuilding(state, states);
             break;
         case GENERATE_BUILD_ROAD:
+            allPossibleBuildRoad(state, states, true);
             break;
         case GENERATE_BUILD_SETTLEMENT:
+            allPossibleBuildSettlement(state, states);
             break;
         case GENERATE_BUILD_CITY:
             allPossibleBuildCity(state, states);
@@ -198,14 +202,31 @@ public class BoardStateAI extends BoardState {
         if (!state.canPlayDevCard(ROAD_BUILDING)) {
             return;
         }
+        HashSet<BoardStateAI> firstRoadSet = new HashSet<>();
+        allPossibleBuildRoad(state, firstRoadSet, false);
+        for (BoardStateAI firstRoad : firstRoadSet) {
+            allPossibleBuildRoad(firstRoad, states, false);
+        }
+        // TODO Recycle firstRoadSet
     }
 
-    private void allPossibleBuildRoad(BoardStateAI state, HashSet<BoardStateAI> states) {
-        if (!state.getCurrentPlayer().canBuyRoad()) {
+    private void allPossibleBuildRoad(BoardStateAI state, HashSet<BoardStateAI> states, boolean pay) {
+        if (pay && !state.getCurrentPlayer().canBuyRoad()) {
             return;
         }
-        for(byte e : state.getCurrentRoadCache()){
-
+        for (byte e : state.getCurrentRoadCache()) {
+            for (byte v : edgeToVertex[e]) {
+                if (state.vertices[v].getPlayerId() != state.playerTurn) {
+                    continue;
+                }
+                for (byte possibleRoad : vertexToEdge[v]) {
+                    if (state.edges[possibleRoad] == UNASSIGNED_EDGE) {
+                        BoardStateAI b = state.clone();
+                        b.buildRoad(possibleRoad, pay);
+                        addStateToSet(b, states);
+                    }
+                }
+            }
         }
     }
 
@@ -216,9 +237,9 @@ public class BoardStateAI extends BoardState {
         if (!state.getCurrentPlayer().canBuySettlement()) {
             return;
         }
-        for(byte e : state.getCurrentRoadCache()){
-            for(byte v : edgeToVertex[e]){
-                if(!state.vertices[v].isSettled()){
+        for (byte e : state.getCurrentRoadCache()) {
+            for (byte v : edgeToVertex[e]) {
+                if (!state.vertices[v].isSettled()) {
                     BoardStateAI b = state.clone();
                     b.buildCity(v);
                     addStateToSet(b, states);
@@ -231,14 +252,14 @@ public class BoardStateAI extends BoardState {
         if (!state.getCurrentPlayer().canBuyCity()) {
             return;
         }
-        for(byte v : state.getCurrentSettlementCache()){
+        for (byte v : state.getCurrentSettlementCache()) {
             BoardStateAI b = state.clone();
             b.buildCity(v);
             addStateToSet(b, states);
         }
     }
 
-    private void addStateToSet(BoardStateAI state, HashSet<BoardStateAI> states){
+    private void addStateToSet(BoardStateAI state, HashSet<BoardStateAI> states) {
         if (!states.contains(state)) {
             states.add(state);
         } else {
