@@ -1,5 +1,7 @@
 package com.SpringField.engine.board;
 
+import java.util.Arrays;
+
 import static com.SpringField.engine.util.Util.*;
 
 public class Player {
@@ -48,20 +50,20 @@ public class Player {
         resources[type] -= amount;
     }
 
-    public void bankTrade(byte inputType, byte outputType) {
+    public void tradeBank(byte playerResource, byte bankResource) {
         int tradeAmount;
-        if (ports[inputType]) {
+        if (ports[playerResource]) {
             tradeAmount = 2;
         } else if (generalPort) {
             tradeAmount = 3;
         } else {
             tradeAmount = 4;
         }
-        if (resources[inputType] < tradeAmount) {
+        if (resources[playerResource] < tradeAmount) {
             throw new RuntimeException("Invalid Transaction");
         }
-        resources[inputType] -= tradeAmount;
-        resources[outputType]++;
+        resources[playerResource] -= tradeAmount;
+        resources[bankResource]++;
     }
 
     public void addPort(byte type) {
@@ -212,4 +214,47 @@ public class Player {
                 + devCards[VICTORY]);
     }
 
+    public Player clone() {
+        Player p = new Player();
+        p.resources = resources.clone();
+        p.structures = structures.clone();
+        p.devCards = devCards.clone();
+        p.ports = ports.clone();
+        p.generalPort = generalPort;
+        p.knightsPlayed = knightsPlayed;
+        return p;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Player player = (Player) o;
+
+        if (generalPort != player.generalPort)
+            return false;
+        if (knightsPlayed != player.knightsPlayed)
+            return false;
+        if (!Arrays.equals(resources, player.resources))
+            return false;
+        if (!Arrays.equals(structures, player.structures))
+            return false;
+        if (!Arrays.equals(devCards, player.devCards))
+            return false;
+        return Arrays.equals(ports, player.ports);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(resources);
+        result = 31 * result + Arrays.hashCode(structures);
+        result = 31 * result + Arrays.hashCode(devCards);
+        result = 31 * result + Arrays.hashCode(ports);
+        result = 31 * result + (generalPort ? 1 : 0);
+        result = 31 * result + (int) knightsPlayed;
+        return result;
+    }
 }
