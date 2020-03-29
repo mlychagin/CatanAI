@@ -12,25 +12,24 @@ import static com.SpringField.engine.util.Util.KNIGHT;
 
 public class settleTest {
     @Test
-    public void canInitBoardstate(){
+    public void canInitBoardstate() {
         BoardState test = new BoardState(4);
 
         // vertices
         Vertex[] vertexes = test.getVertices();
-        for (Vertex v: vertexes){
+        for (Vertex v : vertexes) {
             System.out.println(v);
         }
 
         // edges
         byte[] edges = test.getEdges();
-        for (byte e: edges){
+        for (byte e : edges) {
             System.out.println(e);
         }
 
-
         // players
         Player[] players = test.getPlayers();
-        for (Player p: players){
+        for (Player p : players) {
             System.out.println(p);
         }
 

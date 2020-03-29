@@ -23,21 +23,14 @@ public class BoardStateAI extends BoardState {
     }
 
     /*
-     * 1. Knight Card
-     * 2. Player Trades
-     * 3. Monopoly / Year of Plenty
-     * 4. Bank Trades
-     * 5. Road Building (Dev Card)
-     * 6. Build Road
-     * 7. Build Settlement
-     * 8. Build City
-     * 9. Buy Dev Card
+     * 1. Knight Card 2. Player Trades 3. Monopoly / Year of Plenty 4. Bank Trades 5. Road Building (Dev Card) 6. Build
+     * Road 7. Build Settlement 8. Build City 9. Buy Dev Card
      */
     public HashSet<BoardStateAI> getAllPossibleMoves() {
         HashSet<BoardStateAI> resultSet = new HashSet<>();
         resultSet.add(this);
-        for(byte type = GENERATE_DEV_KNIGHT; type <= GENERATE_BUY_DEV_CARD; type++){
-            for(BoardStateAI b : resultSet){
+        for (byte type = GENERATE_DEV_KNIGHT; type <= GENERATE_BUY_DEV_CARD; type++) {
+            for (BoardStateAI b : resultSet) {
                 allPossibleStatesGenerator(b, resultSet, type);
             }
         }
@@ -49,22 +42,22 @@ public class BoardStateAI extends BoardState {
         HashSet<BoardStateAI> newBatch = new HashSet<>();
         allPossibleStatesGeneratorRouter(state, batch, type);
         while (true) {
-            if(batch.isEmpty()){
+            if (batch.isEmpty()) {
                 return;
             }
             ArrayList<BoardStateAI> deleteSet = new ArrayList<>();
-            for(BoardStateAI b : batch){
-                if(resultSet.contains(b)){
+            for (BoardStateAI b : batch) {
+                if (resultSet.contains(b)) {
                     deleteSet.add(b);
                 } else {
                     resultSet.add(b);
                 }
             }
-            for(BoardStateAI b : deleteSet){
+            for (BoardStateAI b : deleteSet) {
                 batch.remove(b);
-                //TODO Recycle b
+                // TODO Recycle b
             }
-            for(BoardStateAI b : batch){
+            for (BoardStateAI b : batch) {
                 allPossibleStatesGeneratorRouter(b, newBatch, type);
             }
             batch.addAll(newBatch);
@@ -72,67 +65,67 @@ public class BoardStateAI extends BoardState {
         }
     }
 
-    private void allPossibleStatesGeneratorRouter(BoardStateAI state, HashSet<BoardStateAI> states, byte type){
-        switch (type){
-            case GENERATE_DEV_KNIGHT:
-                break;
-            case GENERATE_PLAYER_TRADES:
-                break;
-            case GENERATE_DEV_MONOPOLY:
-                allPossibleMonopoly(state, states);
-                break;
-            case GENERATE_DEV_YEAR_OF_PLENTY:
-                allPossibleYearOfPlenty(state, states);
-                break;
-            case GENERATE_BANK_TRADES:
-                allPossibleBankTrades(state, states);
-                break;
-            case GENERATE_DEV_ROAD_BUILDING:
-                break;
-            case GENERATE_BUILD_ROAD:
-                break;
-            case GENERATE_BUILD_SETTLEMENT:
-                break;
-            case GENERATE_BUILD_CITY:
-                break;
-            case GENERATE_BUY_DEV_CARD:
-                break;
-            default:
-                throw new RuntimeException("Invalid State Space Generation Type");
+    private void allPossibleStatesGeneratorRouter(BoardStateAI state, HashSet<BoardStateAI> states, byte type) {
+        switch (type) {
+        case GENERATE_DEV_KNIGHT:
+            break;
+        case GENERATE_PLAYER_TRADES:
+            break;
+        case GENERATE_DEV_MONOPOLY:
+            allPossibleMonopoly(state, states);
+            break;
+        case GENERATE_DEV_YEAR_OF_PLENTY:
+            allPossibleYearOfPlenty(state, states);
+            break;
+        case GENERATE_BANK_TRADES:
+            allPossibleBankTrades(state, states);
+            break;
+        case GENERATE_DEV_ROAD_BUILDING:
+            break;
+        case GENERATE_BUILD_ROAD:
+            break;
+        case GENERATE_BUILD_SETTLEMENT:
+            break;
+        case GENERATE_BUILD_CITY:
+            break;
+        case GENERATE_BUY_DEV_CARD:
+            break;
+        default:
+            throw new RuntimeException("Invalid State Space Generation Type");
         }
     }
 
     private void allPossibleMonopoly(BoardStateAI state, HashSet<BoardStateAI> states) {
-        if(!state.canPlayMonopoly()){
+        if (!state.canPlayMonopoly()) {
             return;
         }
         Player p = state.players[state.getPlayerTurn()];
         for (byte r = WOOD; r <= ROCK; r++) {
-            if(p.getResources()[r] + state.getResourceCardPool()[r] < DEFAULT_RESOURCE_COUNT){
+            if (p.getResources()[r] + state.getResourceCardPool()[r] < DEFAULT_RESOURCE_COUNT) {
                 BoardStateAI b = state.clone();
                 b.playMonopoly(r);
-                if(!states.contains(b)){
+                if (!states.contains(b)) {
                     states.add(b);
                 } else {
-                    //TODO Recycle
+                    // TODO Recycle
                 }
             }
         }
     }
 
     private void allPossibleYearOfPlenty(BoardStateAI state, HashSet<BoardStateAI> states) {
-        if(!state.canPlayDevCard(YEAR_OF_PLENTY)){
+        if (!state.canPlayDevCard(YEAR_OF_PLENTY)) {
             return;
         }
         for (byte r1 = WOOD; r1 <= ROCK; r1++) {
             for (byte r2 = WOOD; r2 <= ROCK; r2++) {
-                if(canPlayYearOfPlenty(r1, r2)){
+                if (canPlayYearOfPlenty(r1, r2)) {
                     BoardStateAI b = state.clone();
                     b.playYearOfPlenty(r1, r2);
-                    if(!states.contains(b)){
+                    if (!states.contains(b)) {
                         states.add(b);
                     } else {
-                        //TODO Recycle
+                        // TODO Recycle
                     }
                 }
             }
@@ -145,45 +138,45 @@ public class BoardStateAI extends BoardState {
                 if (playerResource == bankResource) {
                     continue;
                 }
-                if(state.canTradeBank(playerResource, bankResource)){
+                if (state.canTradeBank(playerResource, bankResource)) {
                     BoardStateAI b = state.clone();
                     b.tradeBank(playerResource, bankResource);
-                    if(!states.contains(b)){
+                    if (!states.contains(b)) {
                         states.add(b);
                     } else {
-                        //TODO Recycle
+                        // TODO Recycle
                     }
                 }
             }
         }
     }
 
-    private void allPossibleRoadBuilding(BoardStateAI state, HashSet<BoardStateAI> states){
-        if(!state.canPlayDevCard(ROAD_BUILDING)){
+    private void allPossibleRoadBuilding(BoardStateAI state, HashSet<BoardStateAI> states) {
+        if (!state.canPlayDevCard(ROAD_BUILDING)) {
             return;
         }
     }
 
-    private void allPossibleBuildRoad(BoardStateAI state, HashSet<BoardStateAI> states){
-        if(!state.players[state.playerTurn].canBuyRoad()){
+    private void allPossibleBuildRoad(BoardStateAI state, HashSet<BoardStateAI> states) {
+        if (!state.players[state.playerTurn].canBuyRoad()) {
             return;
         }
     }
 
-    private void allPossibleBuildSettlement(BoardStateAI state, HashSet<BoardStateAI> states){
-        if(!state.players[state.playerTurn].canBuySettlement()){
+    private void allPossibleBuildSettlement(BoardStateAI state, HashSet<BoardStateAI> states) {
+        if (!state.players[state.playerTurn].canBuySettlement()) {
             return;
         }
     }
 
-    private void allPossibleBuildCity(BoardStateAI state, HashSet<BoardStateAI> states){
-        if(!state.players[state.playerTurn].canBuyCity()){
+    private void allPossibleBuildCity(BoardStateAI state, HashSet<BoardStateAI> states) {
+        if (!state.players[state.playerTurn].canBuyCity()) {
             return;
         }
     }
 
-    private void allPossibleBuyDevCard(BoardStateAI state, HashSet<BoardStateAI> states){
-        if(state.canBuyDevCard()){
+    private void allPossibleBuyDevCard(BoardStateAI state, HashSet<BoardStateAI> states) {
+        if (state.canBuyDevCard()) {
             return;
         }
     }

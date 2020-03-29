@@ -48,7 +48,8 @@ public class Vertex {
         return new Vertex(playerId, building, port);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Vertex{" + "playerId=" + playerId + ", building=" + building + ", port=" + port + '}';
     }
 

@@ -89,11 +89,11 @@ public class Player {
         return devCards[type] > 0 && type != VICTORY;
     }
 
-    public boolean canTradeBank(byte playerResource){
+    public boolean canTradeBank(byte playerResource) {
         return resources[playerResource] >= tradeBankHelper(playerResource);
     }
 
-    public byte tradeBankHelper(byte playerResource){
+    public byte tradeBankHelper(byte playerResource) {
         byte tradeAmount;
         if (ports[playerResource]) {
             tradeAmount = 2;
@@ -162,13 +162,12 @@ public class Player {
     }
 
     public void tradeBank(byte playerResource, byte bankResource) {
-        if(!canTradeBank(playerResource)){
+        if (!canTradeBank(playerResource)) {
             throw new RuntimeException("Invalid Transaction");
         }
         resources[playerResource] -= tradeBankHelper(playerResource);
         resources[bankResource]++;
     }
-
 
     public byte stealResource() {
         if (getTotalResourceCount() == 0) {
