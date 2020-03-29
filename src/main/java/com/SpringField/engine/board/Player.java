@@ -25,6 +25,18 @@ public class Player {
         return devCards;
     }
 
+    public boolean[] getPorts() {
+        return ports;
+    }
+
+    public boolean hasGeneralPort() {
+        return generalPort;
+    }
+
+    public byte getKnightsPlayed() {
+        return knightsPlayed;
+    }
+
     public void addResource(byte type, byte amount) {
         resources[type] += amount;
     }
@@ -36,16 +48,29 @@ public class Player {
         resources[type] -= amount;
     }
 
+    public void bankTrade(byte inputType, byte outputType) {
+        int tradeAmount;
+        if (ports[inputType]) {
+            tradeAmount = 2;
+        } else if (generalPort) {
+            tradeAmount = 3;
+        } else {
+            tradeAmount = 4;
+        }
+        if (resources[inputType] < tradeAmount) {
+            throw new RuntimeException("Invalid Transaction");
+        }
+        resources[inputType] -= tradeAmount;
+        resources[outputType]++;
+    }
+
     public void addPort(byte type) {
         if (type == ANY) {
             generalPort = true;
+            return;
         }
         checkResource(type);
         ports[type] = true;
-    }
-
-    public byte getKnightsPlayed() {
-        return knightsPlayed;
     }
 
     public byte getTotalResourceCount() {
