@@ -61,7 +61,9 @@ public class BoardState {
     }
 
     public boolean canSettle(byte vertexId) {
+        // Getting all the edges coming out of that vertex
         for (byte e : vertexToEdge[vertexId]) {
+            // Checking the vertexes on the other sides of the edges
             for (byte v : edgeToVertex[e]) {
                 Vertex adjacentVertex = vertices.get(v);
                 if (adjacentVertex.isAssigned()) {
