@@ -61,7 +61,9 @@ public class BoardState {
     }
 
     public boolean canSettle(byte vertexId) {
+        // Getting all the edges coming out of that vertex
         for (byte e : vertexToEdge[vertexId]) {
+            // Checking the vertexes on the other sides of the edges
             for (byte v : edgeToVertex[e]) {
                 Vertex adjacentVertex = vertices.get(v);
                 if (adjacentVertex.isAssigned()) {
@@ -74,7 +76,7 @@ public class BoardState {
 
     public void initBoard(int numPlayers) {
         for (int i = 0; i < DEFAULT_NUM_VERTICES; i++) {
-            vertices.add(new Vertex(UNASSIGNED_PORT));
+            vertices.add(new Vertex(vertexToPort[i]));
         }
         for (int i = 0; i < edgeToVertex.length; i++) {
             edges.add(UNASSIGNED_PLAYER);
@@ -104,6 +106,9 @@ public class BoardState {
         p.buySettlement(pay);
         v.setPlayerId(playerId);
         v.setBuilding(STATUS_SETTLEMENT);
+        if (v.getPort() != UNASSIGNED_PORT) {
+            p.addPort(v.getPort());
+        }
         resourceCardPool[WOOD]++;
         resourceCardPool[BRICK]++;
         resourceCardPool[SHEEP]++;
