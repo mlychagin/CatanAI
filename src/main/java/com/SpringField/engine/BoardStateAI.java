@@ -18,13 +18,16 @@ public class BoardStateAI extends BoardState {
         super(numPlayers);
     }
 
-    private boolean moveAvailable() {
-        return false;
-    }
-
     /*
-     * 1. Knight Card 2. Player Trades 3. Monopoly / Year of Plenty 4. Bank Trades 5. Road Building (Dev Card) 6. Build
-     * Road 7. Build Settlement 8. Build City 9. Buy Dev Card
+     * 1. Knight Card
+     * 2. Player Trades
+     * 3. Monopoly / Year of Plenty
+     * 4. Bank Trades
+     * 5. Road Building (Dev Card)
+     * 6. Build Road
+     * 7. Build Settlement
+     * 8. Build City
+     * 9. Buy Dev Card
      */
     public HashSet<BoardStateAI> getAllPossibleMoves() {
         HashSet<BoardStateAI> resultSet = new HashSet<>();
@@ -40,12 +43,12 @@ public class BoardStateAI extends BoardState {
     private void allPossibleStatesGenerator(BoardStateAI state, HashSet<BoardStateAI> resultSet, byte type) {
         HashSet<BoardStateAI> batch = new HashSet<>();
         HashSet<BoardStateAI> newBatch = new HashSet<>();
+        ArrayList<BoardStateAI> deleteSet = new ArrayList<>();
         allPossibleStatesGeneratorRouter(state, batch, type);
         while (true) {
             if (batch.isEmpty()) {
                 return;
             }
-            ArrayList<BoardStateAI> deleteSet = new ArrayList<>();
             for (BoardStateAI b : batch) {
                 if (resultSet.contains(b)) {
                     deleteSet.add(b);
@@ -57,6 +60,7 @@ public class BoardStateAI extends BoardState {
                 batch.remove(b);
                 // TODO Recycle b
             }
+            deleteSet.clear();
             for (BoardStateAI b : batch) {
                 allPossibleStatesGeneratorRouter(b, newBatch, type);
             }

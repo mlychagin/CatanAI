@@ -8,11 +8,11 @@ import java.util.Arrays;
 
 import static com.SpringField.engine.util.Util.*;
 
-public class Settlment {
+public class Settlement {
     private BoardState state;
     private byte playerId;
 
-    public Settlment(BoardState state) {
+    public Settlement(BoardState state) {
         this.state = state;
         this.playerId = state.getPlayerTurn();
     }
@@ -101,7 +101,7 @@ public class Settlment {
 
         // For loop to check over data
         for (int i = 0; i < length; i++) {
-            if (b.canBuildSettlement(UNASSIGNED_PLAYER, (byte) i)) {
+            if (b.canBuildSettlement((byte) i)) {
                 ret_vector.add((byte) i); // Append if its unassigned
             }
         }
@@ -125,6 +125,17 @@ public class Settlment {
             return (byte) 5;
         } else {
             return (byte) 0;
+        }
+    }
+
+    /*
+     * ;)
+     */
+    private static byte getRarity(byte b) {
+        if (b <= 7) {
+            return (byte) (b - 1);
+        } else {
+            return (byte) (13 - b);
         }
     }
 }
