@@ -40,12 +40,16 @@ public class Vertex {
         return port;
     }
 
-    public boolean isAssigned() {
+    public boolean isSettled() {
         return playerId != UNASSIGNED_PLAYER;
     }
 
     public Vertex clone() {
         return new Vertex(playerId, building, port);
+    }
+
+    @Override public String toString() {
+        return "Vertex{" + "playerId=" + playerId + ", building=" + building + ", port=" + port + '}';
     }
 
     @Override

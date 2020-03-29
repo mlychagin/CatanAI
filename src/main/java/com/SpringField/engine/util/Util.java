@@ -16,12 +16,7 @@ public class Util {
     public static final byte DESERT = 6;
     public static final byte ANY = 6;
 
-    public static final byte DEFAULT_WOOD_COUNT = 19;
-    public static final byte DEFAULT_BRICK_COUNT = 19;
-    public static final byte DEFAULT_SHEEP_COUNT = 19;
-    public static final byte DEFAULT_HAY_COUNT = 19;
-    public static final byte DEFAULT_ROCK_COUNT = 19;
-    public static final byte DEFAULT_DESERT_COUNT = 0;
+    public static final byte DEFAULT_RESOURCE_COUNT = 19;
 
     /*
      * Structures
@@ -38,10 +33,10 @@ public class Util {
      * Dev Cards
      */
     public static final byte KNIGHT = 0;
-    public static final byte VICTORY = 1;
-    public static final byte ROAD_BUILDING = 2;
-    public static final byte MONOPOLY = 3;
-    public static final byte YEAR_OF_PLENTY = 4;
+    public static final byte ROAD_BUILDING = 1;
+    public static final byte MONOPOLY = 2;
+    public static final byte YEAR_OF_PLENTY = 3;
+    public static final byte VICTORY = 4;
 
     public static final byte DEFAULT_NUM_KNIGHT = 15;
     public static final byte DEFAULT_NUM_VICTORY = 5;
@@ -74,7 +69,7 @@ public class Util {
 
     public static byte[] tilesNumber = new byte[] { 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
 
-    public static byte[][] edgeToVertex = new byte[][] { new byte[] { 0, 1 }, new byte[] { 1, 2 }, new byte[] { 2, 3 },
+    public static final byte[][] edgeToVertex = new byte[][] { new byte[] { 0, 1 }, new byte[] { 1, 2 }, new byte[] { 2, 3 },
             new byte[] { 3, 4 }, new byte[] { 4, 5 }, new byte[] { 5, 6 }, new byte[] { 0, 8 }, new byte[] { 2, 10 },
             new byte[] { 4, 12 }, new byte[] { 6, 14 }, new byte[] { 7, 8 }, new byte[] { 8, 9 }, new byte[] { 9, 10 },
             new byte[] { 10, 11 }, new byte[] { 11, 12 }, new byte[] { 13, 14 }, new byte[] { 14, 15 },
@@ -95,7 +90,7 @@ public class Util {
 
     };
 
-    public static byte[][] tileToVertex = new byte[][] { new byte[] { 0, 1, 2, 8, 9, 10 },
+    public static final byte[][] tileToVertex = new byte[][] { new byte[] { 0, 1, 2, 8, 9, 10 },
             new byte[] { 2, 3, 4, 10, 11, 12 }, new byte[] { 4, 5, 6, 12, 13, 14 }, new byte[] { 7, 8, 9, 17, 18, 19 },
             new byte[] { 9, 10, 11, 19, 20, 21 }, new byte[] { 11, 12, 13, 21, 22, 23 },
             new byte[] { 13, 14, 15, 23, 24, 25 }, new byte[] { 16, 17, 18, 27, 28, 29 },
@@ -115,11 +110,31 @@ public class Util {
             UNASSIGNED_PORT, UNASSIGNED_PORT, UNASSIGNED_PORT, HAY, HAY, ANY, ANY, UNASSIGNED_PORT, ROCK, ROCK,
             UNASSIGNED_PORT, UNASSIGNED_PORT };
 
-    public static byte DEFAULT_NUM_TILES = (byte) tilesResource.length;
-    public static byte DEFAULT_NUM_VERTICES = 54;
-    public static byte DEFAULT_NUM_EDGES = (byte) edgeToVertex.length;
+    public final static byte DEFAULT_NUM_TILES = (byte) tilesResource.length;
+    public final static byte DEFAULT_NUM_VERTICES = 54;
+    public final static byte DEFAULT_NUM_EDGES = (byte) edgeToVertex.length;
 
-    public static byte[][] vertexToEdge = new byte[DEFAULT_NUM_VERTICES][];
+    public final static byte[][] vertexToEdge = new byte[DEFAULT_NUM_VERTICES][];
+
+    /*
+     * Game
+     */
+    public final static byte VICTORY_POINTS_REQ_WIN = 12;
+    public final static byte WIN_CONDITION = -1;
+
+    /*
+     * BoardStateAI Space State Generation
+     */
+    public final static byte GENERATE_DEV_KNIGHT = 0;
+    public final static byte GENERATE_PLAYER_TRADES = 1;
+    public final static byte GENERATE_DEV_MONOPOLY = 2;
+    public final static byte GENERATE_DEV_YEAR_OF_PLENTY = 3;
+    public final static byte GENERATE_BANK_TRADES = 4;
+    public final static byte GENERATE_DEV_ROAD_BUILDING = 5;
+    public final static byte GENERATE_BUILD_ROAD = 6;
+    public final static byte GENERATE_BUILD_SETTLEMENT = 7;
+    public final static byte GENERATE_BUILD_CITY = 8;
+    public final static byte GENERATE_BUY_DEV_CARD = 9;
 
     static {
         initializeTiles();

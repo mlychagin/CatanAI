@@ -2,10 +2,9 @@ package com.SpringField.ai;
 
 import com.SpringField.engine.BoardState;
 import com.SpringField.engine.board.Vertex;
-import com.SpringField.engine.util.Util;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
 import static com.SpringField.engine.util.Util.*;
 
@@ -102,7 +101,7 @@ public class Settlment {
 
         // For loop to check over data
         for (int i = 0; i < length; i++) {
-            if (b.canSettle((byte) i)) {
+            if (b.canBuildSettlement(UNASSIGNED_PLAYER, (byte) i)) {
                 ret_vector.add((byte) i); // Append if its unassigned
             }
         }

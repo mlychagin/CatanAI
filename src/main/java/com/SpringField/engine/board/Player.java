@@ -50,22 +50,6 @@ public class Player {
         resources[type] -= amount;
     }
 
-    public void tradeBank(byte playerResource, byte bankResource) {
-        int tradeAmount;
-        if (ports[playerResource]) {
-            tradeAmount = 2;
-        } else if (generalPort) {
-            tradeAmount = 3;
-        } else {
-            tradeAmount = 4;
-        }
-        if (resources[playerResource] < tradeAmount) {
-            throw new RuntimeException("Invalid Transaction");
-        }
-        resources[playerResource] -= tradeAmount;
-        resources[bankResource]++;
-    }
-
     public void addPort(byte type) {
         if (type == ANY) {
             generalPort = true;
@@ -98,6 +82,27 @@ public class Player {
 
     public boolean canBuyDevCard() {
         return resources[SHEEP] >= 1 && resources[HAY] >= 1 && resources[ROCK] >= 1;
+    }
+
+    public boolean canPlayDevCard(byte type) {
+        checkDevCard(type);
+        return devCards[type] > 0 && type != VICTORY;
+    }
+
+    public boolean canTradeBank(byte playerResource){
+        return resources[playerResource] >= tradeBankHelper(playerResource);
+    }
+
+    public byte tradeBankHelper(byte playerResource){
+        byte tradeAmount;
+        if (ports[playerResource]) {
+            tradeAmount = 2;
+        } else if (generalPort) {
+            tradeAmount = 3;
+        } else {
+            tradeAmount = 4;
+        }
+        return tradeAmount;
     }
 
     public void buyRoad(boolean pay) {
@@ -146,11 +151,6 @@ public class Player {
         devCards[type]++;
     }
 
-    public boolean canPlayDevCard(byte type) {
-        checkDevCard(type);
-        return devCards[type] > 0 && type != VICTORY;
-    }
-
     public void playDevCard(byte type) {
         if (!canPlayDevCard(type)) {
             throw new RuntimeException("Invalid Transaction");
@@ -160,6 +160,15 @@ public class Player {
             knightsPlayed++;
         }
     }
+
+    public void tradeBank(byte playerResource, byte bankResource) {
+        if(!canTradeBank(playerResource)){
+            throw new RuntimeException("Invalid Transaction");
+        }
+        resources[playerResource] -= tradeBankHelper(playerResource);
+        resources[bankResource]++;
+    }
+
 
     public byte stealResource() {
         if (getTotalResourceCount() == 0) {
