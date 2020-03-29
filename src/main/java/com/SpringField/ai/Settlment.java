@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import static com.SpringField.engine.util.Util.tilesNumber;
-import static com.SpringField.engine.util.Util.tilesResource;
+import static com.SpringField.engine.util.Util.*;
 
 public class Settlment {
     private BoardState state;
@@ -20,35 +19,52 @@ public class Settlment {
     }
 
     /*
-     * Information I want to calculate (purely Heuristics based for now):
+     * Information I want to calculate (purely Heuristics based for now): \
      * Vertex Value - Purely odds of Landing
      * Diversity - Current Resource coverage (from player's perspective)
-     * Scarcity - How abundant resource are
-     * Distance to Port - Not important yet
+     * Scarcity - How abundant resource are Distance
+     * to Port - Not important yet
      */
     public byte getBestPossibleSettle(BoardState b) {
         // Setup our best settle and our possibilities vector
         byte best = 0;
         ArrayList<Byte> possibleSettles = getAllPossibleSettles(b); // ArrayList for vertexes that are settle-able
-        ArrayList<Byte> resourceAbundance = getResourceAbundances(); // Total dot count of each resource
+        //ArrayList<Byte> resourceAbundance = getResourceAbundances(); // Total dot count of each resource
 
         // For loop to traverse all possible settles for getVertex
-        for (Byte v: possibleSettles){
-            if (best < getVertexValue(v)){
+        for (Byte v : possibleSettles) {
+            if (best < getVertexValue(v)) {
                 best = v;
             }
         }
 
-
-        // Settle randomly for now
-        Random r = new Random();
-        best = possibleSettles.get(r.nextInt(possibleSettles.size()));
+        // Only simple settling strategies for now,
+        // just adds up the point totals
         return best;
     }
 
-    public float getVertexValue(byte vertex){
-        byte ret_val = 0;
-        return ret_val;
+
+    /*
+     * Vertex value, generated purely based off likelihood totals
+     */
+    public byte getVertexValue(byte vertex) {
+        byte value = 0;
+        byte length = (byte) tileToVertex.length;
+        for (byte ctr = 0; ctr < length; ctr++){
+            byte[] instance = tileToVertex[ctr];
+            byte counter = 0;
+            for (byte i: instance){
+                if (counter > 3){
+                    counter = 0;
+                    break;
+                }
+                if (i == vertex){
+                    counter+=1;
+                    value += tilesNumber[ctr];
+                }
+            }
+        }
+        return value;
     }
 
     /*
@@ -74,7 +90,7 @@ public class Settlment {
     }
 
     /*
-     * Return all possible settleable vertexes. nice extrapolation for data manipulation later down the road
+     * Return all possible settle able vertexes
      */
     private ArrayList<Byte> getAllPossibleSettles(BoardState b) {
         // Initialize vertex array holders
