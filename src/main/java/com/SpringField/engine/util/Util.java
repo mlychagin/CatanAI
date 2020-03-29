@@ -1,6 +1,8 @@
 package com.SpringField.engine.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 public class Util {
@@ -115,6 +117,8 @@ public class Util {
     public final static byte DEFAULT_NUM_EDGES = (byte) edgeToVertex.length;
 
     public final static byte[][] vertexToEdge = new byte[DEFAULT_NUM_VERTICES][];
+    public final static byte[][] vertexToVertex = new byte[DEFAULT_NUM_VERTICES][];
+    public final static byte[][] edgeToEdge = new byte[DEFAULT_NUM_EDGES][];
 
     /*
      * Game
@@ -136,12 +140,14 @@ public class Util {
     public final static byte GENERATE_BUILD_CITY = 8;
     public final static byte GENERATE_BUY_DEV_CARD = 9;
 
-    static {
+    public static void initializeStaticInstance() {
         initializeTiles();
-        setupNodeToEdge();
+        setupVertexToEdge();
+        setupEdgeToEdge();
+        setupVertexToVertex();
     }
 
-    public static void initializeTiles() {
+    private static void initializeTiles() {
         if (tilesResource.length != tilesNumber.length) {
             throw new RuntimeException("Resources and Numbers not aligned");
         }
@@ -149,7 +155,7 @@ public class Util {
         shuffleArray(tilesNumber);
     }
 
-    public static void shuffleArray(byte[] a) {
+    private static void shuffleArray(byte[] a) {
         int n = a.length;
         Random random = new Random();
         random.nextInt();
@@ -161,8 +167,8 @@ public class Util {
         }
     }
 
-    public static void setupNodeToEdge() {
-        ArrayList<Byte>[] vertexToEdgeList = new ArrayList[54];
+    private static void setupVertexToEdge() {
+        ArrayList<Byte>[] vertexToEdgeList = new ArrayList[DEFAULT_NUM_VERTICES];
         for (int i = 0; i < vertexToEdgeList.length; i++) {
             vertexToEdgeList[i] = new ArrayList<>();
         }
@@ -177,6 +183,42 @@ public class Util {
             vertexToEdge[i] = new byte[list.size()];
             for (int j = 0; j < list.size(); j++) {
                 vertexToEdge[i][j] = list.get(j);
+            }
+        }
+    }
+
+    private static void setupEdgeToEdge() {
+        for (int e = 0; e < DEFAULT_NUM_EDGES; e++) {
+            ArrayList<Byte> adjacentEdges = new ArrayList<>();
+            for (byte v : edgeToVertex[e]) {
+                for (byte adjacentEdge : vertexToEdge[v]) {
+                    if (adjacentEdge != e) {
+                        adjacentEdges.add(adjacentEdge);
+                    }
+                }
+            }
+            Collections.sort(adjacentEdges);
+            edgeToEdge[e] = new byte[adjacentEdges.size()];
+            for (int i = 0; i < adjacentEdges.size(); i++) {
+                edgeToEdge[e][i] = adjacentEdges.get(i);
+            }
+        }
+    }
+
+    private static void setupVertexToVertex() {
+        for (byte v = 0; v < DEFAULT_NUM_VERTICES; v++) {
+            ArrayList<Byte> adjacentVerticies = new ArrayList<>();
+            for (byte e : vertexToEdge[v]) {
+                for (byte adjacentVertex : edgeToVertex[e]) {
+                    if (adjacentVertex != v) {
+                        adjacentVerticies.add(adjacentVertex);
+                    }
+                }
+            }
+            Collections.sort(adjacentVerticies);
+            vertexToVertex[v] = new byte[adjacentVerticies.size()];
+            for (int i = 0; i < adjacentVerticies.size(); i++) {
+                vertexToVertex[v][i] = adjacentVerticies.get(i);
             }
         }
     }

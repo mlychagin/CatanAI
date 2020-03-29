@@ -65,8 +65,8 @@ public class BoardState {
     public byte getPlayerTurn() {
         return playerTurn;
     }
-    
-    protected Player getCurrentPlayer(){
+
+    protected Player getCurrentPlayer() {
         return getCurrentPlayer();
     }
 
@@ -97,6 +97,7 @@ public class BoardState {
         return total;
     }
 
+    // TODO Buy isn't used? -- Road Building
     public boolean canBuildRoad(byte edgeId, boolean buy) {
         if (!settlementPhase && !getCurrentPlayer().canBuyRoad()) {
             return false;
@@ -131,13 +132,11 @@ public class BoardState {
         if (vertices[vertexId].isSettled()) {
             return false;
         }
-        boolean foundRoad = false;
-        // Getting all the edges coming out of that vertex
+        boolean foundRoad = settlementPhase;
         for (byte e : vertexToEdge[vertexId]) {
             if (edges[e] == playerTurn) {
                 foundRoad = true;
             }
-            // Checking the vertexes on the other sides of the edges
             for (byte v : edgeToVertex[e]) {
                 Vertex adjacentVertex = vertices[v];
                 if (adjacentVertex.isSettled()) {
@@ -427,9 +426,12 @@ public class BoardState {
         }
     }
 
-    private byte transverseNode(HashSet<Byte> seenEdges, byte nodeId, byte currentRoadLength) {
+    private byte transverseNode(HashSet<Byte> seenEdges, byte vertexId, byte currentRoadLength) {
+        if (vertices[vertexId].getPlayerId() != playerTurn) {
+            return currentRoadLength;
+        }
         byte maxRoadLength = currentRoadLength;
-        byte[] outgoingEdges = vertexToEdge[nodeId];
+        byte[] outgoingEdges = vertexToEdge[vertexId];
         for (byte edgeId : outgoingEdges) {
             if (seenEdges.contains(edgeId)) {
                 continue;
@@ -437,7 +439,7 @@ public class BoardState {
             if (edges[edgeId] == playerTurn) {
                 byte nextNodeId = -1;
                 for (byte n : edgeToVertex[edgeId]) {
-                    if (n != nodeId) {
+                    if (n != vertexId) {
                         nextNodeId = n;
                     }
                 }
