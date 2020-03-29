@@ -20,9 +20,11 @@ public class Settlment {
     }
 
     /*
-     * Information I want to calculate (purely Heuristics based for now): Resource Value - Resource num compared to
-     * resource abundance Number Value - Purely odds of Landing Current Resource Coverage weighting (probably a later
-     * implement)
+     * Information I want to calculate (purely Heuristics based for now):
+     * Vertex Value - Purely odds of Landing
+     * Diversity - Current Resource coverage (from player's perspective)
+     * Scarcity - How abundant resource are
+     * Distance to Port - Not important yet
      */
     public byte getBestPossibleSettle(BoardState b) {
         // Setup our best settle and our possibilities vector
@@ -30,10 +32,23 @@ public class Settlment {
         ArrayList<Byte> possibleSettles = getAllPossibleSettles(b); // ArrayList for vertexes that are settle-able
         ArrayList<Byte> resourceAbundance = getResourceAbundances(); // Total dot count of each resource
 
+        // For loop to traverse all possible settles for getVertex
+        for (Byte v: possibleSettles){
+            if (best < getVertexValue(v)){
+                best = v;
+            }
+        }
+
+
         // Settle randomly for now
         Random r = new Random();
         best = possibleSettles.get(r.nextInt(possibleSettles.size()));
         return best;
+    }
+
+    public float getVertexValue(byte vertex){
+        byte ret_val = 0;
+        return ret_val;
     }
 
     /*
