@@ -125,7 +125,7 @@ public class Player {
     }
 
     public void playDevCard(byte type) {
-        if (canPlayDevCard(type)) {
+        if (!canPlayDevCard(type)) {
             throw new RuntimeException("Invalid Transaction");
         }
         devCards[type]--;

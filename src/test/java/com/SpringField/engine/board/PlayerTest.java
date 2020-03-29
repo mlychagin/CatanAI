@@ -3,6 +3,9 @@ package com.SpringField.engine.board;
 import org.junit.Test;
 import org.junit.*;
 
+
+import java.util.Random;
+
 import static com.SpringField.engine.util.Util.*;
 
 public class PlayerTest {
@@ -200,5 +203,64 @@ public class PlayerTest {
         p.addResource(HAY, (byte) (1));
         p.buyDevCard(VICTORY);
         assert (p.getNumVictoryPoints() == 3);
+    }
+
+    @Test
+    public void getTotalResourceCountTest(){
+        Player p = new Player();
+        assert (p.getTotalResourceCount() == 0);
+        p.addResource(WOOD, (byte) (1));
+        p.addResource(BRICK, (byte) (1));
+        p.addResource(SHEEP, (byte) (1 ));
+        p.addResource(HAY, (byte)1 );
+        assert (p.getTotalResourceCount() == 4);
+        p.buySettlement(true);
+        assert (p.getTotalResourceCount() == 0);
+        p.addResource(ROCK, (byte) (3));
+        p.addResource(HAY, (byte) (2));
+        assert (p.getTotalResourceCount() == 5);
+        p.buyCity();
+        assert (p.getTotalResourceCount() == 0);
+        for(byte i = 1 ; i < 50 ; i++){
+            Random r = new Random();
+            byte type  = (byte) r.nextInt(5);
+            p.addResource(type, (byte)1);
+            assert (p.getTotalResourceCount() == i);
+        }
+    }
+    @Test
+    public void getKnightsPlayedTest(){
+        Player p = new Player();
+        assert p.getKnightsPlayed() == 0;
+        p.addResource(ROCK, (byte) (1));
+        p.addResource(SHEEP, (byte) (1));
+        p.addResource(HAY, (byte) (1));
+        p.buyDevCard(KNIGHT);
+        assert p.getKnightsPlayed() == 0;
+        p.playDevCard(KNIGHT);
+        assert p.getKnightsPlayed() == 1;
+    }
+    @Test
+    public void stealResourceTest(){
+        Player p = new Player();
+        try{
+            p.stealResource();
+            assert false;
+        }
+        catch(Exception e){
+            e.getMessage().equals("Algorithm Failure");
+        }
+        for(byte i = 0; i < 5 ; i++){
+            p.addResource(i,(byte)1);
+        }
+        byte stolenType1 = p.stealResource();
+        assert p.getResources()[stolenType1] == 0;
+        byte stolenType2 = p.stealResource();
+        assert p.getResources()[stolenType2] == 0;
+        assert (stolenType1 != stolenType2);
+    }
+    @Test
+    public void nameTest(){
+        Player p = new Player();
     }
 }
