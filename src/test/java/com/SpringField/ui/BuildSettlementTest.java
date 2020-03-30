@@ -19,14 +19,6 @@ import javafx.stage.Stage;
 
 // Tests for
 public class BuildSettlementTest extends Application {
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    @Override
-    public void init() {
-
-    }
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -62,3 +54,5 @@ public class BuildSettlementTest extends Application {
         stage.show(); // goes into Animation Timer
     }
 }
+
+
