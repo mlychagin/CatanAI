@@ -80,6 +80,8 @@ public class BoardState {
         return playerTurn;
     }
 
+    public byte getRobberTile(){ return robberTile; }
+
     protected Player getCurrentPlayer() {
         return players[playerTurn];
     }

@@ -101,7 +101,12 @@ public class Hexagon extends Polygon {
         for (Line l : edges) {
             l.display(gc, currentState);
         }
-        drawTileLabel(gc);
+        if(currentState.getRobberTile() == tileNumber) {
+            drawTileLabel(gc, true);
+        }
+        else{
+            drawTileLabel(gc, false);
+        }
         displayDots(gc);
     }
 
@@ -125,7 +130,7 @@ public class Hexagon extends Polygon {
         }
     }
 
-    private void drawTileLabel(GraphicsContext gc) {
+    private void drawTileLabel(GraphicsContext gc, boolean hasRobber) {
         // Method to draw lable on each tile
         gc.setFill(Color.BLACK);
         gc.setTextAlign(TextAlignment.LEFT);
@@ -134,9 +139,6 @@ public class Hexagon extends Polygon {
 
         int tileDiceNumber = Util.tilesNumber[tileNumber];
         int resourceType = Util.tilesResource[tileNumber];
-
-        // TODO: Check for knight on tile
-        boolean hasKnight = false;
 
         switch (resourceType) {
         case Util.DESERT:
@@ -183,7 +185,7 @@ public class Hexagon extends Polygon {
             gc.fillText(toPrint, xPos - 10, yPos);
         }
 
-        if (hasKnight) {
+        if (hasRobber) {
             gc.setLineWidth(4);
             gc.strokeLine(xPos - 15, yPos - 5, xPos + 15, yPos - 5);
             gc.fill();
