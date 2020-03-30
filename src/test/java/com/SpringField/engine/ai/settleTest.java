@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.Random;
 
 import static com.SpringField.engine.util.Util.*;
-import static com.SpringField.engine.util.Util.KNIGHT;
+import com.SpringField.engine.util.Util;
 
 public class settleTest {
     public static void main(String[] args) throws IOException{
@@ -19,7 +19,7 @@ public class settleTest {
         String pathToCsv ="";
         FileWriter csvWriter;
         try {
-            pathToCsv = "output.txt";
+            pathToCsv = "src\\test\\java\\com\\SpringField\\engine\\ai\\output.txt";
             csvWriter = new FileWriter(pathToCsv);
         } catch (IOException e){
             throw new IOException("Could not locate: " + pathToCsv);
@@ -30,7 +30,7 @@ public class settleTest {
 
         // 1000 iterations of a board state being settled
         int i = 0;
-        while (i < 100000) {
+        while (i < 1) {
             String settles = "";
             BoardState test = new BoardState(4);
             Settlement chooser = new Settlement(test);
@@ -50,10 +50,13 @@ public class settleTest {
 
             // loop to print out pertinent data
             String[] arr = settles.split(" ");
-            for (int j = 0; j < 7;j++) {
-                //if ((j + 1) == 7) {
-                csvWriter.write(arr[j]);
-                //}
+            for (int j = 0;;j++) {
+                if ((j + 1) == 8) {
+                    csvWriter.write(arr[j] + "\n");
+                    break;
+                }
+                csvWriter.write(arr[j] + ", ");
+
             }
             csvWriter.flush();
         }
@@ -62,6 +65,10 @@ public class settleTest {
 
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
+
+        BoardState test = new BoardState(4);
+        System.out.println(test.getVertices());
+        test.toXML("src\\test\\java\\com\\SpringField\\engine\\ai\\test.xml");
         System.out.println("\nExecuted and settled " + i + " boardstates in: " + (duration*(1.0)/1000000000) + " second(s)!");
     }
 

@@ -1,11 +1,22 @@
 package com.SpringField.engine;
 
+// Custom Objects
 import com.SpringField.engine.board.Player;
 import com.SpringField.engine.board.Vertex;
 
+// Util
+import java.io.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
+
+// XML Parsing Stuff
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
+import org.xml.sax.*;
+import org.w3c.dom.*;
 
 import static com.SpringField.engine.util.Util.*;
 
@@ -471,6 +482,128 @@ public class BoardState {
             points += 2;
         }
         return points;
+    }
+
+
+    /*
+     * TO XML - Fields needed:
+     * Vertexes
+     *  - PlayerID
+     *  - Building
+     *  - Port
+     *
+     *  Edges (byte arr)
+     *  TilesResource
+     *  TilesNumber
+     *
+     *  Stack: https://stackoverflow.com/questions/7373567/how-to-read-and-write-xml-files
+     */
+    public void toXML(String xml){
+        // Setup holder variables
+        Vertex[] vertices = getVertices();
+        Document dom;
+        Element e = null;
+
+        // instance of a DocumentBuilderFactory
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+        try {
+            // use factory to get an instance of document builder
+            DocumentBuilder db = dbf.newDocumentBuilder();
+
+            // create instance of DOM and string
+            dom = db.newDocument();
+            String data;
+
+            // create the root element
+            Element root         = dom.createElement("boardstate");
+            dom.appendChild(root);
+//            Element Vertexes     = dom.createElement("Vertexes");
+//            Element Edges        = dom.createElement("Edges");
+//            Element tileResource = dom.createElement("tilesResources");
+//            Element tileNumber   = dom.createElement("TilesNumber");
+
+            // Nothing like 4 "for" loops to hold your code together
+            byte holder = 0;
+            Element vertexes     = dom.createElement("vertexes");
+            for (Vertex v: vertices){
+                // Parse each vertex's information into a dom element
+                data = Byte.toString((v.getPlayerId())) +" " + Byte.toString(v.getBuilding()) + " "+ Byte.toString(v.getPort());
+                e = dom.createElement("v" + holder);
+                e.appendChild(dom.createTextNode(data));
+
+                // Append each of them to teh vertex's child
+                vertexes.appendChild(e);
+
+                // Accumulator
+                holder++;
+            }
+            root.appendChild(vertexes);
+
+
+            // Same as above ^^^ but for edges
+            byte ctr = 0;
+            Element edge1 = dom.createElement("edges");
+            for (byte edge: edges){
+                data = Byte.toString(edge);
+                e = dom.createElement("e" + ctr);
+                e.appendChild(dom.createTextNode(data));
+                edge1.appendChild(e);
+                ctr++;
+            }
+            root.appendChild(edge1);
+
+//            // Again the same but tiles
+//            int limiter = 0;
+//            Element tileResource = dom.createElement("tilesResources");
+//            for (byte b: tilesResource){
+//                data = Byte.toString(b);
+//                e = dom.createElement();
+//                e.appendChild(dom.createTextNode(data)); // <<<<---------- error is happening here with xml formatting idk
+//                tileResource.appendChild(e);
+//                limiter++;
+//            }
+//            root.appendChild(tileResource);
+//
+//            // Numbers
+//            int limit = 0;
+//            Element tileNumber   = dom.createElement("TilesNumber");
+//            for (byte r: tilesNumber){
+//                data = Byte.toString(r);
+//                e = dom.createElement("");
+//                e.appendChild(dom.createTextNode(data));
+//                tileNumber.appendChild(e);
+//                limit++;
+//                root.appendChild(tileNumber);
+//            }
+
+            // Try downloading the file
+            try{
+                Transformer tr = TransformerFactory.newInstance().newTransformer();
+                tr.setOutputProperty(OutputKeys.INDENT, "yes");
+                tr.setOutputProperty(OutputKeys.METHOD, "xml");
+                tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+                tr.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "Boardstate.dtd");
+                tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+                // send DOM to file
+                tr.transform(new DOMSource(dom),
+                        new StreamResult(new FileOutputStream(xml)));
+        } catch (TransformerException n){
+            n.printStackTrace();
+        } catch (IOException ioe) {
+            System.out.println(ioe.getMessage());
+        }
+    } catch (ParserConfigurationException pce) {
+        System.out.println("UsersXML: Error trying to instantiate DocumentBuilder " + pce);
+    }
+    }
+
+    /*
+    TODO: fromXML
+     */
+    public void fromXML(String file){
+
     }
 
     @Override
