@@ -230,8 +230,10 @@ public class BoardState {
         edges[edgeId] = playerTurn;
         p.buyRoad(pay);
         updateLargestRoad(edgeId);
-        resourceCardPool[WOOD]++;
-        resourceCardPool[BRICK]++;
+        if (pay){
+            resourceCardPool[WOOD]++;
+            resourceCardPool[BRICK]++;
+        }
     }
 
     public void buildSettlement(byte vertexId, boolean pay) {
@@ -246,10 +248,12 @@ public class BoardState {
         if (v.getPort() != UNASSIGNED_PORT) {
             p.addPort(v.getPort());
         }
-        resourceCardPool[WOOD]++;
-        resourceCardPool[BRICK]++;
-        resourceCardPool[SHEEP]++;
-        resourceCardPool[HAY]++;
+        if (pay) {
+            resourceCardPool[WOOD]++;
+            resourceCardPool[BRICK]++;
+            resourceCardPool[SHEEP]++;
+            resourceCardPool[HAY]++;
+        }
     }
 
     public void buildCity(byte vertexId) {

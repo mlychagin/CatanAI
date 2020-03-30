@@ -150,7 +150,7 @@ public class Util {
         initializedContext = true;
     }
 
-    private static void initializeTiles() {
+    public static void initializeTiles() {
         if (tilesResource.length != tilesNumber.length) {
             throw new RuntimeException("Resources and Numbers not aligned");
         }

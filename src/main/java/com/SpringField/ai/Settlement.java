@@ -24,10 +24,10 @@ public class Settlement {
      * Scarcity - How abundant resource are Distance
      * to Port - Not important yet
      */
-    public byte getBestPossibleSettle(BoardState b) {
+    public byte getBestPossibleSettle() {
         // Setup our best settle and our possibilities vector
         byte best = 0;
-        ArrayList<Byte> possibleSettles = getAllPossibleSettles(b); // ArrayList for vertexes that are settle-able
+        ArrayList<Byte> possibleSettles = getAllPossibleSettles(); // ArrayList for vertexes that are settle-able
         //ArrayList<Byte> resourceAbundance = getResourceAbundances(); // Total dot count of each resource
 
         // For loop to traverse all possible settles for getVertex
@@ -91,9 +91,9 @@ public class Settlement {
     /*
      * Return all possible settle able vertexes
      */
-    private ArrayList<Byte> getAllPossibleSettles(BoardState b) {
+    private ArrayList<Byte> getAllPossibleSettles() {
         // Initialize vertex array holders
-        Vertex[] vertexes = b.getVertices();
+        Vertex[] vertexes = state.getVertices();
         ArrayList<Byte> ret_vector = new ArrayList<Byte>();
 
         // Find out how long it is
@@ -101,7 +101,7 @@ public class Settlement {
 
         // For loop to check over data
         for (int i = 0; i < length; i++) {
-            if (b.canBuildSettlement((byte) i)) {
+            if (state.canBuildSettlement((byte) i)) {
                 ret_vector.add((byte) i); // Append if its unassigned
             }
         }
