@@ -8,7 +8,7 @@ public class Player {
     private byte[] resources = new byte[] { 0, 0, 0, 0, 0 };
     private byte[] structures = new byte[] { DEFAULT_ROAD_COUNT, DEFAULT_SETTLEMENT_COUNT, DEFAULT_CITY_COUNT };
     private byte[] devCards = new byte[] { 0, 0, 0, 0, 0 };
-    private boolean[] ports = new boolean[] { false, false, false, false };
+    private boolean[] ports = new boolean[] { false, false, false, false, false };
     private boolean generalPort = false;
     private byte knightsPlayed = 0;
 
