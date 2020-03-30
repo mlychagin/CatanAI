@@ -74,21 +74,21 @@ public class Util {
     public static final byte[][] edgeToVertex = new byte[][] { new byte[] { 0, 1 }, new byte[] { 1, 2 },
             new byte[] { 2, 3 }, new byte[] { 3, 4 }, new byte[] { 4, 5 }, new byte[] { 5, 6 }, new byte[] { 0, 8 },
             new byte[] { 2, 10 }, new byte[] { 4, 12 }, new byte[] { 6, 14 }, new byte[] { 7, 8 }, new byte[] { 8, 9 },
-            new byte[] { 9, 10 }, new byte[] { 10, 11 }, new byte[] { 11, 12 }, new byte[] { 13, 14 },
-            new byte[] { 14, 15 }, new byte[] { 7, 17 }, new byte[] { 9, 19 }, new byte[] { 11, 21 },
-            new byte[] { 13, 23 }, new byte[] { 15, 25 }, new byte[] { 16, 17 }, new byte[] { 17, 18 },
-            new byte[] { 18, 19 }, new byte[] { 19, 20 }, new byte[] { 20, 21 }, new byte[] { 21, 22 },
-            new byte[] { 22, 23 }, new byte[] { 23, 24 }, new byte[] { 24, 25 }, new byte[] { 25, 26 },
-            new byte[] { 16, 27 }, new byte[] { 18, 29 }, new byte[] { 20, 31 }, new byte[] { 22, 33 },
-            new byte[] { 24, 35 }, new byte[] { 26, 37 }, new byte[] { 27, 28 }, new byte[] { 28, 29 },
-            new byte[] { 29, 30 }, new byte[] { 30, 31 }, new byte[] { 31, 32 }, new byte[] { 32, 33 },
-            new byte[] { 33, 34 }, new byte[] { 34, 35 }, new byte[] { 35, 36 }, new byte[] { 36, 37 },
-            new byte[] { 28, 38 }, new byte[] { 30, 40 }, new byte[] { 32, 42 }, new byte[] { 34, 44 },
-            new byte[] { 36, 46 }, new byte[] { 38, 39 }, new byte[] { 39, 40 }, new byte[] { 40, 41 },
-            new byte[] { 41, 42 }, new byte[] { 42, 43 }, new byte[] { 43, 44 }, new byte[] { 44, 45 },
-            new byte[] { 45, 46 }, new byte[] { 39, 47 }, new byte[] { 41, 49 }, new byte[] { 43, 51 },
-            new byte[] { 45, 53 }, new byte[] { 47, 48 }, new byte[] { 48, 49 }, new byte[] { 49, 50 },
-            new byte[] { 50, 51 }, new byte[] { 51, 52 }, new byte[] { 52, 53 },
+            new byte[] { 9, 10 }, new byte[] { 10, 11 }, new byte[] { 11, 12 }, new byte[] { 12, 13 },
+            new byte[] { 13, 14 }, new byte[] { 14, 15 }, new byte[] { 7, 17 }, new byte[] { 9, 19 },
+            new byte[] { 11, 21 }, new byte[] { 13, 23 }, new byte[] { 15, 25 }, new byte[] { 16, 17 },
+            new byte[] { 17, 18 }, new byte[] { 18, 19 }, new byte[] { 19, 20 }, new byte[] { 20, 21 },
+            new byte[] { 21, 22 }, new byte[] { 22, 23 }, new byte[] { 23, 24 }, new byte[] { 24, 25 },
+            new byte[] { 25, 26 }, new byte[] { 16, 27 }, new byte[] { 18, 29 }, new byte[] { 20, 31 },
+            new byte[] { 22, 33 }, new byte[] { 24, 35 }, new byte[] { 26, 37 }, new byte[] { 27, 28 },
+            new byte[] { 28, 29 }, new byte[] { 29, 30 }, new byte[] { 30, 31 }, new byte[] { 31, 32 },
+            new byte[] { 32, 33 }, new byte[] { 33, 34 }, new byte[] { 34, 35 }, new byte[] { 35, 36 },
+            new byte[] { 36, 37 }, new byte[] { 28, 38 }, new byte[] { 30, 40 }, new byte[] { 32, 42 },
+            new byte[] { 34, 44 }, new byte[] { 36, 46 }, new byte[] { 38, 39 }, new byte[] { 39, 40 },
+            new byte[] { 40, 41 }, new byte[] { 41, 42 }, new byte[] { 42, 43 }, new byte[] { 43, 44 },
+            new byte[] { 44, 45 }, new byte[] { 45, 46 }, new byte[] { 39, 47 }, new byte[] { 41, 49 },
+            new byte[] { 43, 51 }, new byte[] { 45, 53 }, new byte[] { 47, 48 }, new byte[] { 48, 49 },
+            new byte[] { 49, 50 }, new byte[] { 50, 51 }, new byte[] { 51, 52 }, new byte[] { 52, 53 },
 
     };
 
@@ -140,11 +140,14 @@ public class Util {
     public final static byte GENERATE_BUILD_CITY = 8;
     public final static byte GENERATE_BUY_DEV_CARD = 9;
 
+    public static boolean initializedContext = false;
+
     public static void initializeStaticInstance() {
         initializeTiles();
         setupVertexToEdge();
         setupEdgeToEdge();
         setupVertexToVertex();
+        initializedContext = true;
     }
 
     private static void initializeTiles() {
@@ -153,6 +156,20 @@ public class Util {
         }
         shuffleArray(tilesResource);
         shuffleArray(tilesNumber);
+        byte desertIndex = -1;
+        for (int i = 0; i < tilesResource.length; i++) {
+            if (tilesResource[i] == DESERT) {
+                desertIndex = (byte) i;
+                break;
+            }
+        }
+        for (int i = 0; i < tilesNumber.length; i++) {
+            if (tilesNumber[i] == 7) {
+                tilesResource[desertIndex] = tilesResource[i];
+                tilesResource[i] = DESERT;
+                break;
+            }
+        }
     }
 
     private static void shuffleArray(byte[] a) {

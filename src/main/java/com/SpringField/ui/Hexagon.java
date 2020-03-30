@@ -20,14 +20,13 @@ public class Hexagon extends Polygon {
     private Line[] edges = new Line[6];
     private Point[] points = new Point[6];
 
-    final int[] probabilities = {1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1};
+    final int[] probabilities = { 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1 };
     private Image brickTile = new Image("brick.png");
     private Image desertTile = new Image("desert.png");
     private Image oreTile = new Image("ore.png");
     private Image wheatTile = new Image("wheat.png");
     private Image pastureTile = new Image("pasture.png");
     private Image forestTile = new Image("forest.png");
-
 
     private int tileNumber;
 
@@ -39,7 +38,7 @@ public class Hexagon extends Polygon {
         initPoints();
     }
 
-    public Hexagon(int centerX, int centerY, int tileNumber, Point nw, Point n, Point ne, Point se, Point s, Point sw ){
+    public Hexagon(int centerX, int centerY, int tileNumber, Point nw, Point n, Point ne, Point se, Point s, Point sw) {
         setOpacity(0.0);
         this.centerX = centerX;
         this.centerY = centerY;
@@ -63,14 +62,9 @@ public class Hexagon extends Polygon {
         points[4] = new Point(centerX, centerY + RADIUS); // S point
         points[5] = new Point(centerX - RADIUS, centerY + (RADIUS / 2)); // SW point
 
-        getPoints().addAll(
-                points[0].getX(), points[0].getY(),
-                points[1].getX(), points[1].getY(),
-                points[2].getX(), points[2].getY(),
-                points[3].getX(), points[3].getY(),
-                points[4].getX(), points[4].getY(),
-                points[5].getX(), points[5].getY()
-        );
+        getPoints().addAll(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(),
+                points[2].getY(), points[3].getX(), points[3].getY(), points[4].getX(), points[4].getY(),
+                points[5].getX(), points[5].getY());
     }
 
     public void initLines(int nw, int ne, int e, int se, int sw, int w) {
@@ -145,30 +139,30 @@ public class Hexagon extends Polygon {
         boolean hasKnight = false;
 
         switch (resourceType) {
-            case Util.DESERT:
-                toPrint = "desert";
-                toDraw = desertTile;
-                break;
-            case Util.WOOD:
-                toPrint = "wood";
-                toDraw = forestTile;
-                break;
-            case Util.BRICK:
-                toPrint = "brick";
-                toDraw = brickTile;
-                break;
-            case Util.SHEEP:
-                toPrint = "sheep";
-                toDraw = pastureTile;
-                break;
-            case Util.HAY:
-                toPrint = "hay";
-                toDraw = wheatTile;
-                break;
-            case Util.ROCK:
-                toPrint = "rock";
-                toDraw = oreTile;
-                break;
+        case Util.DESERT:
+            toPrint = "desert";
+            toDraw = desertTile;
+            break;
+        case Util.WOOD:
+            toPrint = "wood";
+            toDraw = forestTile;
+            break;
+        case Util.BRICK:
+            toPrint = "brick";
+            toDraw = brickTile;
+            break;
+        case Util.SHEEP:
+            toPrint = "sheep";
+            toDraw = pastureTile;
+            break;
+        case Util.HAY:
+            toPrint = "hay";
+            toDraw = wheatTile;
+            break;
+        case Util.ROCK:
+            toPrint = "rock";
+            toDraw = oreTile;
+            break;
         }
         int xPos = centerX;
         int yPos = centerY;
@@ -189,9 +183,9 @@ public class Hexagon extends Polygon {
             gc.fillText(toPrint, xPos - 10, yPos);
         }
 
-        if(hasKnight){
+        if (hasKnight) {
             gc.setLineWidth(4);
-            gc.strokeLine(xPos-15, yPos - 5, xPos+15, yPos - 5);
+            gc.strokeLine(xPos - 15, yPos - 5, xPos + 15, yPos - 5);
             gc.fill();
             gc.setStroke(Color.BLACK);
             gc.setLineWidth(1);

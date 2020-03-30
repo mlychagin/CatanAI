@@ -28,7 +28,9 @@ public class Line {
         return p2;
     }
 
-    public int getEdgeNumber() { return edgeNumber; }
+    public int getEdgeNumber() {
+        return edgeNumber;
+    }
 
     public int getColor() {
         return color;

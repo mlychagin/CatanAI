@@ -11,7 +11,10 @@ public class MapReferencing {
     @Test
     public void printVertexToEdge() {
         initializeStaticInstance();
-        System.out.println(Arrays.deepToString(vertexToEdge));
+        for (int i = 0; i < edgeToVertex.length; i++) {
+            System.out.println("Edge (" + i + ") : " + Arrays.toString(edgeToVertex[i]));
+        }
+        // System.out.println(Arrays.deepToString(vertexToEdge));
     }
 
     @Test

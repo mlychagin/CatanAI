@@ -30,6 +30,9 @@ public class BoardState {
     }
 
     public BoardState(int numPlayers) {
+        if (!initializedContext) {
+            initializeStaticInstance();
+        }
         vertices = new Vertex[DEFAULT_NUM_VERTICES];
         edges = new byte[DEFAULT_NUM_EDGES];
         players = new Player[numPlayers];
@@ -418,7 +421,7 @@ public class BoardState {
         seenEdges.add(edgeId);
         byte maxRoadLength = 1;
         for (byte n : edgeToVertex[edgeId]) {
-            maxRoadLength += transverseNode(seenEdges, n, maxRoadLength);
+            maxRoadLength += transverseVertex(seenEdges, n, maxRoadLength);
         }
         if (maxRoadLength > currentLongestRoad) {
             currentLongestRoad = maxRoadLength;
@@ -426,7 +429,7 @@ public class BoardState {
         }
     }
 
-    private byte transverseNode(HashSet<Byte> seenEdges, byte vertexId, byte currentRoadLength) {
+    private byte transverseVertex(HashSet<Byte> seenEdges, byte vertexId, byte currentRoadLength) {
         if (vertices[vertexId].getPlayerId() != playerTurn) {
             return currentRoadLength;
         }
@@ -446,7 +449,7 @@ public class BoardState {
                 if (nextNodeId == -1) {
                     throw new RuntimeException("Next Node not found");
                 }
-                byte roadLength = transverseNode(seenEdges, nextNodeId, ++currentRoadLength);
+                byte roadLength = transverseVertex(seenEdges, nextNodeId, ++currentRoadLength);
                 if (roadLength > maxRoadLength) {
                     maxRoadLength = roadLength;
                 }

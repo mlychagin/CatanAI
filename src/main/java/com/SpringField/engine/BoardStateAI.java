@@ -259,17 +259,6 @@ public class BoardStateAI extends BoardState {
         }
     }
 
-    private void addStateToSet(BoardStateAI state, HashSet<BoardStateAI> states) {
-        if (!states.contains(state)) {
-            states.add(state);
-        } else {
-            // TODO Recycle
-        }
-    }
-
-    /*
-     * Note: We can try to implement a Monte Carlo algorithm here. Right now, you only get one roll.
-     */
     private void allPossibleBuyDevCard(BoardStateAI state, HashSet<BoardStateAI> states) {
         if (state.canBuyDevCard()) {
             return;
@@ -277,6 +266,14 @@ public class BoardStateAI extends BoardState {
         BoardStateAI b = state.clone();
         b.buyDevCard();
         addStateToSet(b, states);
+    }
+
+    private void addStateToSet(BoardStateAI state, HashSet<BoardStateAI> states) {
+        if (!states.contains(state)) {
+            states.add(state);
+        } else {
+            // TODO Recycle
+        }
     }
 
     public BoardStateAI clone() {
