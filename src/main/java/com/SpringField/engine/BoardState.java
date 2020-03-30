@@ -70,7 +70,7 @@ public class BoardState {
     }
 
     protected Player getCurrentPlayer() {
-        return getCurrentPlayer();
+        return players[playerTurn];
     }
 
     public void initBoard(int numPlayers) {
