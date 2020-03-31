@@ -9,8 +9,8 @@ public class Vertex {
     private byte port;
 
     public Vertex(byte port) {
-        playerId = UNASSIGNED_PLAYER;
-        building = STATUS_EMPTY;
+        this.playerId = UNASSIGNED_PLAYER;
+        this.building = STATUS_EMPTY;
         this.port = port;
     }
 
