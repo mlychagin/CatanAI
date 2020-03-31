@@ -38,14 +38,14 @@ public class settleTest {
                 byte next_settle = chooser.getBestPossibleSettle();
                 settles = settles + next_settle + " ";
                 try {
-                    test.buildSettlement(next_settle, false);
+                    test.buildSettlement(next_settle);
                 } catch (RuntimeException e) {
                     throw new RuntimeException("Could not build settlement");
                 }
             }
 
             // Reset the bnoard and forward the counters
-            initializeTiles();
+            initializeTiles(new Random());
             i++;
 
             // loop to print out pertinent data
@@ -93,9 +93,9 @@ public class settleTest {
         for (byte i = 0; i<8;i++) {
             byte next_settle = chooser.getBestPossibleSettle();
             try {
-                test.buildSettlement(next_settle, false);
+                test.buildSettlement(next_settle);
             }
-            catch (RuntimeException e){
+            catch (RuntimeException | IOException e){
                 throw new RuntimeException("could not build settlement");
             }
         }

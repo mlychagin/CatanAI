@@ -1,6 +1,7 @@
 package com.SpringField.engine.board;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import static com.SpringField.engine.util.Util.*;
 
@@ -27,14 +28,6 @@ public class Player {
         return devCards;
     }
 
-    public boolean[] getPorts() {
-        return ports;
-    }
-
-    public boolean hasGeneralPort() {
-        return generalPort;
-    }
-
     public byte getKnightsPlayed() {
         return knightsPlayed;
     }
@@ -44,9 +37,6 @@ public class Player {
     }
 
     public void removeResource(byte type, byte amount) {
-        if (resources[type] < amount) {
-            throw new RuntimeException("Invalid Transaction");
-        }
         resources[type] -= amount;
     }
 
@@ -91,6 +81,15 @@ public class Player {
 
     public boolean canTradeBank(byte playerResource) {
         return resources[playerResource] >= tradeBankHelper(playerResource);
+    }
+
+    public boolean canPlayerTrade(byte[] giving){
+        for(byte i = WOOD; i <= ROCK; i++ ){
+            if(resources[i] < giving[i]){
+                return false;
+            }
+        }
+        return true;
     }
 
     public byte tradeBankHelper(byte playerResource) {
@@ -169,11 +168,18 @@ public class Player {
         resources[bankResource]++;
     }
 
-    public byte stealResource() {
+    public void tradePlayer(byte[] giving, byte[] receiving){
+        for(byte i = WOOD; i <= ROCK; i++ ){
+            resources[i] -= giving[i];
+            resources[i] += receiving[i];
+        }
+    }
+
+    public byte stealResource(Random r) {
         if (getTotalResourceCount() == 0) {
             return INVALID_RESOURCE;
         }
-        byte type = getRandomSlot(resources);
+        byte type = getRandomSlot(resources, r);
         if (resources[type] == 0) {
             throw new RuntimeException("Algorithm Failure");
         }

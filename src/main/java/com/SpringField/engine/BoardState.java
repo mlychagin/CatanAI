@@ -2,7 +2,10 @@ package com.SpringField.engine;
 
 import com.SpringField.engine.board.Player;
 import com.SpringField.engine.board.Vertex;
+import com.SpringField.engine.util.BoardStateConfig;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
@@ -10,43 +13,34 @@ import java.util.Random;
 import static com.SpringField.engine.util.Util.*;
 
 public class BoardState {
+    protected BoardStateConfig config;
     protected Vertex[] vertices;
     protected byte[] edges;
     protected Player[] players;
     protected byte[] resourceCardPool;
     protected byte[] devCardPool;
     protected byte[] devCardsAcquiredThisTurn;
-    protected boolean settlementPhase;
     protected byte playerWithLargestArmy;
     protected byte playerWithLongestRoad;
     protected byte currentLongestRoad;
     protected byte playerTurn;
     protected byte robberTile;
-
-    // TODO Recycle Random
-    private Random randomGen = new Random();
+    protected byte turnNumber;
+    protected Random r;
 
     protected BoardState() {
     }
 
-    public BoardState(int numPlayers) {
-        if (!initializedContext) {
-            initializeStaticInstance();
-        }
-        vertices = new Vertex[DEFAULT_NUM_VERTICES];
-        edges = new byte[DEFAULT_NUM_EDGES];
-        players = new Player[numPlayers];
-        initBoard(numPlayers);
-        resourceCardPool = new byte[] { DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT,
-                DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT };
-        devCardPool = new byte[] { DEFAULT_NUM_KNIGHT, DEFAULT_NUM_VICTORY, DEFAULT_NUM_ROAD_BUILDING,
-                DEFAULT_NUM_MONOPOLY, DEFAULT_NUM_YEAR_OF_PLENTY };
-        devCardsAcquiredThisTurn = new byte[] { 0, 0, 0, 0 };
-        settlementPhase = true;
-        playerWithLargestArmy = UNASSIGNED_PLAYER;
-        playerWithLongestRoad = UNASSIGNED_PLAYER;
-        currentLongestRoad = 0;
-        playerTurn = 0;
+    public BoardState(BoardStateConfig config, int numPlayers) {
+        this.config = config;
+        initialize(numPlayers);
+        r = new Random();
+    }
+
+    public BoardState(BoardStateConfig config, int numPlayers, long seed) {
+        this.config = config;
+        initialize(numPlayers);
+        r = new Random(seed);
     }
 
     public Vertex[] getVertices() {
@@ -73,13 +67,16 @@ public class BoardState {
         return players[playerTurn];
     }
 
-    public void initBoard(int numPlayers) {
+    protected void initialize(int numPlayers) {
+        vertices = new Vertex[DEFAULT_NUM_VERTICES];
         for (int i = 0; i < DEFAULT_NUM_VERTICES; i++) {
             vertices[i] = new Vertex(vertexToPort[i]);
         }
+        edges = new byte[DEFAULT_NUM_EDGES];
         for (int i = 0; i < DEFAULT_NUM_EDGES; i++) {
             edges[i] = UNASSIGNED_PLAYER;
         }
+        players = new Player[numPlayers];
         for (int i = 0; i < numPlayers; i++) {
             players[i] = new Player();
         }
@@ -90,6 +87,20 @@ public class BoardState {
                 break;
             }
         }
+        resourceCardPool = new byte[] { DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT,
+                DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT };
+        devCardPool = new byte[] { DEFAULT_NUM_KNIGHT, DEFAULT_NUM_VICTORY, DEFAULT_NUM_ROAD_BUILDING,
+                DEFAULT_NUM_MONOPOLY, DEFAULT_NUM_YEAR_OF_PLENTY };
+        devCardsAcquiredThisTurn = new byte[] { 0, 0, 0, 0 };
+        playerWithLargestArmy = UNASSIGNED_PLAYER;
+        playerWithLongestRoad = UNASSIGNED_PLAYER;
+        currentLongestRoad = 0;
+        playerTurn = 0;
+        turnNumber = 0;
+    }
+
+    private boolean inSettlementPhase(){
+        return turnNumber < players.length * 2;
     }
 
     private byte numDevCardsAvailable() {
@@ -100,9 +111,8 @@ public class BoardState {
         return total;
     }
 
-    // TODO Buy isn't used? -- Road Building
     public boolean canBuildRoad(byte edgeId, boolean buy) {
-        if (!settlementPhase && !getCurrentPlayer().canBuyRoad()) {
+        if (!inSettlementPhase() && buy && !getCurrentPlayer().canBuyRoad()) {
             return false;
         }
         return canBuildRoadHelper(edgeId, UNASSIGNED_EDGE);
@@ -129,13 +139,13 @@ public class BoardState {
     }
 
     public boolean canBuildSettlement(byte vertexId) {
-        if (!settlementPhase && !getCurrentPlayer().canBuySettlement()) {
+        if (!inSettlementPhase() && !getCurrentPlayer().canBuySettlement()) {
             return false;
         }
         if (vertices[vertexId].isSettled()) {
             return false;
         }
-        boolean foundRoad = settlementPhase;
+        boolean foundRoad = inSettlementPhase();
         for (byte e : vertexToEdge[vertexId]) {
             if (edges[e] == playerTurn) {
                 foundRoad = true;
@@ -222,7 +232,20 @@ public class BoardState {
         return getCurrentPlayer().canTradeBank(playerResource) && resourceCardPool[bankResource] > 0;
     }
 
-    public void buildRoad(byte edgeId, boolean pay) {
+    public boolean canTradePlayer(byte playerId, byte[] giving){
+        return players[playerId].canPlayerTrade(giving);
+    }
+
+    public void buildRoad(byte edgeId) throws IOException {
+        buildRoadHelper(edgeId, !inSettlementPhase());
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(ROAD_COMMAND);
+            dos.writeByte(edgeId);
+        }
+    }
+
+    protected void buildRoadHelper(byte edgeId, boolean pay) {
         if (!canBuildRoad(edgeId, pay)) {
             throw new RuntimeException("Invalid Transaction");
         }
@@ -236,27 +259,32 @@ public class BoardState {
         }
     }
 
-    public void buildSettlement(byte vertexId, boolean pay) {
+    public void buildSettlement(byte vertexId) throws IOException {
         if (!canBuildSettlement(vertexId)) {
             throw new RuntimeException("Invalid Transaction");
         }
         Player p = getCurrentPlayer();
         Vertex v = vertices[vertexId];
-        p.buySettlement(pay);
+        p.buySettlement(!inSettlementPhase());
         v.setPlayerId(playerTurn);
         v.setBuilding(STATUS_SETTLEMENT);
         if (v.getPort() != UNASSIGNED_PORT) {
             p.addPort(v.getPort());
         }
-        if (pay) {
+        if (!inSettlementPhase()) {
             resourceCardPool[WOOD]++;
             resourceCardPool[BRICK]++;
             resourceCardPool[SHEEP]++;
             resourceCardPool[HAY]++;
         }
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(SETTLEMENT_COMMAND);
+            dos.writeByte(vertexId);
+        }
     }
 
-    public void buildCity(byte vertexId) {
+    public void buildCity(byte vertexId) throws IOException {
         if (!canBuildCity(vertexId)) {
             throw new RuntimeException("Invalid Transaction");
         }
@@ -267,27 +295,38 @@ public class BoardState {
         v.setBuilding(STATUS_CITY);
         resourceCardPool[HAY] += 2;
         resourceCardPool[ROCK] += 3;
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(CITY_COMMAND);
+            dos.writeByte(vertexId);
+        }
     }
 
-    public byte playRobber(byte tileId, byte playerIdSteal) {
+    public byte playRobber(byte tileId, byte playerIdSteal) throws IOException {
         if (!canPlayRobber(tileId)) {
             throw new RuntimeException("Invalid Transaction");
         }
         Player p = getCurrentPlayer();
         robberTile = tileId;
-        byte type = players[playerIdSteal].stealResource();
+        byte type = players[playerIdSteal].stealResource(r);
         if (type != INVALID_RESOURCE) {
             p.addResource(type, (byte) 1);
+        }
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(ROBBER_COMMAND);
+            dos.writeByte(tileId);
+            dos.writeByte(playerIdSteal);
         }
         return type;
     }
 
-    public byte buyDevCard() {
+    public byte buyDevCard() throws IOException {
         if (!canBuyDevCard()) {
             throw new RuntimeException("Invalid Transaction");
         }
         Player p = getCurrentPlayer();
-        byte type = getRandomSlot(devCardPool);
+        byte type = getRandomSlot(devCardPool, r);
         p.buyDevCard(type);
         if (type != VICTORY) {
             devCardsAcquiredThisTurn[type]++;
@@ -295,34 +334,48 @@ public class BoardState {
         resourceCardPool[SHEEP]++;
         resourceCardPool[HAY]++;
         resourceCardPool[ROCK]++;
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(DEV_CARD_COMMAND);
+        }
         return type;
     }
 
-    public byte playKnightCard(byte tileId, byte playerIdSteal) {
+    public byte playKnightCard(byte tileId, byte playerIdSteal) throws IOException {
         if (!canPlayKnightCard(tileId)) {
             throw new RuntimeException("Invalid Transaction");
         }
         Player p = getCurrentPlayer();
         p.playDevCard(KNIGHT);
         updateLargestArmy();
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(KNIGHT_COMMAND);
+        }
         return playRobber(tileId, playerIdSteal);
     }
 
-    public void playRoadBuilding(byte e1, byte e2) {
+    public void playRoadBuilding(byte e1, byte e2) throws IOException {
         if (!canPlayRoadBuilding(e1, e2)) {
             throw new RuntimeException("Invalid Transaction");
         }
         Player p = getCurrentPlayer();
         p.playDevCard(ROAD_BUILDING);
-        buildRoad(e1, false);
-        buildRoad(e1, false);
+        buildRoadHelper(e1, false);
+        buildRoadHelper(e1, false);
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(ROAD_BUILDING_COMMAND);
+            dos.writeByte(e1);
+            dos.writeByte(e2);
+        }
     }
 
     /*
      * Currently returns total amount stolen. For proper info we should return the amount stolen from each player as
      * well.
      */
-    public byte playMonopoly(byte resourceType) {
+    public byte playMonopoly(byte resourceType) throws IOException {
         if (!canPlayMonopoly()) {
             throw new RuntimeException("Invalid Transaction");
         }
@@ -335,10 +388,15 @@ public class BoardState {
             }
             totalStolen += players[i].stealAllResource(resourceType);
         }
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(MONOPOLY_COMMAND);
+            dos.writeByte(resourceType);
+        }
         return totalStolen;
     }
 
-    public void playYearOfPlenty(byte r1, byte r2) {
+    public void playYearOfPlenty(byte r1, byte r2) throws IOException {
         if (!canPlayYearOfPlenty(r1, r2)) {
             throw new RuntimeException("Invalid Transaction");
         }
@@ -346,13 +404,40 @@ public class BoardState {
         p.playDevCard(YEAR_OF_PLENTY);
         p.addResource(r1, (byte) 1);
         p.addResource(r2, (byte) 1);
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(YEAR_OF_PLENTY_COMMAND);
+            dos.writeByte(r1);
+            dos.writeByte(r2);
+        }
     }
 
-    public void tradeBank(byte playerResource, byte bankResource) {
+    public void tradeBank(byte playerResource, byte bankResource) throws IOException {
         getCurrentPlayer().tradeBank(playerResource, bankResource);
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(TRADE_BANK_COMMAND);
+            dos.writeByte(playerResource);
+            dos.writeByte(bankResource);
+        }
     }
 
-    public byte advanceTurn() {
+    public void tradePlayer(byte playerId, byte[] giving, byte[] receiving) throws IOException {
+        if(!canTradePlayer(playerTurn, giving) || !canTradePlayer(playerId, receiving)){
+            throw new RuntimeException("Invalid Transaction");
+        }
+        getCurrentPlayer().tradePlayer(giving, receiving);
+        players[playerId].tradePlayer(receiving, giving);
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(TRADE_PLAYER_COMMAND);
+            dos.writeByte(playerId);
+            config.writeByteArray(giving);
+            config.writeByteArray(receiving);
+        }
+    }
+
+    public byte advanceTurn() throws IOException {
         if (computeVictoryPoints(playerTurn) >= VICTORY_POINTS_REQ_WIN) {
             return WIN_CONDITION;
         }
@@ -361,11 +446,19 @@ public class BoardState {
         if (playerTurn == players.length) {
             playerTurn = 0;
         }
+        turnNumber++;
+        if(config.isLoggerActive()){
+            DataOutputStream dos = config.getLogger();
+            dos.writeByte(ADVANCE_TURN_COMMAND);
+        }
         return rollDice();
     }
 
     private byte rollDice() {
-        byte roll = (byte) (randomGen.nextInt(6) + randomGen.nextInt(6) + 2);
+        if(inSettlementPhase()){
+            return NO_DICE_ROLL;
+        }
+        byte roll = (byte) (r.nextInt(6) + r.nextInt(6) + 2);
         if (roll == 7) {
             return roll;
         }
@@ -477,8 +570,6 @@ public class BoardState {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
 
         BoardState that = (BoardState) o;
 

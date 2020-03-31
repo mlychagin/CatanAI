@@ -1,7 +1,6 @@
 package com.SpringField.engine.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
@@ -45,6 +44,7 @@ public class Util {
     public static final byte DEFAULT_NUM_ROAD_BUILDING = 2;
     public static final byte DEFAULT_NUM_MONOPOLY = 2;
     public static final byte DEFAULT_NUM_YEAR_OF_PLENTY = 2;
+    public static final byte DEFAULT_DEV_TYPES = 5;
 
     /*
      * Building Status
@@ -60,8 +60,6 @@ public class Util {
     public static final byte UNASSIGNED_EDGE = -1;
     public static final byte UNASSIGNED_VERTEX = -1;
     public static final byte UNASSIGNED_PORT = -1;
-
-    private static Random randomGen = new Random();
 
     /*
      * Board
@@ -125,6 +123,7 @@ public class Util {
      */
     public final static byte VICTORY_POINTS_REQ_WIN = 12;
     public final static byte WIN_CONDITION = -1;
+    public final static byte NO_DICE_ROLL = -2;
 
     /*
      * BoardStateAI Space State Generation
@@ -140,44 +139,38 @@ public class Util {
     public final static byte GENERATE_BUILD_CITY = 8;
     public final static byte GENERATE_BUY_DEV_CARD = 9;
 
+    /*
+     * Replay Commands
+     */
+    public final static byte INVALID_COMMAND = 0;
+    public final static byte SEED_COMMAND = 1;
+    public final static byte ROAD_COMMAND = 2;
+    public final static byte SETTLEMENT_COMMAND = 3;
+    public final static byte CITY_COMMAND = 4;
+    public final static byte DEV_CARD_COMMAND = 5;
+    public final static byte ROBBER_COMMAND = 6;
+    public final static byte KNIGHT_COMMAND = 7;
+    public final static byte ROAD_BUILDING_COMMAND = 8;
+    public final static byte MONOPOLY_COMMAND = 9;
+    public final static byte YEAR_OF_PLENTY_COMMAND = 10;
+    public final static byte TRADE_BANK_COMMAND = 11;
+    public final static byte TRADE_PLAYER_COMMAND = 12;
+    public final static byte ADVANCE_TURN_COMMAND = 13;
+
     public static boolean initializedContext = false;
 
     public static void initializeStaticInstance() {
-        initializeTiles();
         setupVertexToEdge();
         setupEdgeToEdge();
         setupVertexToVertex();
         initializedContext = true;
     }
 
-    public static void initializeTiles() {
-        if (tilesResource.length != tilesNumber.length) {
-            throw new RuntimeException("Resources and Numbers not aligned");
-        }
-        shuffleArray(tilesResource);
-        shuffleArray(tilesNumber);
-        byte desertIndex = -1;
-        for (int i = 0; i < tilesResource.length; i++) {
-            if (tilesResource[i] == DESERT) {
-                desertIndex = (byte) i;
-                break;
-            }
-        }
-        for (int i = 0; i < tilesNumber.length; i++) {
-            if (tilesNumber[i] == 7) {
-                tilesResource[desertIndex] = tilesResource[i];
-                tilesResource[i] = DESERT;
-                break;
-            }
-        }
-    }
-
-    private static void shuffleArray(byte[] a) {
+    public static void shuffleArray(byte[] a, Random r) {
         int n = a.length;
-        Random random = new Random();
-        random.nextInt();
+        r.nextInt();
         for (int i = 0; i < n; i++) {
-            int change = i + random.nextInt(n - i);
+            int change = i + r.nextInt(n - i);
             byte helper = a[i];
             a[i] = a[change];
             a[change] = helper;
@@ -240,12 +233,12 @@ public class Util {
         }
     }
 
-    public static byte getRandomSlot(byte[] a) {
+    public static byte getRandomSlot(byte[] a, Random r) {
         byte total = 0;
         for (byte amount : a) {
             total += amount;
         }
-        byte randomNumber = (byte) randomGen.nextInt(total);
+        byte randomNumber = (byte) r.nextInt(total);
         byte slot = 0;
         boolean found = false;
         for (int i = 0; i < a.length; i++) {

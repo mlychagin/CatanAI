@@ -3,6 +3,7 @@ package com.SpringField.ai;
 import com.SpringField.engine.BoardState;
 import com.SpringField.engine.BoardStateAI;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -33,7 +34,7 @@ public class AlphaBetaPruning {
      * Get all possible moves from this position You can use this method or the API directly I'm writing this method so
      * you know where to look
      */
-    private HashSet<BoardStateAI> getAllPossibleMoves(BoardStateAI b) {
+    private HashSet<BoardStateAI> getAllPossibleMoves(BoardStateAI b) throws IOException {
         return b.getAllPossibleMoves();
     }
 }
