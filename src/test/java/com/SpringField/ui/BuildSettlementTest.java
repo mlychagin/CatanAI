@@ -33,16 +33,16 @@ public class BuildSettlementTest extends Application {
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        BoardState scenario = new BoardState(4);
+        //BoardState scenario = new BoardState(4);
 
-        Board gameBoard = new SmallBoard(scenario);
+        //Board gameBoard = new SmallBoard(scenario);
         System.out.println("Settlement Phase Begin");
         // scenario.settlementPhase();
         System.out.println("Settlement Phase End");
         AnimationTimer gameLoop = new AnimationTimer() {
 
             public void handle(long currentNanoTime) {
-                gameBoard.drawBoard(gc);
+                //gameBoard.drawBoard(gc);
                 /*
                  * if (!scenario.playRound()) { System.out.println(scenario.toString()); stop(); // stops animation
                  * timer if winner found }

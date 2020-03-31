@@ -3,6 +3,7 @@ package com.SpringField.ai;
 import com.SpringField.engine.BoardState;
 import com.SpringField.engine.BoardStateAI;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -29,7 +30,7 @@ public class AlphaBetaPruning {
         return b.computeVictoryPoints(playerId);
     }
 
-    private byte AlphaBetaPruning(BoardStateAI board, byte depth, byte alpha, byte beta){
+    private byte AlphaBetaPruning(BoardStateAI board, byte depth, byte alpha, byte beta) throws IOException{
         if (depth == 3)
             return costFunction(board, board.getPlayerTurn());
 
@@ -52,7 +53,7 @@ public class AlphaBetaPruning {
         }
     }
 
-    private byte maxN(BoardStateAI board, byte depth){
+    private byte maxN(BoardStateAI board, byte depth) throws IOException{
         depth += 1; // initialize depth to -1 when starting
         if (depth == 3){
             return costFunction(board, depth);
