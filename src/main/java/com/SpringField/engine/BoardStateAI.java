@@ -87,6 +87,9 @@ public class BoardStateAI extends BoardState {
                 allPossibleStatesGenerator(b, resultSet, type);
             }
         }
+        for(BoardStateAI b : resultSet){
+            b.advanceTurn();
+        }
         return resultSet;
     }
 
