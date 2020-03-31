@@ -4,6 +4,7 @@ import com.SpringField.ai.Settlement;
 import com.SpringField.engine.board.Player;
 import com.SpringField.engine.BoardState;
 import com.SpringField.engine.board.Vertex;
+import com.SpringField.engine.util.BoardStateConfig;
 import org.junit.Test;
 
 import java.io.*;
@@ -13,6 +14,16 @@ import static com.SpringField.engine.util.Util.*;
 import com.SpringField.engine.util.Util;
 
 public class settleTest {
+    private static BoardStateConfig defaultConfig;
+
+    static {
+        try {
+            defaultConfig = new BoardStateConfig(null, 4, 0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws IOException{
         // Quick bulk testing to get us off the ground
         // Quick I/O to link with a csv file
@@ -27,12 +38,13 @@ public class settleTest {
 
         // Start the timer
         long startTime = System.nanoTime();
+        Random r = new Random();
 
         // 1000 iterations of a board state being settled
         int i = 0;
         while (i < 1) {
             String settles = "";
-            BoardState test = new BoardState(4);
+            BoardState test = new BoardState(new BoardStateConfig(null, 4, r.nextLong()), 4);
             Settlement chooser = new Settlement(test);
             for (byte n = 0; n < 8; n++) {
                 byte next_settle = chooser.getBestPossibleSettle();
@@ -44,8 +56,6 @@ public class settleTest {
                 }
             }
 
-            // Reset the bnoard and forward the counters
-            initializeTiles(new Random());
             i++;
 
             // loop to print out pertinent data
@@ -66,7 +76,7 @@ public class settleTest {
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
 
-        BoardState test = new BoardState(4);
+        BoardState test = new BoardState(defaultConfig, 4);
         System.out.println(test.getVertices());
         test.toXML("src\\test\\java\\com\\SpringField\\engine\\ai\\test.xml");
         System.out.println("\nExecuted and settled " + i + " boardstates in: " + (duration*(1.0)/1000000000) + " second(s)!");
@@ -75,7 +85,7 @@ public class settleTest {
 
     @Test
     public void canInitBoardstate() {
-        BoardState test = new BoardState(4);
+        BoardState test = new BoardState(defaultConfig, 4);
 
         // vertices
         Vertex[] vertexes = test.getVertices();
