@@ -97,6 +97,9 @@ public class BoardState {
     public byte getPlayerTurn() {
         return playerTurn;
     }
+    public byte getTurnNumber(){
+        return turnNumber;
+    }
 
     public byte getRobberTile(){ return robberTile; }
 

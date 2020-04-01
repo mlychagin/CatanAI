@@ -67,6 +67,20 @@ public class BoardStateTest {
         }
     }
 
+    @Test
+    public void advanceTurnTest() throws IOException {
+        BoardState b = getBoard();
+        byte[] t = new byte[] {0,1,2,3,3,2,1,0};
+        for(byte i : t){
+            assert b.getPlayerTurn() == i;
+            b.advanceTurn();
+        }
+        for(byte i = 8; i < 50;i++){
+            assert(b.getPlayerTurn() == (i % 4));
+            b.advanceTurn();
+        }
+    }
+
     /*
      * Todo:
      *  Build City
