@@ -15,7 +15,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
@@ -503,7 +502,7 @@ public class BoardState {
         if(inSettlementPhase()){
             if(turnNumber < players.length - 1) {
                 playerTurn++;
-            } else if(turnNumber > players.length - 1) {
+            } else if(turnNumber > players.length && turnNumber < players.length * 2 - 1) {
                 playerTurn--;
             }
         } else {
