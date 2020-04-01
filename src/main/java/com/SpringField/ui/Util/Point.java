@@ -62,29 +62,27 @@ public class Point extends Circle {
     public void display(GraphicsContext gc, BoardState currentState) {
         int size = 20;
         Vertex[] vertices = currentState.getVertices();
-        for (int i = 0; i < vertices.length; i++) {
-            if (vertices[i].getBuilding() != Util.STATUS_EMPTY) {
-                switch (vertices[i].getPlayerId()) {
-                case 0:
-                    gc.setFill(Color.RED);
-                    break;
-                case 1:
-                    gc.setFill(Color.BLUE);
-                    break;
-                case 2:
-                    gc.setFill(Color.ORANGE);
-                    break;
-                case 3:
-                    gc.setFill(Color.GREEN);
-                    break;
-                }
-                gc.fillRect(x - (size / 2), y - size / 2, size, size);
-                if (vertices[i].getBuilding() == Util.STATUS_CITY) {
-                    gc.fillPolygon(new double[] { (x - (size / 2)), x, (x + (size / 2)) },
-                            new double[] { y - size / 2, y - size, y - size / 2 }, 3);
-                }
-                gc.setFill(Color.BLACK);
+        if (vertices[slot].getBuilding() != Util.STATUS_EMPTY) {
+            switch (vertices[slot].getPlayerId()) {
+            case 0:
+                gc.setFill(Color.RED);
+                break;
+            case 1:
+                gc.setFill(Color.BLUE);
+                break;
+            case 2:
+                gc.setFill(Color.ORANGE);
+                break;
+            case 3:
+                gc.setFill(Color.GREEN);
+                break;
             }
+            gc.fillRect(x - (size / 2), y - size / 2, size, size);
+            if (vertices[slot].getBuilding() == Util.STATUS_CITY) {
+                gc.fillPolygon(new double[] { (x - (size / 2)), x, (x + (size / 2)) },
+                        new double[] { y - size / 2, y - size, y - size / 2 }, 3);
+            }
+            gc.setFill(Color.BLACK);
         }
     }
 }
