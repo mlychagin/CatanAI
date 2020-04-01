@@ -14,7 +14,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
 
 import static com.SpringField.engine.util.Util.initializeStaticInstance;
-import static com.SpringField.engine.util.Util.initializedContext;
 
 // Tests for
 public class BuildSettlementTest extends Application {
@@ -33,10 +32,6 @@ public class BuildSettlementTest extends Application {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         BoardState b = new BoardState(new BoardStateConfig(null, 4, 0), 4, 0);
-
-        if(!initializedContext){
-            initializeStaticInstance();
-        }
 
         //Round 1
         b.buildSettlement((byte) 29);

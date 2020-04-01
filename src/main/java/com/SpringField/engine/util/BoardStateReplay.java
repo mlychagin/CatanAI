@@ -17,7 +17,6 @@ public class BoardStateReplay {
         if(dis.readByte() != SEED_COMMAND) {
             throw new RuntimeException("Invalid Game Start");
         }
-        initializedContext = false;
         boardState = new BoardState(null, dis.readByte(), dis.readLong());
     }
 

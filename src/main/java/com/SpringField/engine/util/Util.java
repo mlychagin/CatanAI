@@ -157,13 +157,24 @@ public class Util {
     public final static byte TRADE_PLAYER_COMMAND = 12;
     public final static byte ADVANCE_TURN_COMMAND = 13;
 
-    public static boolean initializedContext = false;
+    /*
+     * Player Color
+     */
+    public final static byte PLAYER_RED = 0;
+    public final static byte PLAYER_BLUE = 1;
+    public final static byte PLAYER_ORANGE = 2;
+    public final static byte PLAYER_GREEN = 3;
+    public final static byte PLAYER_WHITE = 4;
+    public final static byte PLAYER_BROWN = 5;
+
+    static {
+        initializeStaticInstance();
+    }
 
     public static void initializeStaticInstance() {
         setupVertexToEdge();
         setupEdgeToEdge();
         setupVertexToVertex();
-        initializedContext = true;
     }
 
     public static void shuffleArray(byte[] a, Random r) {
