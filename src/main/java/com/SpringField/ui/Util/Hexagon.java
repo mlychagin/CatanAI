@@ -44,16 +44,16 @@ public class Hexagon extends Polygon {
         points[4] = s;
         points[5] = sw;
 
-        initPoints();
+        setPoints();
     }
 
-    private void initPoints() {
-        points[0] = new Point(centerX - RADIUS, centerY - (RADIUS / 2)); // NW point
-        points[1] = new Point(centerX, centerY - RADIUS); // N point
-        points[2] = new Point(centerX + RADIUS, centerY - (RADIUS / 2)); // NE point
-        points[3] = new Point(centerX + RADIUS, centerY + (RADIUS / 2)); // SE point
-        points[4] = new Point(centerX, centerY + RADIUS); // S point
-        points[5] = new Point(centerX - RADIUS, centerY + (RADIUS / 2)); // SW point
+    private void setPoints() {
+        points[0].setLocation(centerX - RADIUS, centerY - (RADIUS / 2)); // NW point
+        points[1].setLocation(centerX, centerY - RADIUS); // N point
+        points[2].setLocation(centerX + RADIUS, centerY - (RADIUS / 2)); // NE point
+        points[3].setLocation(centerX + RADIUS, centerY + (RADIUS / 2)); // SE point
+        points[4].setLocation(centerX, centerY + RADIUS); // S point
+        points[5].setLocation(centerX - RADIUS, centerY + (RADIUS / 2)); // SW point
 
         getPoints().addAll(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(), points[2].getX(),
                 points[2].getY(), points[3].getX(), points[3].getY(), points[4].getX(), points[4].getY(),
