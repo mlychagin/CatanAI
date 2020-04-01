@@ -244,6 +244,7 @@ public class Player {
         writeByteArray(output, resources);
         writeByteArray(output, structures);
         writeByteArray(output, devCards);
+        output.writeByte(ports.length);
         for (boolean port : ports) {
             output.writeBoolean(port);
         }

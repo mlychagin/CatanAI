@@ -159,7 +159,4 @@ public class BoardStateTest {
         assert !b.canPlayRobber((byte) 4, robbedPlayerId);
     }
 
-
-
-
 }

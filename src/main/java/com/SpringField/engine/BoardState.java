@@ -68,6 +68,7 @@ public class BoardState {
         this.devCardsAcquiredThisTurn = devCardsAcquiredThisTurn;
         this.playerWithLargestArmy = playerWithLargestArmy;
         this.playerWithLongestRoad = playerWithLongestRoad;
+        this.currentLongestRoad = currentLongestRoad;
         this.playerTurn = playerTurn;
         this.robberTile = robberTile;
         this.turnNumber = turnNumber;
@@ -502,7 +503,7 @@ public class BoardState {
         if(inSettlementPhase()){
             if(turnNumber < players.length - 1) {
                 playerTurn++;
-            } else if(turnNumber > players.length && turnNumber < players.length * 2 - 1) {
+            } else if(turnNumber > players.length - 1 && turnNumber < players.length * 2 - 1) {
                 playerTurn--;
             }
         } else {
@@ -807,34 +808,52 @@ public class BoardState {
         return new BoardState(config, players, vertices, edges, resourceCardPool, devCardPool, devCardsAcquiredThisTurn, playerWithLargestArmy, playerWithLongestRoad, currentLongestRoad, playerTurn, robberTile, turnNumber);
     }
 
-    @Override
-    public boolean equals(Object o) {
+    @Override public boolean equals(Object o) {
         if (this == o)
             return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         BoardState that = (BoardState) o;
 
+        if (playerWithLargestArmy != that.playerWithLargestArmy)
+            return false;
+        if (playerWithLongestRoad != that.playerWithLongestRoad)
+            return false;
+        if (currentLongestRoad != that.currentLongestRoad)
+            return false;
         if (playerTurn != that.playerTurn)
             return false;
         if (robberTile != that.robberTile)
             return false;
-        if (!Arrays.equals(vertices, that.vertices))
+        if (turnNumber != that.turnNumber)
+            return false;
+        if (!Arrays.deepEquals(players, that.players))
+            return false;
+        if (!Arrays.deepEquals(vertices, that.vertices))
             return false;
         if (!Arrays.equals(edges, that.edges))
             return false;
-        if (!Arrays.equals(players, that.players))
+        if (!Arrays.equals(resourceCardPool, that.resourceCardPool))
             return false;
-        return Arrays.equals(devCardPool, that.devCardPool);
+        if (!Arrays.equals(devCardPool, that.devCardPool))
+            return false;
+        return Arrays.equals(devCardsAcquiredThisTurn, that.devCardsAcquiredThisTurn);
     }
 
-    @Override
-    public int hashCode() {
-        int result = Arrays.hashCode(vertices);
+    @Override public int hashCode() {
+        int result = Arrays.hashCode(players);
+        result = 31 * result + Arrays.hashCode(vertices);
         result = 31 * result + Arrays.hashCode(edges);
-        result = 31 * result + Arrays.hashCode(players);
+        result = 31 * result + Arrays.hashCode(resourceCardPool);
         result = 31 * result + Arrays.hashCode(devCardPool);
+        result = 31 * result + Arrays.hashCode(devCardsAcquiredThisTurn);
+        result = 31 * result + (int) playerWithLargestArmy;
+        result = 31 * result + (int) playerWithLongestRoad;
+        result = 31 * result + (int) currentLongestRoad;
         result = 31 * result + (int) playerTurn;
         result = 31 * result + (int) robberTile;
+        result = 31 * result + (int) turnNumber;
         return result;
     }
 }

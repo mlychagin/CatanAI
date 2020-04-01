@@ -10,17 +10,24 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import static com.SpringField.ui.Util.Util.outputFileName;
 
 public class DrawBoard extends Application {
     private static BoardState b;
 
     public static void main(String[] args) throws IOException {
-        String boardBytecode = args[0];
-        ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(boardBytecode.getBytes()));
+        byte[] serializedBoardState = Files.readAllBytes(Path.of(outputFileName));
+        ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(serializedBoardState));
         b = BoardState.deSerialize(input);
         input.close();
+        File f = new File(outputFileName);
+        f.delete();
         launch();
     }
 

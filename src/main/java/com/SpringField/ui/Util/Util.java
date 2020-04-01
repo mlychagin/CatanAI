@@ -3,7 +3,13 @@ package com.SpringField.ui.Util;
 import com.SpringField.engine.BoardState;
 import com.SpringField.ui.DrawBoard;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class Util {
 
@@ -17,9 +23,19 @@ public class Util {
     public final static byte PLAYER_WHITE = 4;
     public final static byte PLAYER_BROWN = 5;
 
+    /*
+     * Draw Board Files
+     */
+    public final static String outputFileName = "tmp";
+
     public static void drawBoard(BoardState b) throws IOException {
+        File f = new File(outputFileName);
+        f.delete();
+
         byte[] serializedBoardState = b.serialize();
-        String[] input = new String[]{new String(serializedBoardState)};
-        DrawBoard.main(input);
+        FileOutputStream fileOutputStream = new FileOutputStream(f);
+        fileOutputStream.write(serializedBoardState);
+        fileOutputStream.close();
+        DrawBoard.main(new String[0]);
     }
 }
