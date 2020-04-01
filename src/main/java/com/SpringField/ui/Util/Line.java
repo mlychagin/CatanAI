@@ -1,4 +1,4 @@
-package com.SpringField.ui;
+package com.SpringField.ui.Util;
 
 import com.SpringField.engine.BoardState;
 import javafx.scene.canvas.GraphicsContext;
@@ -10,6 +10,7 @@ public class Line {
      *
      */
 
+    private final static int DEFAULT_WIDTH = 12;
     private int color = 4; // defaults to black
     private int edgeNumber;
     private Point p1, p2;
@@ -44,19 +45,19 @@ public class Line {
         switch (currentState.getEdges()[edgeNumber]) {
         case 0:
             gc.setStroke(Color.RED);
-            gc.setLineWidth(4);
+            gc.setLineWidth(DEFAULT_WIDTH);
             break;
         case 1:
             gc.setStroke(Color.BLUE);
-            gc.setLineWidth(4);
+            gc.setLineWidth(DEFAULT_WIDTH);
             break;
         case 2:
             gc.setStroke(Color.ORANGE);
-            gc.setLineWidth(4);
+            gc.setLineWidth(DEFAULT_WIDTH);
             break;
         case 3:
             gc.setStroke(Color.GREEN);
-            gc.setLineWidth(4);
+            gc.setLineWidth(DEFAULT_WIDTH);
             break;
         default:
             gc.setStroke(Color.BLACK);

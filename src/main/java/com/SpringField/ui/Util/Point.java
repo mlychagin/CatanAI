@@ -1,13 +1,10 @@
-package com.SpringField.ui;
+package com.SpringField.ui.Util;
 
 import com.SpringField.engine.BoardState;
 
 import com.SpringField.engine.board.Vertex;
 import com.SpringField.engine.util.Util;
-import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 

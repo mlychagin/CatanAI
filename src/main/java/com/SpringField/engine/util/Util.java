@@ -247,6 +247,7 @@ public class Util {
             if (randomNumber <= 0) {
                 slot = (byte) i;
                 found = true;
+                break;
             }
         }
         if (!found) {

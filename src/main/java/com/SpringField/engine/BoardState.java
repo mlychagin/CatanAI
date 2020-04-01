@@ -1,25 +1,26 @@
 package com.SpringField.engine;
 
-// Custom Objects
 import com.SpringField.engine.board.Player;
 import com.SpringField.engine.board.Vertex;
 import com.SpringField.engine.util.BoardStateConfig;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.DataOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-// Util
-import java.io.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
-
-// XML Parsing Stuff
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-import org.xml.sax.*;
-import org.w3c.dom.*;
 
 import static com.SpringField.engine.util.Util.*;
 
@@ -64,6 +65,10 @@ public class BoardState {
 
     public Player[] getPlayers() {
         return players;
+    }
+
+    public BoardStateConfig getConfig() {
+        return config;
     }
 
     public byte[] getResourceCardPool() {
@@ -178,7 +183,7 @@ public class BoardState {
     }
 
     public boolean canBuildCity(byte vertexId) {
-        if (!getCurrentPlayer().canBuyCity()) {
+        if (inSettlementPhase() || !getCurrentPlayer().canBuyCity()) {
             return false;
         }
         Vertex v = vertices[vertexId];
@@ -188,12 +193,24 @@ public class BoardState {
         return v.getPlayerId() == playerTurn;
     }
 
-    public boolean canPlayRobber(byte tileId) {
+    public boolean canPlayRobber(byte tileId, byte playerIdSteal) {
+        if(inSettlementPhase() || playerTurn == playerIdSteal){
+            return false;
+        }
+        boolean found = false;
+        for(byte v : tileToVertex[tileId]){
+            if(vertices[v].getPlayerId() == playerIdSteal){
+                found = true;
+            }
+        }
+        if(!found){
+            return false;
+        }
         return robberTile != tileId;
     }
 
     public boolean canBuyDevCard() {
-        if (numDevCardsAvailable() == 0) {
+        if (inSettlementPhase() || numDevCardsAvailable() == 0) {
             return false;
         }
         return getCurrentPlayer().canBuyDevCard();
@@ -231,6 +248,9 @@ public class BoardState {
     }
 
     public boolean canPlayDevCard(byte type) {
+        if(inSettlementPhase()){
+            return false;
+        }
         Player p = getCurrentPlayer();
         if (p.getDevCards()[type] <= devCardsAcquiredThisTurn[type]) {
             return false;
@@ -242,10 +262,16 @@ public class BoardState {
     }
 
     public boolean canTradeBank(byte playerResource, byte bankResource) {
+        if(inSettlementPhase()){
+            return false;
+        }
         return getCurrentPlayer().canTradeBank(playerResource) && resourceCardPool[bankResource] > 0;
     }
 
     public boolean canTradePlayer(byte playerId, byte[] giving){
+        if(inSettlementPhase()){
+            return false;
+        }
         return players[playerId].canPlayerTrade(giving);
     }
 
@@ -316,7 +342,7 @@ public class BoardState {
     }
 
     public byte playRobber(byte tileId, byte playerIdSteal) throws IOException {
-        if (!canPlayRobber(tileId)) {
+        if (!canPlayRobber(tileId, playerIdSteal)) {
             throw new RuntimeException("Invalid Transaction");
         }
         Player p = getCurrentPlayer();
@@ -341,6 +367,7 @@ public class BoardState {
         Player p = getCurrentPlayer();
         byte type = getRandomSlot(devCardPool, r);
         p.buyDevCard(type);
+        devCardPool[type]--;
         if (type != VICTORY) {
             devCardsAcquiredThisTurn[type]++;
         }

@@ -25,6 +25,7 @@ public class BoardStateConfig {
         tilesNumber = Util.tilesNumber.clone();
         r = new Random(seed);
         dos = null;
+        initializeTiles();
     }
 
     public DataOutputStream getLogger(){

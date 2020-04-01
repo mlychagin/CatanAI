@@ -1,10 +1,7 @@
-package com.SpringField.ui;
+package com.SpringField.ui.Util;
 
-import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
@@ -28,21 +25,17 @@ public class Hexagon extends Polygon {
     private Image pastureTile = new Image("pasture.png");
     private Image forestTile = new Image("forest.png");
 
-    private int tileNumber;
+    private final int tileIndex;
+    private byte tileNumber;
+    private byte tileResource;
 
-    public Hexagon(int centerX, int centerY, int tileNumber) {
+    public Hexagon(int centerX, int centerY, int tileIndex, byte tileNumber, byte tileResource, Point nw, Point n, Point ne, Point se, Point s, Point sw) {
         setOpacity(0.0);
         this.centerX = centerX;
         this.centerY = centerY;
+        this.tileIndex = tileIndex;
         this.tileNumber = tileNumber;
-        initPoints();
-    }
-
-    public Hexagon(int centerX, int centerY, int tileNumber, Point nw, Point n, Point ne, Point se, Point s, Point sw) {
-        setOpacity(0.0);
-        this.centerX = centerX;
-        this.centerY = centerY;
-        this.tileNumber = tileNumber;
+        this.tileResource = tileResource;
 
         points[0] = nw;
         points[1] = n;
@@ -97,24 +90,19 @@ public class Hexagon extends Polygon {
     }
 
     public void display(GraphicsContext gc, BoardState currentState) {
-        // Print edges
+        // Print edge
+        drawTileLabel(gc, currentState.getRobberTile() == tileIndex);
+        displayDots(gc);
         for (Line l : edges) {
             l.display(gc, currentState);
         }
-        if(currentState.getRobberTile() == tileNumber) {
-            drawTileLabel(gc, true);
-        }
-        else{
-            drawTileLabel(gc, false);
-        }
-        displayDots(gc);
     }
 
     private void displayDots(GraphicsContext gc) {
         // Print probability
         int xPos = centerX;
         int yPos = centerY;
-        int tileDiceNumber = Util.tilesNumber[tileNumber];
+        int tileDiceNumber = tileNumber;
 
         gc.setFill(Color.BLACK);
         gc.setTextAlign(TextAlignment.LEFT);
@@ -137,8 +125,8 @@ public class Hexagon extends Polygon {
         Image toDraw = null;
         String toPrint = "";
 
-        int tileDiceNumber = Util.tilesNumber[tileNumber];
-        int resourceType = Util.tilesResource[tileNumber];
+        int tileDiceNumber = tileNumber;
+        int resourceType = tileResource;
 
         switch (resourceType) {
         case Util.DESERT:
