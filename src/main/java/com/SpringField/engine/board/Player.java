@@ -1,5 +1,8 @@
 package com.SpringField.engine.board;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -14,6 +17,15 @@ public class Player {
     private byte knightsPlayed = 0;
 
     public Player() {
+    }
+
+    private Player(byte[] resources, byte[] structures, byte[] devCards, boolean[] ports, boolean generalPort, byte knightsPlayed){
+        this.resources = resources;
+        this.structures = structures;
+        this.devCards = devCards;
+        this.ports = ports;
+        this.generalPort = generalPort;
+        this.knightsPlayed = knightsPlayed;
     }
 
     public byte[] getResources() {
@@ -226,6 +238,31 @@ public class Player {
     public byte getNumVictoryPoints() {
         return (byte) ((DEFAULT_SETTLEMENT_COUNT - structures[SETTLEMENT]) + 2 * (DEFAULT_CITY_COUNT - structures[CITY])
                 + devCards[VICTORY]);
+    }
+
+    public void serialize(ObjectOutputStream output) throws IOException {
+        writeByteArray(output, resources);
+        writeByteArray(output, structures);
+        writeByteArray(output, devCards);
+        for (boolean port : ports) {
+            output.writeBoolean(port);
+        }
+        output.writeBoolean(generalPort);
+        output.writeByte(knightsPlayed);
+    }
+
+    public static Player deSerialize(ObjectInputStream input) throws IOException {
+        byte[] resources = readByteArray(input);
+        byte[] structures = readByteArray(input);
+        byte[] devCards = readByteArray(input);
+        byte length = input.readByte();
+        boolean[] ports = new boolean[length];
+        for(int i = 0; i < length; i++){
+            ports[i] = input.readBoolean();
+        }
+        boolean generalPort = input.readBoolean();
+        byte knightsPlayed = input.readByte();
+        return new Player(resources, structures, devCards, ports, generalPort, knightsPlayed);
     }
 
     public Player clone() {

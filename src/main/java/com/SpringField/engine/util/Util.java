@@ -1,5 +1,9 @@
 package com.SpringField.engine.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -157,16 +161,6 @@ public class Util {
     public final static byte TRADE_PLAYER_COMMAND = 12;
     public final static byte ADVANCE_TURN_COMMAND = 13;
 
-    /*
-     * Player Color
-     */
-    public final static byte PLAYER_RED = 0;
-    public final static byte PLAYER_BLUE = 1;
-    public final static byte PLAYER_ORANGE = 2;
-    public final static byte PLAYER_GREEN = 3;
-    public final static byte PLAYER_WHITE = 4;
-    public final static byte PLAYER_BROWN = 5;
-
     static {
         initializeStaticInstance();
     }
@@ -265,6 +259,22 @@ public class Util {
             throw new RuntimeException("Algorithm Failure");
         }
         return slot;
+    }
+
+    public static void writeByteArray(ObjectOutputStream output, byte[] a) throws IOException {
+        output.writeByte(a.length);
+        for(byte b : a){
+            output.writeByte(b);
+        }
+    }
+
+    public static byte[] readByteArray(ObjectInputStream input) throws IOException {
+        byte length = input.readByte();
+        byte[] a = new byte[length];
+        for(int i = 0; i < length; i++){
+            a[i] = input.readByte();
+        }
+        return a;
     }
 
 }

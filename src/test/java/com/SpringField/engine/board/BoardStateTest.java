@@ -2,11 +2,13 @@ package com.SpringField.engine.board;
 
 import com.SpringField.engine.BoardState;
 import com.SpringField.engine.util.BoardStateConfig;
+import com.SpringField.ui.DrawBoard;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static com.SpringField.engine.util.Util.*;
+import static com.SpringField.ui.Util.Util.drawBoard;
 
 public class BoardStateTest {
     private static int numPlayers = 4;
@@ -72,7 +74,8 @@ public class BoardStateTest {
 
     @Test
     public void buildRoadTest() throws IOException {
-
+        BoardState b = getBoardAfterSettlementPhase();
+        drawBoard(b);
     }
 
     @Test

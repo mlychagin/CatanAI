@@ -1,9 +1,13 @@
 package com.SpringField.engine.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Random;
 
 import static com.SpringField.engine.util.Util.*;
@@ -14,17 +18,23 @@ public class BoardStateConfig {
     private byte[] tilesNumber;
     private Random r;
 
+    private BoardStateConfig(byte[] tilesResource, byte[] tilesNumber){
+        this.tilesResource = tilesResource;
+        this.tilesNumber = tilesNumber;
+    }
+
     public BoardStateConfig(String outputFile, int numPlayers, long seed) throws IOException {
         if(outputFile != null){
             dos = new DataOutputStream(new FileOutputStream(outputFile));
             dos.writeByte(SEED_COMMAND);
             dos.writeByte(numPlayers);
             dos.writeLong(seed);
+        } else {
+            dos = null;
         }
         tilesResource = Util.tilesResource.clone();
         tilesNumber = Util.tilesNumber.clone();
         r = new Random(seed);
-        dos = null;
         initializeTiles();
     }
 
@@ -75,6 +85,17 @@ public class BoardStateConfig {
         for (byte b : a) {
             dos.writeByte(b);
         }
+    }
+
+    public void serialize(ObjectOutputStream output) throws IOException {
+        Util.writeByteArray(output, tilesResource);
+        Util.writeByteArray(output, tilesNumber);
+    }
+
+    public static BoardStateConfig deSerialize(ObjectInputStream input) throws IOException {
+        byte[] tilesResource = input.readNBytes(input.readByte());
+        byte[] tilesNumber = input.readNBytes(input.readByte());
+        return new BoardStateConfig(tilesResource, tilesNumber);
     }
 
 }

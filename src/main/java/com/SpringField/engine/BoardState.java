@@ -15,9 +15,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
@@ -26,9 +30,9 @@ import static com.SpringField.engine.util.Util.*;
 
 public class BoardState {
     protected BoardStateConfig config;
+    protected Player[] players;
     protected Vertex[] vertices;
     protected byte[] edges;
-    protected Player[] players;
     protected byte[] resourceCardPool;
     protected byte[] devCardPool;
     protected byte[] devCardsAcquiredThisTurn;
@@ -53,6 +57,21 @@ public class BoardState {
         this.config = config;
         initialize(numPlayers);
         r = new Random(seed);
+    }
+
+    private BoardState(BoardStateConfig config, Player[] players, Vertex[] vertices, byte[] edges, byte[] resourceCardPool, byte[] devCardPool, byte[] devCardsAcquiredThisTurn, byte playerWithLargestArmy, byte playerWithLongestRoad, byte currentLongestRoad, byte playerTurn, byte robberTile, byte turnNumber){
+        this.config = config;
+        this.players = players;
+        this.vertices = vertices;
+        this.edges = edges;
+        this.resourceCardPool = resourceCardPool;
+        this.devCardPool = devCardPool;
+        this.devCardsAcquiredThisTurn = devCardsAcquiredThisTurn;
+        this.playerWithLargestArmy = playerWithLargestArmy;
+        this.playerWithLongestRoad = playerWithLongestRoad;
+        this.playerTurn = playerTurn;
+        this.robberTile = robberTile;
+        this.turnNumber = turnNumber;
     }
 
     public Vertex[] getVertices() {
@@ -86,6 +105,10 @@ public class BoardState {
     }
 
     protected void initialize(int numPlayers) {
+        players = new Player[numPlayers];
+        for (int i = 0; i < numPlayers; i++) {
+            players[i] = new Player();
+        }
         vertices = new Vertex[DEFAULT_NUM_VERTICES];
         for (int i = 0; i < DEFAULT_NUM_VERTICES; i++) {
             vertices[i] = new Vertex(vertexToPort[i]);
@@ -93,10 +116,6 @@ public class BoardState {
         edges = new byte[DEFAULT_NUM_EDGES];
         for (int i = 0; i < DEFAULT_NUM_EDGES; i++) {
             edges[i] = UNASSIGNED_PLAYER;
-        }
-        players = new Player[numPlayers];
-        for (int i = 0; i < numPlayers; i++) {
-            players[i] = new Player();
         }
         for (int i = 0; i < config.getTilesResource().length; i++) {
             if (config.getTilesResource()[i] == DESERT) {
@@ -481,9 +500,17 @@ public class BoardState {
             return WIN_CONDITION;
         }
         Arrays.fill(devCardsAcquiredThisTurn, (byte) 0);
-        playerTurn++;
-        if (playerTurn == players.length) {
-            playerTurn = 0;
+        if(inSettlementPhase()){
+            if(turnNumber < players.length - 1) {
+                playerTurn++;
+            } else if(turnNumber > players.length - 1) {
+                playerTurn--;
+            }
+        } else {
+            playerTurn++;
+            if (playerTurn == players.length) {
+                playerTurn = 0;
+            }
         }
         turnNumber++;
         if(config.isLoggerActive()){
@@ -707,7 +734,7 @@ public class BoardState {
                 tr.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "Boardstate.dtd");
                 tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
-                // send DOM to file
+                // send DOM to fil
                 tr.transform(new DOMSource(dom),
                         new StreamResult(new FileOutputStream(xml)));
         } catch (TransformerException n){
@@ -725,6 +752,60 @@ public class BoardState {
      */
     public void fromXML(String file){
 
+    }
+
+    public byte[] serialize() throws IOException {
+        ByteArrayOutputStream bOutput = new ByteArrayOutputStream();
+        ObjectOutputStream output = new ObjectOutputStream(bOutput);
+        config.serialize(output);
+        output.writeByte(players.length);
+        for(Player p : players){
+            p.serialize(output);
+        }
+        output.writeByte(vertices.length);
+        for(Vertex v : vertices){
+            v.serialize(output);
+        }
+        writeByteArray(output, edges);
+        writeByteArray(output, resourceCardPool);
+        writeByteArray(output, devCardPool);
+        writeByteArray(output, devCardsAcquiredThisTurn);
+        output.writeByte(playerWithLargestArmy);
+        output.writeByte(playerWithLongestRoad);
+        output.writeByte(currentLongestRoad);
+        output.writeByte(playerTurn);
+        output.writeByte(robberTile);
+        output.writeByte(turnNumber);
+        output.flush();
+        output.close();
+        byte[] result = bOutput.toByteArray();
+        bOutput.close();
+        return result;
+    }
+
+    public static BoardState deSerialize(ObjectInputStream input) throws IOException {
+        BoardStateConfig config = BoardStateConfig.deSerialize(input);
+        byte lengthPlayers = input.readByte();
+        Player[] players = new Player[lengthPlayers];
+        for(byte i = 0; i < lengthPlayers; i++){
+            players[i] = Player.deSerialize(input);
+        }
+        byte lengthVertices = input.readByte();
+        Vertex[] vertices = new Vertex[lengthVertices];
+        for(byte i = 0; i < lengthVertices; i++){
+            vertices[i] = Vertex.deSerialize(input);
+        }
+        byte[] edges = readByteArray(input);
+        byte[] resourceCardPool = readByteArray(input);
+        byte[] devCardPool = readByteArray(input);
+        byte[] devCardsAcquiredThisTurn = readByteArray(input);
+        byte playerWithLargestArmy = input.readByte();
+        byte playerWithLongestRoad = input.readByte();
+        byte currentLongestRoad = input.readByte();
+        byte playerTurn = input.readByte();
+        byte robberTile = input.readByte();
+        byte turnNumber = input.readByte();
+        return new BoardState(config, players, vertices, edges, resourceCardPool, devCardPool, devCardsAcquiredThisTurn, playerWithLargestArmy, playerWithLongestRoad, currentLongestRoad, playerTurn, robberTile, turnNumber);
     }
 
     @Override

@@ -1,5 +1,9 @@
 package com.SpringField.engine.board;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import static com.SpringField.engine.util.Util.STATUS_EMPTY;
 import static com.SpringField.engine.util.Util.UNASSIGNED_PLAYER;
 
@@ -48,9 +52,14 @@ public class Vertex {
         return new Vertex(playerId, building, port);
     }
 
-    @Override
-    public String toString() {
-        return "Vertex{" + "playerId=" + playerId + ", building=" + building + ", port=" + port + '}';
+    public void serialize(ObjectOutputStream output) throws IOException {
+        output.writeByte(playerId);
+        output.writeByte(building);
+        output.writeByte(port);
+    }
+
+    public static Vertex deSerialize(ObjectInputStream input) throws IOException {
+        return new Vertex(input.readByte(), input.readByte(), input.readByte());
     }
 
     @Override
