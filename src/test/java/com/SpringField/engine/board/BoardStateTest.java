@@ -2,11 +2,9 @@ package com.SpringField.engine.board;
 
 import com.SpringField.engine.BoardState;
 import com.SpringField.engine.util.BoardStateConfig;
-import com.SpringField.ui.Board;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Random;
 
 import static com.SpringField.engine.util.Util.*;
 
@@ -14,9 +12,6 @@ public class BoardStateTest {
     private static int numPlayers = 4;
 
     private static BoardState getBoard() throws IOException {
-        if(!initializedContext){
-            initializeStaticInstance();
-        }
         return new BoardState(new BoardStateConfig(null, numPlayers, 0), numPlayers, 0);
     }
 

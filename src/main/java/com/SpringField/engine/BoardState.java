@@ -98,9 +98,8 @@ public class BoardState {
         for (int i = 0; i < numPlayers; i++) {
             players[i] = new Player();
         }
-        for (int i = 0; i < tilesResource.length; i++) {
-            byte r = tilesResource[i];
-            if (r == DESERT) {
+        for (int i = 0; i < config.getTilesResource().length; i++) {
+            if (config.getTilesResource()[i] == DESERT) {
                 robberTile = (byte) i;
                 break;
             }
