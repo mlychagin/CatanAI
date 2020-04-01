@@ -40,7 +40,7 @@ public class OriginalBoard extends Board {
         tiles[3] = new Hexagon(tiles[0].getCenterX() - TILE_RADIUS,
                 tiles[0].getCenterY() + TILE_RADIUS + (TILE_RADIUS / 2), 3, tilesNumber[3], tilesResource[3],points[7], points[8], points[9], points[19],
                 points[18], points[17]);
-        tiles[3].initLines(10, 11, 19, 25, 24, 16);
+        tiles[3].initLines(10, 11, 19, 25, 24, 18);
 
         tiles[4] = new Hexagon(tiles[3].getCenterX() + TILE_RADIUS * 2, tiles[3].getCenterY(), 4, tilesNumber[4], tilesResource[4],points[9], points[10],
                 points[11], points[21], points[20], points[19]);
