@@ -24,15 +24,15 @@ public class settleTest {
         }
     }
 
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException {
         // Quick bulk testing to get us off the ground
         // Quick I/O to link with a csv file
-        String pathToCsv ="";
+        String pathToCsv = "";
         FileWriter csvWriter;
         try {
             pathToCsv = "src\\test\\java\\com\\SpringField\\engine\\ai\\output.txt";
             csvWriter = new FileWriter(pathToCsv);
-        } catch (IOException e){
+        } catch (IOException e) {
             throw new IOException("Could not locate: " + pathToCsv);
         }
 
@@ -60,7 +60,7 @@ public class settleTest {
 
             // loop to print out pertinent data
             String[] arr = settles.split(" ");
-            for (int j = 0;;j++) {
+            for (int j = 0;; j++) {
                 if ((j + 1) == 8) {
                     csvWriter.write(arr[j] + "\n");
                     break;
@@ -79,9 +79,9 @@ public class settleTest {
         BoardState test = new BoardState(defaultConfig, 4);
         System.out.println(test.getVertices());
         test.toXML("src\\test\\java\\com\\SpringField\\engine\\ai\\test.xml");
-        System.out.println("\nExecuted and settled " + i + " boardstates in: " + (duration*(1.0)/1000000000) + " second(s)!");
+        System.out.println(
+                "\nExecuted and settled " + i + " boardstates in: " + (duration * (1.0) / 1000000000) + " second(s)!");
     }
-
 
     @Test
     public void canInitBoardstate() {
@@ -107,12 +107,11 @@ public class settleTest {
 
         Settlement chooser = new Settlement(test);
 
-        for (byte i = 0; i<8;i++) {
+        for (byte i = 0; i < 8; i++) {
             byte next_settle = chooser.getBestPossibleSettle();
             try {
                 test.buildSettlement(next_settle);
-            }
-            catch (RuntimeException | IOException e){
+            } catch (RuntimeException | IOException e) {
                 throw new RuntimeException("could not build settlement");
             }
         }

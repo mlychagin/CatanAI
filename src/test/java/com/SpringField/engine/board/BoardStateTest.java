@@ -19,7 +19,7 @@ public class BoardStateTest {
     private static BoardState getBoardAfterSettlementPhase() throws IOException {
         BoardState b = getBoard();
 
-        //Round 1
+        // Round 1
         b.buildSettlement((byte) 29);
         b.buildRoad((byte) 41);
         b.advanceTurn();
@@ -36,7 +36,7 @@ public class BoardStateTest {
         b.buildRoad((byte) 36);
         b.advanceTurn();
 
-        //Round 2
+        // Round 2
         b.buildSettlement((byte) 19);
         b.buildRoad((byte) 26);
         b.advanceTurn();
@@ -60,7 +60,7 @@ public class BoardStateTest {
     @Test
     public void getCurrentPlayerTest() throws IOException {
         BoardState b = getBoard();
-        for(int i = 0; i < 100; i++){
+        for (int i = 0; i < 100; i++) {
             assert i % 4 == b.getPlayerTurn();
             b.advanceTurn();
         }
@@ -69,41 +69,110 @@ public class BoardStateTest {
     @Test
     public void advanceTurnTest() throws IOException {
         BoardState b = getBoard();
-        byte[] t = new byte[] {0,1,2,3,3,2,1,0};
-        for(byte i : t){
+        byte[] t = new byte[] { 0, 1, 2, 3, 3, 2, 1, 0 };
+        for (byte i : t) {
             assert b.getPlayerTurn() == i;
             b.advanceTurn();
         }
-        for(byte i = 8; i < 50;i++){
-            assert(b.getPlayerTurn() == (i % 4));
+        for (byte i = 8; i < 50; i++) {
+            assert (b.getPlayerTurn() == (i % 4));
             b.advanceTurn();
+        }
+    }
+    @Test
+    public void buildRoadTest() throws IOException {
+        BoardState b = getBoardAfterSettlementPhase();
+        Player p = b.getCurrentPlayer();
+        b.getCurrentPlayer().addResource(WOOD, (byte) 1);
+        b.getCurrentPlayer().addResource(BRICK, (byte) 1);
+        assert b.canBuildRoad((byte) 8,true);
+        assert b.canBuildRoad((byte) 15,true);
+        assert b.canBuildRoad((byte) 42,true);
+        assert b.canBuildRoad((byte) 50,true);
+        b.buildRoad((byte) 8);
+        b.getCurrentPlayer().addResource(WOOD, (byte) 1);
+        b.getCurrentPlayer().addResource(BRICK, (byte) 1);
+        assert b.canBuildRoad((byte) 3,true);
+        assert b.canBuildRoad((byte) 4,true);
+        b.getCurrentPlayer().addResource(WOOD, (byte) 16);
+        b.getCurrentPlayer().addResource(BRICK, (byte) 16);
+        b.buildRoad((byte) 4);
+        b.buildRoad((byte) 5);
+        b.buildRoad((byte) 9);
+        b.buildRoad((byte) 16);
+        b.buildRoad((byte) 21);
+        assert !b.canBuildRoad((byte) 30,true);
+        b.buildRoad((byte) 17);
+        b.buildRoad((byte) 22);
+        b.buildRoad((byte) 31);
+        assert !b.canBuildRoad((byte) 37,true);
+        b.buildRoad((byte) 32);
+        b.buildRoad((byte) 38);
+        b.buildRoad((byte) 48);
+        b.buildRoad((byte) 53);
+        assert !b.canBuildRoad((byte) 61,true);
+    }
+    @Test
+    public void canBuildSettlementTest() throws IOException {
+        BoardState b = getBoardAfterSettlementPhase();
+        b.getCurrentPlayer().addResource(WOOD, (byte) 5);
+        b.getCurrentPlayer().addResource(BRICK, (byte) 5);
+        b.getCurrentPlayer().addResource(SHEEP, (byte) 1);
+        b.getCurrentPlayer().addResource(HAY, (byte) 1);
+        assert !b.canBuildSettlement((byte) 12);
+        assert !b.canBuildSettlement((byte) 10);
+        assert !b.canBuildSettlement((byte) 11);
+        b.buildRoad((byte) 8);
+        b.buildRoad((byte) 34);
+        b.buildRoad((byte) 25);
+        b.buildRoad((byte) 50);
+        for(byte i = 0; i<54; i++){
+            if(i!=4){
+                assert !b.canBuildSettlement(i);
+            }
+            else{
+                assert b.canBuildSettlement(i);
+            }
+        }
+    }
+    @Test
+    public void canBuildCityTest() throws IOException {
+        BoardState b = getBoardAfterSettlementPhase();
+        b.getCurrentPlayer().addResource(HAY, (byte) 2);
+        b.getCurrentPlayer().addResource(ROCK, (byte) 3);
+        for(byte i = 0; i<54; i++){
+            if(i!=11 && i!=29){
+                assert !b.canBuildCity((byte) i);
+            }
+            else{
+                assert b.canBuildSettlement((byte) i);
+            }
         }
     }
 
     /*
-     * Todo:
-     *  Build City
+     * Todo: Build City
      */
 
     @Test
-    public void buildRoadTest() throws IOException {
+    public void drawTest() throws IOException {
         BoardState b = getBoardAfterSettlementPhase();
         drawBoard(b);
     }
 
     @Test
     public void buildSettlementToRoadTest() throws IOException {
-        for(byte v = 0; v < DEFAULT_NUM_VERTICES; v++){
+        for (byte v = 0; v < DEFAULT_NUM_VERTICES; v++) {
             BoardState b = getBoard();
             b.buildSettlement(v);
-            for(int i = 0; i < numPlayers * 2; i++){
+            for (int i = 0; i < numPlayers * 2; i++) {
                 b.advanceTurn();
             }
             assert b.getPlayerTurn() == 0;
-            for(byte potentialRoad = 0; potentialRoad < DEFAULT_NUM_EDGES; potentialRoad++){
+            for (byte potentialRoad = 0; potentialRoad < DEFAULT_NUM_EDGES; potentialRoad++) {
                 boolean adjacent = false;
-                for(byte adjacentEdges : vertexToEdge[v]){
-                    if(potentialRoad == adjacentEdges){
+                for (byte adjacentEdges : vertexToEdge[v]) {
+                    if (potentialRoad == adjacentEdges) {
                         assert b.canBuildRoad(potentialRoad, false);
                         adjacent = true;
                         break;
@@ -116,19 +185,19 @@ public class BoardStateTest {
 
     @Test
     public void buildSettlementTest() throws IOException {
-        for(byte settlementVertex = 0; settlementVertex < DEFAULT_NUM_VERTICES; settlementVertex++){
+        for (byte settlementVertex = 0; settlementVertex < DEFAULT_NUM_VERTICES; settlementVertex++) {
             BoardState b = getBoard();
             b.buildSettlement(settlementVertex);
             b.advanceTurn();
             assert b.getPlayerTurn() == 1;
-            for(byte potentialSettlement = 0; potentialSettlement < DEFAULT_NUM_VERTICES; potentialSettlement++){
-                if(potentialSettlement == settlementVertex){
+            for (byte potentialSettlement = 0; potentialSettlement < DEFAULT_NUM_VERTICES; potentialSettlement++) {
+                if (potentialSettlement == settlementVertex) {
                     assert !b.canBuildSettlement(settlementVertex);
                     continue;
                 }
                 boolean adjacent = false;
-                for(byte adjacentVertex : vertexToVertex[settlementVertex]){
-                    if(potentialSettlement == adjacentVertex){
+                for (byte adjacentVertex : vertexToVertex[settlementVertex]) {
+                    if (potentialSettlement == adjacentVertex) {
                         assert !b.canBuildSettlement(potentialSettlement);
                         adjacent = true;
                         break;
@@ -141,7 +210,7 @@ public class BoardStateTest {
 
     @Test
     public void buildCityTest() throws IOException {
-        for(byte v = 0; v < DEFAULT_NUM_VERTICES; v++){
+        for (byte v = 0; v < DEFAULT_NUM_VERTICES; v++) {
             BoardState b = getBoard();
             b.buildSettlement(v);
             Player p = b.getPlayers()[b.getPlayerTurn()];
@@ -192,13 +261,19 @@ public class BoardStateTest {
         assert b.getCurrentLongestRoad() == 4;
         b.buildRoad((byte) 7);
         assert b.getCurrentLongestRoad() == 5;
+        b.buildRoad((byte) 13);
+        assert b.getCurrentLongestRoad() == 6;
+        b.buildRoad((byte) 20);
+        assert b.getCurrentLongestRoad() == 11;
+        b.buildRoad((byte) 34);
+        assert b.getCurrentLongestRoad() == 12;
+        b.buildRoad((byte) 25);
+        assert b.getCurrentLongestRoad() == 13;
         drawBoard(b);
-
-
 
     }
 
-    private void addResourcesForRoad(Player p, byte numRoads){
+    private void addResourcesForRoad(Player p, byte numRoads) {
         p.addResource(WOOD, numRoads);
         p.addResource(BRICK, numRoads);
     }

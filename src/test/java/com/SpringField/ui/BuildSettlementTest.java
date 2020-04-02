@@ -33,7 +33,7 @@ public class BuildSettlementTest extends Application {
 
         BoardState b = new BoardState(new BoardStateConfig(null, 4, 0), 4, 0);
 
-        //Round 1
+        // Round 1
         b.buildSettlement((byte) 29);
         b.buildRoad((byte) 41);
         b.advanceTurn();
@@ -50,7 +50,7 @@ public class BuildSettlementTest extends Application {
         b.buildRoad((byte) 36);
         b.advanceTurn();
 
-        //Round 2
+        // Round 2
         b.buildSettlement((byte) 19);
         b.buildRoad((byte) 26);
         b.advanceTurn();
@@ -86,5 +86,3 @@ public class BuildSettlementTest extends Application {
         stage.show(); // goes into Animation Timer
     }
 }
-
-

@@ -118,14 +118,13 @@ public class Player {
     }
 
     public void buyRoad(boolean pay) {
-        if (!pay) {
-            return;
-        }
-        if (!canBuyRoad()) {
+        if (pay && !canBuyRoad()) {
             throw new RuntimeException("Invalid Transaction");
         }
-        resources[WOOD] -= 1;
-        resources[BRICK] -= 1;
+        if(pay){
+            resources[WOOD] -= 1;
+            resources[BRICK] -= 1;
+        }
         structures[ROAD] -= 1;
     }
 

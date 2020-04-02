@@ -8,7 +8,8 @@ import static com.SpringField.engine.util.Util.*;
 
 public class PlayerTest {
 
-    @Test public void freeRoadTest() {
+    @Test
+    public void freeRoadTest() {
         Player p = new Player();
         assert !p.canBuyRoad();
         p.addResource(WOOD, (byte) 1);
@@ -18,7 +19,8 @@ public class PlayerTest {
         assert p.canBuyRoad();
     }
 
-    @Test public void canBuyRoadTest() {
+    @Test
+    public void canBuyRoadTest() {
         Player p = new Player();
         assert !p.canBuyRoad();
         p.addResource(WOOD, (byte) 1);
@@ -82,7 +84,7 @@ public class PlayerTest {
         Player p = new Player();
         p.addResource(WOOD, (byte) 1);
         p.addResource(BRICK, (byte) 1);
-        for(int i = 0; i < DEFAULT_ROAD_COUNT; i++){
+        for (int i = 0; i < DEFAULT_ROAD_COUNT; i++) {
             p.buyRoad(false);
         }
         assert p.canBuyRoad();
@@ -95,7 +97,7 @@ public class PlayerTest {
         p.addResource(BRICK, (byte) (1 + DEFAULT_SETTLEMENT_COUNT));
         p.addResource(SHEEP, (byte) (1 + DEFAULT_SETTLEMENT_COUNT));
         p.addResource(HAY, (byte) (1 + DEFAULT_SETTLEMENT_COUNT));
-        for(int i = 0; i < DEFAULT_SETTLEMENT_COUNT; i++){
+        for (int i = 0; i < DEFAULT_SETTLEMENT_COUNT; i++) {
             p.buySettlement(true);
         }
         assert !p.canBuySettlement();
@@ -106,7 +108,7 @@ public class PlayerTest {
         Player p = new Player();
         p.addResource(ROCK, (byte) (1 + DEFAULT_CITY_COUNT * 3));
         p.addResource(HAY, (byte) (1 + DEFAULT_CITY_COUNT * 2));
-        for(int i = 0; i < DEFAULT_CITY_COUNT; i++){
+        for (int i = 0; i < DEFAULT_CITY_COUNT; i++) {
             p.buyCity();
         }
         assert !p.canBuyCity();
@@ -126,10 +128,10 @@ public class PlayerTest {
     }
 
     @Test
-    public void tradeBankTest(){
-        for(byte i = WOOD; i <= ROCK; i++){
-            byte j = (byte) (i+1);
-            if(j > ROCK){
+    public void tradeBankTest() {
+        for (byte i = WOOD; i <= ROCK; i++) {
+            byte j = (byte) (i + 1);
+            if (j > ROCK) {
                 j = WOOD;
             }
             Player p = new Player();
@@ -157,10 +159,10 @@ public class PlayerTest {
     public void stealResourceTest() {
         Random r = new Random();
         Player p = new Player();
-        for(byte i = WOOD; i <= ROCK; i++){
+        for (byte i = WOOD; i <= ROCK; i++) {
             p.addResource(i, (byte) 64);
         }
-        while(p.getTotalResourceCount() > 0){
+        while (p.getTotalResourceCount() > 0) {
             byte[] resources = p.getResources().clone();
             byte stolenType = p.stealResource(r);
             assert p.getResources()[stolenType] == resources[stolenType] - 1;
@@ -169,10 +171,10 @@ public class PlayerTest {
     }
 
     @Test
-    public void stealAllResource(){
+    public void stealAllResource() {
         Player p = new Player();
         byte rCount = 64;
-        for(byte i = WOOD; i <= ROCK; i++){
+        for (byte i = WOOD; i <= ROCK; i++) {
             p.addResource(i, rCount);
             assert p.stealAllResource(i) == rCount;
             assert p.getResources()[i] == 0;
