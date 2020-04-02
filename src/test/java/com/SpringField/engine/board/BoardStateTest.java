@@ -79,6 +79,52 @@ public class BoardStateTest {
             b.advanceTurn();
         }
     }
+    @Test
+    public void buildRoadTest() throws IOException {
+        BoardState b = getBoardAfterSettlementPhase();
+        b.getCurrentPlayer().addResource(WOOD, (byte) 1);
+        b.getCurrentPlayer().addResource(BRICK, (byte) 1);
+        assert b.canBuildRoad((byte) 8,true);
+        assert b.canBuildRoad((byte) 15,true);
+        assert b.canBuildRoad((byte) 42,true);
+        assert b.canBuildRoad((byte) 50,true);
+        b.buildRoad((byte) 8);
+        b.getCurrentPlayer().addResource(WOOD, (byte) 1);
+        b.getCurrentPlayer().addResource(BRICK, (byte) 1);
+        assert b.canBuildRoad((byte) 3,true);
+        assert b.canBuildRoad((byte) 4,true);
+    }
+    @Test
+    public void canBuildSettlementTest() throws IOException {
+        BoardState b = getBoardAfterSettlementPhase();
+        b.getCurrentPlayer().addResource(WOOD, (byte) 5);
+        b.getCurrentPlayer().addResource(BRICK, (byte) 5);
+        b.getCurrentPlayer().addResource(SHEEP, (byte) 1);
+        b.getCurrentPlayer().addResource(HAY, (byte) 1);
+        assert !b.canBuildSettlement((byte) 12);
+        assert !b.canBuildSettlement((byte) 10);
+        assert !b.canBuildSettlement((byte) 11);
+        b.buildRoad((byte) 8);
+        b.buildRoad((byte) 34);
+        b.buildRoad((byte) 25);
+        b.buildRoad((byte) 50);
+        for(byte i = 0; i<54; i++){
+            if(i!=4){
+                assert !b.canBuildSettlement((byte) i);
+            }
+        }
+    }
+    @Test
+    public void canBuildCityTest() throws IOException {
+        BoardState b = getBoardAfterSettlementPhase();
+        b.getCurrentPlayer().addResource(HAY, (byte) 2);
+        b.getCurrentPlayer().addResource(ROCK, (byte) 3);
+        for(byte i = 0; i<54; i++){
+            if(i!=11 && i!=29){
+                assert !b.canBuildCity((byte) i);
+            }
+        }
+    }
 
     /*
      * Todo:
@@ -86,7 +132,7 @@ public class BoardStateTest {
      */
 
     @Test
-    public void buildRoadTest() throws IOException {
+    public void drawTest() throws IOException {
         BoardState b = getBoardAfterSettlementPhase();
         drawBoard(b);
     }
