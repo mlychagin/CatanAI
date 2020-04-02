@@ -97,13 +97,26 @@ public class BoardState {
     public byte getPlayerTurn() {
         return playerTurn;
     }
-    public byte getTurnNumber(){
-        return turnNumber;
-    }
 
     public byte getRobberTile(){ return robberTile; }
 
-    protected Player getCurrentPlayer() {
+    public byte getPlayerWithLargestArmy() {
+        return playerWithLargestArmy;
+    }
+
+    public byte getPlayerWithLongestRoad() {
+        return playerWithLongestRoad;
+    }
+
+    public byte getCurrentLongestRoad() {
+        return currentLongestRoad;
+    }
+
+    public byte getTurnNumber() {
+        return turnNumber;
+    }
+
+    public Player getCurrentPlayer() {
         return players[playerTurn];
     }
 
@@ -157,7 +170,7 @@ public class BoardState {
         return canBuildRoadHelper(edgeId, UNASSIGNED_EDGE);
     }
 
-    public boolean canBuildRoadHelper(byte edgeId, byte ghostEdge) {
+    private boolean canBuildRoadHelper(byte edgeId, byte ghostEdge) {
         if (edges[edgeId] != UNASSIGNED_EDGE) {
             return false;
         }
@@ -583,11 +596,12 @@ public class BoardState {
      * Longest Road Algorithm
      */
     private void updateLargestRoad(byte edgeId) {
+        HashSet<Byte> seenVerticies = new HashSet<>();
         HashSet<Byte> seenEdges = new HashSet<>();
         seenEdges.add(edgeId);
         byte maxRoadLength = 1;
         for (byte n : edgeToVertex[edgeId]) {
-            maxRoadLength += transverseVertex(seenEdges, n, maxRoadLength);
+            maxRoadLength += transverseVertex(seenVerticies, seenEdges, n, (byte) 0);
         }
         if (maxRoadLength > currentLongestRoad) {
             currentLongestRoad = maxRoadLength;
@@ -595,8 +609,13 @@ public class BoardState {
         }
     }
 
-    private byte transverseVertex(HashSet<Byte> seenEdges, byte vertexId, byte currentRoadLength) {
-        if (vertices[vertexId].getPlayerId() != playerTurn) {
+    private byte transverseVertex(HashSet<Byte> seenVerticies, HashSet<Byte> seenEdges, byte vertexId, byte currentRoadLength) {
+        if(seenVerticies.contains(vertexId)){
+            return currentRoadLength;
+        }
+        seenVerticies.add(vertexId);
+        Vertex v = vertices[vertexId];
+        if (v.isSettled() && v.getPlayerId() != playerTurn) {
             return currentRoadLength;
         }
         byte maxRoadLength = currentRoadLength;
@@ -615,7 +634,7 @@ public class BoardState {
                 if (nextNodeId == -1) {
                     throw new RuntimeException("Next Node not found");
                 }
-                byte roadLength = transverseVertex(seenEdges, nextNodeId, ++currentRoadLength);
+                byte roadLength = transverseVertex(seenVerticies, seenEdges, nextNodeId, ++currentRoadLength);
                 if (roadLength > maxRoadLength) {
                     maxRoadLength = roadLength;
                 }

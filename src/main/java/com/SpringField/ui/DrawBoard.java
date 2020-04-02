@@ -16,7 +16,7 @@ import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.SpringField.ui.Util.Util.outputFileName;
+import static com.SpringField.ui.util.Util.outputFileName;
 
 public class DrawBoard extends Application {
     private static BoardState b;

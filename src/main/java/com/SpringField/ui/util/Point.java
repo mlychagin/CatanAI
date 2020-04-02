@@ -1,4 +1,4 @@
-package com.SpringField.ui.Util;
+package com.SpringField.ui.util;
 
 import com.SpringField.engine.BoardState;
 
@@ -7,6 +7,8 @@ import com.SpringField.engine.util.Util;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+
+import static com.SpringField.ui.util.Util.*;
 
 public class Point extends Circle {
 
@@ -64,16 +66,16 @@ public class Point extends Circle {
         Vertex[] vertices = currentState.getVertices();
         if (vertices[slot].getBuilding() != Util.STATUS_EMPTY) {
             switch (vertices[slot].getPlayerId()) {
-            case 0:
+            case PLAYER_RED:
                 gc.setFill(Color.RED);
                 break;
-            case 1:
+            case PLAYER_BLUE:
                 gc.setFill(Color.BLUE);
                 break;
-            case 2:
+            case PLAYER_ORANGE:
                 gc.setFill(Color.ORANGE);
                 break;
-            case 3:
+            case PLAYER_GREEN:
                 gc.setFill(Color.GREEN);
                 break;
             }

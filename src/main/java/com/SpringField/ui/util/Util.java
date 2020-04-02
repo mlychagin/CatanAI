@@ -1,15 +1,11 @@
-package com.SpringField.ui.Util;
+package com.SpringField.ui.util;
 
 import com.SpringField.engine.BoardState;
 import com.SpringField.ui.DrawBoard;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class Util {
 

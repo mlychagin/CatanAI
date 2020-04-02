@@ -1,7 +1,7 @@
 package com.SpringField.ui;
 
-import com.SpringField.ui.Util.Hexagon;
-import com.SpringField.ui.Util.Point;
+import com.SpringField.ui.util.Hexagon;
+import com.SpringField.ui.util.Point;
 import javafx.scene.canvas.GraphicsContext;
 
 public abstract class Board {

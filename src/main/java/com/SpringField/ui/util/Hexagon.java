@@ -1,4 +1,4 @@
-package com.SpringField.ui.Util;
+package com.SpringField.ui.util;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;

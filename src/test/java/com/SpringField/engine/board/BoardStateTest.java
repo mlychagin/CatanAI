@@ -2,13 +2,12 @@ package com.SpringField.engine.board;
 
 import com.SpringField.engine.BoardState;
 import com.SpringField.engine.util.BoardStateConfig;
-import com.SpringField.ui.DrawBoard;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static com.SpringField.engine.util.Util.*;
-import static com.SpringField.ui.Util.Util.drawBoard;
+import static com.SpringField.ui.util.Util.drawBoard;
 
 public class BoardStateTest {
     private static int numPlayers = 4;
@@ -171,6 +170,37 @@ public class BoardStateTest {
         assert robbedPlayer.getResources()[WOOD] == 0;
         assert robbingPlayer.getResources()[WOOD] == 1;
         assert !b.canPlayRobber((byte) 4, robbedPlayerId);
+    }
+
+    @Test
+    public void longestRoadTest() throws IOException {
+        BoardState b = getBoardAfterSettlementPhase();
+        assert b.getCurrentLongestRoad() == 1;
+        Player p = b.getCurrentPlayer();
+        addResourcesForRoad(p, (byte) 100);
+        b.buildRoad((byte) 42);
+        assert b.getCurrentLongestRoad() == 2;
+        b.buildRoad((byte) 35);
+        assert b.getCurrentLongestRoad() == 3;
+        b.buildRoad((byte) 27);
+        assert b.getCurrentLongestRoad() == 4;
+        b.buildRoad((byte) 8);
+        assert b.getCurrentLongestRoad() == 4;
+        b.buildRoad((byte) 3);
+        assert b.getCurrentLongestRoad() == 4;
+        b.buildRoad((byte) 2);
+        assert b.getCurrentLongestRoad() == 4;
+        b.buildRoad((byte) 7);
+        assert b.getCurrentLongestRoad() == 5;
+        drawBoard(b);
+
+
+
+    }
+
+    private void addResourcesForRoad(Player p, byte numRoads){
+        p.addResource(WOOD, numRoads);
+        p.addResource(BRICK, numRoads);
     }
 
 }

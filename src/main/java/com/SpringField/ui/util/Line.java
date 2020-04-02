@@ -1,8 +1,10 @@
-package com.SpringField.ui.Util;
+package com.SpringField.ui.util;
 
 import com.SpringField.engine.BoardState;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+
+import static com.SpringField.ui.util.Util.*;
 
 public class Line {
     /*
@@ -43,19 +45,19 @@ public class Line {
 
     public void display(GraphicsContext gc, BoardState currentState) {
         switch (currentState.getEdges()[edgeNumber]) {
-        case 0:
+        case PLAYER_RED:
             gc.setStroke(Color.RED);
             gc.setLineWidth(DEFAULT_WIDTH);
             break;
-        case 1:
+        case PLAYER_BLUE:
             gc.setStroke(Color.BLUE);
             gc.setLineWidth(DEFAULT_WIDTH);
             break;
-        case 2:
+        case PLAYER_ORANGE:
             gc.setStroke(Color.ORANGE);
             gc.setLineWidth(DEFAULT_WIDTH);
             break;
-        case 3:
+        case PLAYER_GREEN:
             gc.setStroke(Color.GREEN);
             gc.setLineWidth(DEFAULT_WIDTH);
             break;
