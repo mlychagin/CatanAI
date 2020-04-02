@@ -82,6 +82,7 @@ public class BoardStateTest {
     @Test
     public void buildRoadTest() throws IOException {
         BoardState b = getBoardAfterSettlementPhase();
+        Player p = b.getCurrentPlayer();
         b.getCurrentPlayer().addResource(WOOD, (byte) 1);
         b.getCurrentPlayer().addResource(BRICK, (byte) 1);
         assert b.canBuildRoad((byte) 8,true);
@@ -127,10 +128,10 @@ public class BoardStateTest {
         b.buildRoad((byte) 50);
         for(byte i = 0; i<54; i++){
             if(i!=4){
-                assert !b.canBuildSettlement((byte) i);
+                assert !b.canBuildSettlement(i);
             }
             else{
-                assert b.canBuildSettlement((byte) i);
+                assert b.canBuildSettlement(i);
             }
         }
     }
