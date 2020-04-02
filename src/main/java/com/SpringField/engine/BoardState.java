@@ -189,9 +189,8 @@ public class BoardState {
             if(vertex.isSettled()){
                 if(vertex.getPlayerId() == playerTurn){
                     return true;
-                } else {
-                    return false;
                 }
+                continue;
             }
             for (byte e : vertexToEdge[v]) {
                 if (edges[e] == playerTurn) {
