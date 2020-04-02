@@ -15,13 +15,13 @@ public class BoardStateConfig {
     private byte[] tilesNumber;
     private Random r;
 
-    private BoardStateConfig(byte[] tilesResource, byte[] tilesNumber){
+    private BoardStateConfig(byte[] tilesResource, byte[] tilesNumber) {
         this.tilesResource = tilesResource;
         this.tilesNumber = tilesNumber;
     }
 
     public BoardStateConfig(String outputFile, int numPlayers, long seed) throws IOException {
-        if(outputFile != null){
+        if (outputFile != null) {
             dos = new DataOutputStream(new FileOutputStream(outputFile));
             dos.writeByte(SEED_COMMAND);
             dos.writeByte(numPlayers);
@@ -35,7 +35,7 @@ public class BoardStateConfig {
         initializeTiles();
     }
 
-    public DataOutputStream getLogger(){
+    public DataOutputStream getLogger() {
         return dos;
     }
 
@@ -51,7 +51,7 @@ public class BoardStateConfig {
         return tilesNumber;
     }
 
-    public boolean isLoggerActive(){
+    public boolean isLoggerActive() {
         return dos != null;
     }
 

@@ -30,22 +30,21 @@ public class AlphaBetaPruning {
         return b.computeVictoryPoints(playerId);
     }
 
-    private byte AlphaBetaPruning(BoardStateAI board, byte depth, byte alpha, byte beta) throws IOException{
+    private byte AlphaBetaPruning(BoardStateAI board, byte depth, byte alpha, byte beta) throws IOException {
         if (depth == 3)
             return costFunction(board, board.getPlayerTurn());
 
-        if (playerId == board.getPlayerTurn()){ // This should be replaced by a call to
-            for (BoardStateAI a: board.getAllPossibleMoves()){
+        if (playerId == board.getPlayerTurn()) { // This should be replaced by a call to
+            for (BoardStateAI a : board.getAllPossibleMoves()) {
                 alpha = (byte) Math.max(alpha, AlphaBetaPruning(a, depth++, alpha, beta));
                 if (alpha >= beta)
                     break;
             }
             return alpha;
-        }
-        else{
-            for (BoardStateAI b: board.getAllPossibleMoves()){
+        } else {
+            for (BoardStateAI b : board.getAllPossibleMoves()) {
                 beta = (byte) Math.max(alpha, AlphaBetaPruning(b, depth++, alpha, beta));
-                if (alpha >= beta){
+                if (alpha >= beta) {
                     break;
                 }
             }
@@ -53,17 +52,17 @@ public class AlphaBetaPruning {
         }
     }
 
-    private byte maxN(BoardStateAI board, byte depth) throws IOException{
+    private byte maxN(BoardStateAI board, byte depth) throws IOException {
         depth += 1; // initialize depth to -1 when starting
-        if (depth == 3){
+        if (depth == 3) {
             return costFunction(board, depth);
         }
-        for (BoardStateAI state: board.getAllPossibleMoves()){
+        for (BoardStateAI state : board.getAllPossibleMoves()) {
             costFunction(state, depth);
             // ψ = MaxN (child, p+) ^^^
             // if (α < ψp)
-            //      α = ψp,
-            //      ψmax = ψ
+            // α = ψp,
+            // ψmax = ψ
         }
         // return ψ max
 

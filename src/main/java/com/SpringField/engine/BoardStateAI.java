@@ -18,7 +18,7 @@ public class BoardStateAI extends BoardState {
     }
 
     @Override
-    protected void initialize(int numPlayers){
+    protected void initialize(int numPlayers) {
         super.initialize(numPlayers);
         playerRoadCache = new byte[numPlayers][];
         playerSettlementCache = new byte[numPlayers][];
@@ -89,7 +89,7 @@ public class BoardStateAI extends BoardState {
                 allPossibleStatesGenerator(b, resultSet, type);
             }
         }
-        for(BoardStateAI b : resultSet){
+        for (BoardStateAI b : resultSet) {
             b.advanceTurn();
         }
         return resultSet;

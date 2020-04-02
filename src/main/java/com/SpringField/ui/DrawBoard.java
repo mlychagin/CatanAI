@@ -56,5 +56,3 @@ public class DrawBoard extends Application {
         stage.show(); // goes into Animation Timer
     }
 }
-
-

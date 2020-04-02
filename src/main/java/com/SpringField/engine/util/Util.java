@@ -263,7 +263,7 @@ public class Util {
 
     public static void writeByteArray(ObjectOutputStream output, byte[] a) throws IOException {
         output.writeByte(a.length);
-        for(byte b : a){
+        for (byte b : a) {
             output.writeByte(b);
         }
     }
@@ -271,7 +271,7 @@ public class Util {
     public static byte[] readByteArray(ObjectInputStream input) throws IOException {
         byte length = input.readByte();
         byte[] a = new byte[length];
-        for(int i = 0; i < length; i++){
+        for (int i = 0; i < length; i++) {
             a[i] = input.readByte();
         }
         return a;

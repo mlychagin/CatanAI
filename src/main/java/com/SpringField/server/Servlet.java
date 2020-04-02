@@ -14,7 +14,7 @@ public class Servlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         // Get the Universal Resource Identifier
         String requestUrl = request.getRequestURI();
-        //String name = requestUrl.substring("/people/".length());
+        // String name = requestUrl.substring("/people/".length());
 
         BoardState board = new BoardState(4);
         Serializable r = board.serialize();
@@ -28,6 +28,6 @@ public class Servlet extends HttpServlet {
         String about = request.getParameter("about");
         int birthYear = Integer.parseInt(request.getParameter("birthYear"));
 
-        //DataStore.getInstance().putPerson(new Person(name, about, birthYear, password));
+        // DataStore.getInstance().putPerson(new Person(name, about, birthYear, password));
     }
 }

@@ -14,7 +14,7 @@ public class BoardStateReplay {
 
     public BoardStateReplay(String inputFile) throws IOException {
         dis = new DataInputStream(new FileInputStream(inputFile));
-        if(dis.readByte() != SEED_COMMAND) {
+        if (dis.readByte() != SEED_COMMAND) {
             throw new RuntimeException("Invalid Game Start");
         }
         boardState = new BoardState(null, dis.readByte(), dis.readLong());
@@ -27,49 +27,49 @@ public class BoardStateReplay {
     public boolean hasNext() throws IOException {
         return dis.available() > 0;
     }
-    
+
     public void next() throws IOException {
         byte b = dis.readByte();
         System.out.println("Command : " + b);
-        switch (b){
-            case ROAD_COMMAND:
-                buildRoad();
-                return;
-            case SETTLEMENT_COMMAND:
-                buildSettlement();
-                return;
-            case CITY_COMMAND:
-                buildCity();
-                return;
-            case DEV_CARD_COMMAND:
-                buyDevCard();
-                return;
-            case ROBBER_COMMAND:
-                playRobber();
-                return;
-            case KNIGHT_COMMAND:
-                playKnightCard();
-                return;
-            case ROAD_BUILDING_COMMAND:
-                playRoadBuilding();
-                return;
-            case MONOPOLY_COMMAND:
-                playMonopoly();
-                return;
-            case YEAR_OF_PLENTY_COMMAND:
-                playYearOfPlenty();
-                return;
-            case TRADE_BANK_COMMAND:
-                tradeBank();
-                return;
-            case TRADE_PLAYER_COMMAND:
-                tradePlayer();
-                return;
-            case ADVANCE_TURN_COMMAND:
-                advanceTurn();
-                return;
-            default:
-                throw new RuntimeException("Invalid Command");
+        switch (b) {
+        case ROAD_COMMAND:
+            buildRoad();
+            return;
+        case SETTLEMENT_COMMAND:
+            buildSettlement();
+            return;
+        case CITY_COMMAND:
+            buildCity();
+            return;
+        case DEV_CARD_COMMAND:
+            buyDevCard();
+            return;
+        case ROBBER_COMMAND:
+            playRobber();
+            return;
+        case KNIGHT_COMMAND:
+            playKnightCard();
+            return;
+        case ROAD_BUILDING_COMMAND:
+            playRoadBuilding();
+            return;
+        case MONOPOLY_COMMAND:
+            playMonopoly();
+            return;
+        case YEAR_OF_PLENTY_COMMAND:
+            playYearOfPlenty();
+            return;
+        case TRADE_BANK_COMMAND:
+            tradeBank();
+            return;
+        case TRADE_PLAYER_COMMAND:
+            tradePlayer();
+            return;
+        case ADVANCE_TURN_COMMAND:
+            advanceTurn();
+            return;
+        default:
+            throw new RuntimeException("Invalid Command");
         }
     }
 
@@ -124,7 +124,7 @@ public class BoardStateReplay {
     private byte[] readByteArray() throws IOException {
         byte length = dis.readByte();
         byte[] a = new byte[length];
-        for(int i = 0 ; i < length; i++){
+        for (int i = 0; i < length; i++) {
             a[i] = dis.readByte();
         }
         return a;

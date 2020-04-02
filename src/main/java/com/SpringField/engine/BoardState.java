@@ -43,10 +43,10 @@ public class BoardState {
     protected byte turnNumber;
     protected Random r;
 
-    protected BoardState(){
+    protected BoardState() {
     }
 
-    public BoardState(int numPlayers) throws IOException{
+    public BoardState(int numPlayers) throws IOException {
         r = new Random();
         this.config = new BoardStateConfig(null, numPlayers, r.nextInt());
         initialize(numPlayers);
@@ -64,7 +64,9 @@ public class BoardState {
         r = new Random(seed);
     }
 
-    private BoardState(BoardStateConfig config, Player[] players, Vertex[] vertices, byte[] edges, byte[] resourceCardPool, byte[] devCardPool, byte[] devCardsAcquiredThisTurn, byte playerWithLargestArmy, byte playerWithLongestRoad, byte currentLongestRoad, byte playerTurn, byte robberTile, byte turnNumber){
+    private BoardState(BoardStateConfig config, Player[] players, Vertex[] vertices, byte[] edges,
+            byte[] resourceCardPool, byte[] devCardPool, byte[] devCardsAcquiredThisTurn, byte playerWithLargestArmy,
+            byte playerWithLongestRoad, byte currentLongestRoad, byte playerTurn, byte robberTile, byte turnNumber) {
         this.config = config;
         this.players = players;
         this.vertices = vertices;
@@ -104,7 +106,9 @@ public class BoardState {
         return playerTurn;
     }
 
-    public byte getRobberTile(){ return robberTile; }
+    public byte getRobberTile() {
+        return robberTile;
+    }
 
     public byte getPlayerWithLargestArmy() {
         return playerWithLargestArmy;
@@ -157,7 +161,7 @@ public class BoardState {
         turnNumber = 0;
     }
 
-    private boolean inSettlementPhase(){
+    private boolean inSettlementPhase() {
         return turnNumber < players.length * 2;
     }
 
@@ -234,16 +238,16 @@ public class BoardState {
     }
 
     public boolean canPlayRobber(byte tileId, byte playerIdSteal) {
-        if(inSettlementPhase() || playerTurn == playerIdSteal){
+        if (inSettlementPhase() || playerTurn == playerIdSteal) {
             return false;
         }
         boolean found = false;
-        for(byte v : tileToVertex[tileId]){
-            if(vertices[v].getPlayerId() == playerIdSteal){
+        for (byte v : tileToVertex[tileId]) {
+            if (vertices[v].getPlayerId() == playerIdSteal) {
                 found = true;
             }
         }
-        if(!found){
+        if (!found) {
             return false;
         }
         return robberTile != tileId;
@@ -288,7 +292,7 @@ public class BoardState {
     }
 
     public boolean canPlayDevCard(byte type) {
-        if(inSettlementPhase()){
+        if (inSettlementPhase()) {
             return false;
         }
         Player p = getCurrentPlayer();
@@ -302,14 +306,14 @@ public class BoardState {
     }
 
     public boolean canTradeBank(byte playerResource, byte bankResource) {
-        if(inSettlementPhase()){
+        if (inSettlementPhase()) {
             return false;
         }
         return getCurrentPlayer().canTradeBank(playerResource) && resourceCardPool[bankResource] > 0;
     }
 
-    public boolean canTradePlayer(byte playerId, byte[] giving){
-        if(inSettlementPhase()){
+    public boolean canTradePlayer(byte playerId, byte[] giving) {
+        if (inSettlementPhase()) {
             return false;
         }
         return players[playerId].canPlayerTrade(giving);
@@ -317,7 +321,7 @@ public class BoardState {
 
     public void buildRoad(byte edgeId) throws IOException {
         buildRoadHelper(edgeId, !inSettlementPhase());
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(ROAD_COMMAND);
             dos.writeByte(edgeId);
@@ -332,7 +336,7 @@ public class BoardState {
         edges[edgeId] = playerTurn;
         p.buyRoad(pay);
         updateLargestRoad(edgeId);
-        if (pay){
+        if (pay) {
             resourceCardPool[WOOD]++;
             resourceCardPool[BRICK]++;
         }
@@ -356,7 +360,7 @@ public class BoardState {
             resourceCardPool[SHEEP]++;
             resourceCardPool[HAY]++;
         }
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(SETTLEMENT_COMMAND);
             dos.writeByte(vertexId);
@@ -374,7 +378,7 @@ public class BoardState {
         v.setBuilding(STATUS_CITY);
         resourceCardPool[HAY] += 2;
         resourceCardPool[ROCK] += 3;
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(CITY_COMMAND);
             dos.writeByte(vertexId);
@@ -391,7 +395,7 @@ public class BoardState {
         if (type != INVALID_RESOURCE) {
             p.addResource(type, (byte) 1);
         }
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(ROBBER_COMMAND);
             dos.writeByte(tileId);
@@ -414,7 +418,7 @@ public class BoardState {
         resourceCardPool[SHEEP]++;
         resourceCardPool[HAY]++;
         resourceCardPool[ROCK]++;
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(DEV_CARD_COMMAND);
         }
@@ -428,7 +432,7 @@ public class BoardState {
         Player p = getCurrentPlayer();
         p.playDevCard(KNIGHT);
         updateLargestArmy();
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(KNIGHT_COMMAND);
         }
@@ -443,7 +447,7 @@ public class BoardState {
         p.playDevCard(ROAD_BUILDING);
         buildRoadHelper(e1, false);
         buildRoadHelper(e1, false);
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(ROAD_BUILDING_COMMAND);
             dos.writeByte(e1);
@@ -468,7 +472,7 @@ public class BoardState {
             }
             totalStolen += players[i].stealAllResource(resourceType);
         }
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(MONOPOLY_COMMAND);
             dos.writeByte(resourceType);
@@ -484,7 +488,7 @@ public class BoardState {
         p.playDevCard(YEAR_OF_PLENTY);
         p.addResource(r1, (byte) 1);
         p.addResource(r2, (byte) 1);
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(YEAR_OF_PLENTY_COMMAND);
             dos.writeByte(r1);
@@ -494,7 +498,7 @@ public class BoardState {
 
     public void tradeBank(byte playerResource, byte bankResource) throws IOException {
         getCurrentPlayer().tradeBank(playerResource, bankResource);
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(TRADE_BANK_COMMAND);
             dos.writeByte(playerResource);
@@ -503,12 +507,12 @@ public class BoardState {
     }
 
     public void tradePlayer(byte playerId, byte[] giving, byte[] receiving) throws IOException {
-        if(!canTradePlayer(playerTurn, giving) || !canTradePlayer(playerId, receiving)){
+        if (!canTradePlayer(playerTurn, giving) || !canTradePlayer(playerId, receiving)) {
             throw new RuntimeException("Invalid Transaction");
         }
         getCurrentPlayer().tradePlayer(giving, receiving);
         players[playerId].tradePlayer(receiving, giving);
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(TRADE_PLAYER_COMMAND);
             dos.writeByte(playerId);
@@ -522,10 +526,10 @@ public class BoardState {
             return WIN_CONDITION;
         }
         Arrays.fill(devCardsAcquiredThisTurn, (byte) 0);
-        if(inSettlementPhase()){
-            if(turnNumber < players.length - 1) {
+        if (inSettlementPhase()) {
+            if (turnNumber < players.length - 1) {
                 playerTurn++;
-            } else if(turnNumber > players.length - 1 && turnNumber < players.length * 2 - 1) {
+            } else if (turnNumber > players.length - 1 && turnNumber < players.length * 2 - 1) {
                 playerTurn--;
             }
         } else {
@@ -535,7 +539,7 @@ public class BoardState {
             }
         }
         turnNumber++;
-        if(config.isLoggerActive()){
+        if (config.isLoggerActive()) {
             DataOutputStream dos = config.getLogger();
             dos.writeByte(ADVANCE_TURN_COMMAND);
         }
@@ -543,7 +547,7 @@ public class BoardState {
     }
 
     private byte rollDice() {
-        if(inSettlementPhase()){
+        if (inSettlementPhase()) {
             return NO_DICE_ROLL;
         }
         byte roll = (byte) (r.nextInt(6) + r.nextInt(6) + 2);
@@ -615,8 +619,9 @@ public class BoardState {
         }
     }
 
-    private byte transverseVertex(HashSet<Byte> seenVerticies, HashSet<Byte> seenEdges, byte vertexId, byte currentRoadLength) {
-        if(seenVerticies.contains(vertexId)){
+    private byte transverseVertex(HashSet<Byte> seenVerticies, HashSet<Byte> seenEdges, byte vertexId,
+            byte currentRoadLength) {
+        if (seenVerticies.contains(vertexId)) {
             return currentRoadLength;
         }
         seenVerticies.add(vertexId);
@@ -660,21 +665,14 @@ public class BoardState {
         return points;
     }
 
-
     /*
-     * TO XML - Fields needed:
-     * Vertexes
-     *  - PlayerID
-     *  - Building
-     *  - Port
+     * TO XML - Fields needed: Vertexes - PlayerID - Building - Port
      *
-     *  Edges (byte arr)
-     *  TilesResource
-     *  TilesNumber
+     * Edges (byte arr) TilesResource TilesNumber
      *
-     *  Stack: https://stackoverflow.com/questions/7373567/how-to-read-and-write-xml-files
+     * Stack: https://stackoverflow.com/questions/7373567/how-to-read-and-write-xml-files
      */
-    public void toXML(String xml){
+    public void toXML(String xml) {
         // Setup holder variables
         Vertex[] vertices = getVertices();
         Document dom;
@@ -692,19 +690,20 @@ public class BoardState {
             String data;
 
             // create the root element
-            Element root         = dom.createElement("boardstate");
+            Element root = dom.createElement("boardstate");
             dom.appendChild(root);
-//            Element Vertexes     = dom.createElement("Vertexes");
-//            Element Edges        = dom.createElement("Edges");
-//            Element tileResource = dom.createElement("tilesResources");
-//            Element tileNumber   = dom.createElement("TilesNumber");
+            // Element Vertexes = dom.createElement("Vertexes");
+            // Element Edges = dom.createElement("Edges");
+            // Element tileResource = dom.createElement("tilesResources");
+            // Element tileNumber = dom.createElement("TilesNumber");
 
             // Nothing like 4 "for" loops to hold your code together
             byte holder = 0;
-            Element vertexes     = dom.createElement("vertexes");
-            for (Vertex v: vertices){
+            Element vertexes = dom.createElement("vertexes");
+            for (Vertex v : vertices) {
                 // Parse each vertex's information into a dom element
-                data = Byte.toString((v.getPlayerId())) +" " + Byte.toString(v.getBuilding()) + " "+ Byte.toString(v.getPort());
+                data = Byte.toString((v.getPlayerId())) + " " + Byte.toString(v.getBuilding()) + " "
+                        + Byte.toString(v.getPort());
                 e = dom.createElement("v" + holder);
                 e.appendChild(dom.createTextNode(data));
 
@@ -716,11 +715,10 @@ public class BoardState {
             }
             root.appendChild(vertexes);
 
-
             // Same as above ^^^ but for edges
             byte ctr = 0;
             Element edge1 = dom.createElement("edges");
-            for (byte edge: edges){
+            for (byte edge : edges) {
                 data = Byte.toString(edge);
                 e = dom.createElement("e" + ctr);
                 e.appendChild(dom.createTextNode(data));
@@ -729,32 +727,33 @@ public class BoardState {
             }
             root.appendChild(edge1);
 
-//            // Again the same but tiles
-//            int limiter = 0;
-//            Element tileResource = dom.createElement("tilesResources");
-//            for (byte b: tilesResource){
-//                data = Byte.toString(b);
-//                e = dom.createElement();
-//                e.appendChild(dom.createTextNode(data)); // <<<<---------- error is happening here with xml formatting idk
-//                tileResource.appendChild(e);
-//                limiter++;
-//            }
-//            root.appendChild(tileResource);
-//
-//            // Numbers
-//            int limit = 0;
-//            Element tileNumber   = dom.createElement("TilesNumber");
-//            for (byte r: tilesNumber){
-//                data = Byte.toString(r);
-//                e = dom.createElement("");
-//                e.appendChild(dom.createTextNode(data));
-//                tileNumber.appendChild(e);
-//                limit++;
-//                root.appendChild(tileNumber);
-//            }
+            // // Again the same but tiles
+            // int limiter = 0;
+            // Element tileResource = dom.createElement("tilesResources");
+            // for (byte b: tilesResource){
+            // data = Byte.toString(b);
+            // e = dom.createElement();
+            // e.appendChild(dom.createTextNode(data)); // <<<<---------- error is happening here with xml formatting
+            // idk
+            // tileResource.appendChild(e);
+            // limiter++;
+            // }
+            // root.appendChild(tileResource);
+            //
+            // // Numbers
+            // int limit = 0;
+            // Element tileNumber = dom.createElement("TilesNumber");
+            // for (byte r: tilesNumber){
+            // data = Byte.toString(r);
+            // e = dom.createElement("");
+            // e.appendChild(dom.createTextNode(data));
+            // tileNumber.appendChild(e);
+            // limit++;
+            // root.appendChild(tileNumber);
+            // }
 
             // Try downloading the file
-            try{
+            try {
                 Transformer tr = TransformerFactory.newInstance().newTransformer();
                 tr.setOutputProperty(OutputKeys.INDENT, "yes");
                 tr.setOutputProperty(OutputKeys.METHOD, "xml");
@@ -763,22 +762,21 @@ public class BoardState {
                 tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
                 // send DOM to fil
-                tr.transform(new DOMSource(dom),
-                        new StreamResult(new FileOutputStream(xml)));
-        } catch (TransformerException n){
-            n.printStackTrace();
-        } catch (IOException ioe) {
-            System.out.println(ioe.getMessage());
+                tr.transform(new DOMSource(dom), new StreamResult(new FileOutputStream(xml)));
+            } catch (TransformerException n) {
+                n.printStackTrace();
+            } catch (IOException ioe) {
+                System.out.println(ioe.getMessage());
+            }
+        } catch (ParserConfigurationException pce) {
+            System.out.println("UsersXML: Error trying to instantiate DocumentBuilder " + pce);
         }
-    } catch (ParserConfigurationException pce) {
-        System.out.println("UsersXML: Error trying to instantiate DocumentBuilder " + pce);
-    }
     }
 
     /*
-    TODO: fromXML
+     * TODO: fromXML
      */
-    public void fromXML(String file){
+    public void fromXML(String file) {
 
     }
 
@@ -787,11 +785,11 @@ public class BoardState {
         ObjectOutputStream output = new ObjectOutputStream(bOutput);
         config.serialize(output);
         output.writeByte(players.length);
-        for(Player p : players){
+        for (Player p : players) {
             p.serialize(output);
         }
         output.writeByte(vertices.length);
-        for(Vertex v : vertices){
+        for (Vertex v : vertices) {
             v.serialize(output);
         }
         writeByteArray(output, edges);
@@ -815,12 +813,12 @@ public class BoardState {
         BoardStateConfig config = BoardStateConfig.deSerialize(input);
         byte lengthPlayers = input.readByte();
         Player[] players = new Player[lengthPlayers];
-        for(byte i = 0; i < lengthPlayers; i++){
+        for (byte i = 0; i < lengthPlayers; i++) {
             players[i] = Player.deSerialize(input);
         }
         byte lengthVertices = input.readByte();
         Vertex[] vertices = new Vertex[lengthVertices];
-        for(byte i = 0; i < lengthVertices; i++){
+        for (byte i = 0; i < lengthVertices; i++) {
             vertices[i] = Vertex.deSerialize(input);
         }
         byte[] edges = readByteArray(input);
@@ -833,10 +831,12 @@ public class BoardState {
         byte playerTurn = input.readByte();
         byte robberTile = input.readByte();
         byte turnNumber = input.readByte();
-        return new BoardState(config, players, vertices, edges, resourceCardPool, devCardPool, devCardsAcquiredThisTurn, playerWithLargestArmy, playerWithLongestRoad, currentLongestRoad, playerTurn, robberTile, turnNumber);
+        return new BoardState(config, players, vertices, edges, resourceCardPool, devCardPool, devCardsAcquiredThisTurn,
+                playerWithLargestArmy, playerWithLongestRoad, currentLongestRoad, playerTurn, robberTile, turnNumber);
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -869,7 +869,8 @@ public class BoardState {
         return Arrays.equals(devCardsAcquiredThisTurn, that.devCardsAcquiredThisTurn);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = Arrays.hashCode(players);
         result = 31 * result + Arrays.hashCode(vertices);
         result = 31 * result + Arrays.hashCode(edges);

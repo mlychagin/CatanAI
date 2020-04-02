@@ -29,7 +29,8 @@ public class Hexagon extends Polygon {
     private byte tileNumber;
     private byte tileResource;
 
-    public Hexagon(int centerX, int centerY, int tileIndex, byte tileNumber, byte tileResource, Point nw, Point n, Point ne, Point se, Point s, Point sw) {
+    public Hexagon(int centerX, int centerY, int tileIndex, byte tileNumber, byte tileResource, Point nw, Point n,
+            Point ne, Point se, Point s, Point sw) {
         setOpacity(0.0);
         this.centerX = centerX;
         this.centerY = centerY;

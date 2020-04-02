@@ -19,7 +19,8 @@ public class Player {
     public Player() {
     }
 
-    private Player(byte[] resources, byte[] structures, byte[] devCards, boolean[] ports, boolean generalPort, byte knightsPlayed){
+    private Player(byte[] resources, byte[] structures, byte[] devCards, boolean[] ports, boolean generalPort,
+            byte knightsPlayed) {
         this.resources = resources;
         this.structures = structures;
         this.devCards = devCards;
@@ -95,9 +96,9 @@ public class Player {
         return resources[playerResource] >= tradeBankHelper(playerResource);
     }
 
-    public boolean canPlayerTrade(byte[] giving){
-        for(byte i = WOOD; i <= ROCK; i++ ){
-            if(resources[i] < giving[i]){
+    public boolean canPlayerTrade(byte[] giving) {
+        for (byte i = WOOD; i <= ROCK; i++) {
+            if (resources[i] < giving[i]) {
                 return false;
             }
         }
@@ -180,8 +181,8 @@ public class Player {
         resources[bankResource]++;
     }
 
-    public void tradePlayer(byte[] giving, byte[] receiving){
-        for(byte i = WOOD; i <= ROCK; i++ ){
+    public void tradePlayer(byte[] giving, byte[] receiving) {
+        for (byte i = WOOD; i <= ROCK; i++) {
             resources[i] -= giving[i];
             resources[i] += receiving[i];
         }
@@ -258,7 +259,7 @@ public class Player {
         byte[] devCards = readByteArray(input);
         byte length = input.readByte();
         boolean[] ports = new boolean[length];
-        for(int i = 0; i < length; i++){
+        for (int i = 0; i < length; i++) {
             ports[i] = input.readBoolean();
         }
         boolean generalPort = input.readBoolean();
