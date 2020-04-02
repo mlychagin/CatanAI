@@ -93,6 +93,23 @@ public class BoardStateTest {
         b.getCurrentPlayer().addResource(BRICK, (byte) 1);
         assert b.canBuildRoad((byte) 3,true);
         assert b.canBuildRoad((byte) 4,true);
+        b.getCurrentPlayer().addResource(WOOD, (byte) 16);
+        b.getCurrentPlayer().addResource(BRICK, (byte) 16);
+        b.buildRoad((byte) 4);
+        b.buildRoad((byte) 5);
+        b.buildRoad((byte) 9);
+        b.buildRoad((byte) 16);
+        b.buildRoad((byte) 21);
+        assert !b.canBuildRoad((byte) 30,true);
+        b.buildRoad((byte) 17);
+        b.buildRoad((byte) 22);
+        b.buildRoad((byte) 31);
+        assert !b.canBuildRoad((byte) 37,true);
+        b.buildRoad((byte) 32);
+        b.buildRoad((byte) 38);
+        b.buildRoad((byte) 48);
+        b.buildRoad((byte) 53);
+        assert !b.canBuildRoad((byte) 61,true);
     }
     @Test
     public void canBuildSettlementTest() throws IOException {
@@ -112,6 +129,9 @@ public class BoardStateTest {
             if(i!=4){
                 assert !b.canBuildSettlement((byte) i);
             }
+            else{
+                assert b.canBuildSettlement((byte) i);
+            }
         }
     }
     @Test
@@ -122,6 +142,9 @@ public class BoardStateTest {
         for(byte i = 0; i<54; i++){
             if(i!=11 && i!=29){
                 assert !b.canBuildCity((byte) i);
+            }
+            else{
+                assert b.canBuildSettlement((byte) i);
             }
         }
     }
