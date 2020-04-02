@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class servletTest {
+public class ServletTest {
     @Test
     public void servletTester() throws Exception {
         BoardState b = new BoardState(4);

@@ -79,21 +79,22 @@ public class BoardStateTest {
             b.advanceTurn();
         }
     }
+
     @Test
     public void buildRoadTest() throws IOException {
         BoardState b = getBoardAfterSettlementPhase();
         Player p = b.getCurrentPlayer();
         b.getCurrentPlayer().addResource(WOOD, (byte) 1);
         b.getCurrentPlayer().addResource(BRICK, (byte) 1);
-        assert b.canBuildRoad((byte) 8,true);
-        assert b.canBuildRoad((byte) 15,true);
-        assert b.canBuildRoad((byte) 42,true);
-        assert b.canBuildRoad((byte) 50,true);
+        assert b.canBuildRoad((byte) 8, true);
+        assert b.canBuildRoad((byte) 15, true);
+        assert b.canBuildRoad((byte) 42, true);
+        assert b.canBuildRoad((byte) 50, true);
         b.buildRoad((byte) 8);
         b.getCurrentPlayer().addResource(WOOD, (byte) 1);
         b.getCurrentPlayer().addResource(BRICK, (byte) 1);
-        assert b.canBuildRoad((byte) 3,true);
-        assert b.canBuildRoad((byte) 4,true);
+        assert b.canBuildRoad((byte) 3, true);
+        assert b.canBuildRoad((byte) 4, true);
         b.getCurrentPlayer().addResource(WOOD, (byte) 16);
         b.getCurrentPlayer().addResource(BRICK, (byte) 16);
         b.buildRoad((byte) 4);
@@ -101,17 +102,18 @@ public class BoardStateTest {
         b.buildRoad((byte) 9);
         b.buildRoad((byte) 16);
         b.buildRoad((byte) 21);
-        assert !b.canBuildRoad((byte) 30,true);
+        assert !b.canBuildRoad((byte) 30, true);
         b.buildRoad((byte) 17);
         b.buildRoad((byte) 22);
         b.buildRoad((byte) 31);
-        assert !b.canBuildRoad((byte) 37,true);
+        assert !b.canBuildRoad((byte) 37, true);
         b.buildRoad((byte) 32);
         b.buildRoad((byte) 38);
         b.buildRoad((byte) 48);
         b.buildRoad((byte) 53);
-        assert !b.canBuildRoad((byte) 61,true);
+        assert !b.canBuildRoad((byte) 61, true);
     }
+
     @Test
     public void canBuildSettlementTest() throws IOException {
         BoardState b = getBoardAfterSettlementPhase();
@@ -126,84 +128,25 @@ public class BoardStateTest {
         b.buildRoad((byte) 34);
         b.buildRoad((byte) 25);
         b.buildRoad((byte) 50);
-        for(byte i = 0; i<54; i++){
-            if(i!=4){
+        for (byte i = 0; i < 54; i++) {
+            if (i != 4) {
                 assert !b.canBuildSettlement(i);
-            }
-            else{
+            } else {
                 assert b.canBuildSettlement(i);
             }
         }
     }
+
     @Test
     public void canBuildCityTest() throws IOException {
         BoardState b = getBoardAfterSettlementPhase();
         b.getCurrentPlayer().addResource(HAY, (byte) 2);
         b.getCurrentPlayer().addResource(ROCK, (byte) 3);
-        for(byte i = 0; i<54; i++){
-            if(i!=11 && i!=29){
-                assert !b.canBuildCity((byte) i);
-            }
-            else{
-                assert b.canBuildSettlement((byte) i);
-            }
-        }
-    }
-
-    /*
-     * Todo: Build City
-     */
-
-    @Test
-    public void drawTest() throws IOException {
-        BoardState b = getBoardAfterSettlementPhase();
-        drawBoard(b);
-    }
-
-    @Test
-    public void buildSettlementToRoadTest() throws IOException {
-        for (byte v = 0; v < DEFAULT_NUM_VERTICES; v++) {
-            BoardState b = getBoard();
-            b.buildSettlement(v);
-            for (int i = 0; i < numPlayers * 2; i++) {
-                b.advanceTurn();
-            }
-            assert b.getPlayerTurn() == 0;
-            for (byte potentialRoad = 0; potentialRoad < DEFAULT_NUM_EDGES; potentialRoad++) {
-                boolean adjacent = false;
-                for (byte adjacentEdges : vertexToEdge[v]) {
-                    if (potentialRoad == adjacentEdges) {
-                        assert b.canBuildRoad(potentialRoad, false);
-                        adjacent = true;
-                        break;
-                    }
-                }
-                assert adjacent || !b.canBuildRoad(potentialRoad, false);
-            }
-        }
-    }
-
-    @Test
-    public void buildSettlementTest() throws IOException {
-        for (byte settlementVertex = 0; settlementVertex < DEFAULT_NUM_VERTICES; settlementVertex++) {
-            BoardState b = getBoard();
-            b.buildSettlement(settlementVertex);
-            b.advanceTurn();
-            assert b.getPlayerTurn() == 1;
-            for (byte potentialSettlement = 0; potentialSettlement < DEFAULT_NUM_VERTICES; potentialSettlement++) {
-                if (potentialSettlement == settlementVertex) {
-                    assert !b.canBuildSettlement(settlementVertex);
-                    continue;
-                }
-                boolean adjacent = false;
-                for (byte adjacentVertex : vertexToVertex[settlementVertex]) {
-                    if (potentialSettlement == adjacentVertex) {
-                        assert !b.canBuildSettlement(potentialSettlement);
-                        adjacent = true;
-                        break;
-                    }
-                }
-                assert adjacent || b.canBuildSettlement(potentialSettlement);
+        for (byte i = 0; i < 54; i++) {
+            if (i != 11 && i != 29) {
+                assert !b.canBuildCity(i);
+            } else {
+                assert b.canBuildSettlement(i);
             }
         }
     }
@@ -239,6 +182,7 @@ public class BoardStateTest {
         assert robbedPlayer.getResources()[WOOD] == 0;
         assert robbingPlayer.getResources()[WOOD] == 1;
         assert !b.canPlayRobber((byte) 4, robbedPlayerId);
+        assert b.getRobberTile() == 4;
     }
 
     @Test

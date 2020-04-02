@@ -32,7 +32,7 @@ public class DrawBoard extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         stage.setTitle("Catan Game");
 
         Group root = new Group();
@@ -53,6 +53,6 @@ public class DrawBoard extends Application {
         };
         gameLoop.start();
 
-        stage.show(); // goes into Animation Timer
+        stage.show();
     }
 }

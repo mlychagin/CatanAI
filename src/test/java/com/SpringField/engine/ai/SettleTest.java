@@ -13,7 +13,7 @@ import java.util.Random;
 import static com.SpringField.engine.util.Util.*;
 import com.SpringField.engine.util.Util;
 
-public class settleTest {
+public class SettleTest {
     private static BoardStateConfig defaultConfig;
 
     static {
@@ -78,7 +78,6 @@ public class settleTest {
 
         BoardState test = new BoardState(defaultConfig, 4);
         System.out.println(test.getVertices());
-        test.toXML("src\\test\\java\\com\\SpringField\\engine\\ai\\test.xml");
         System.out.println(
                 "\nExecuted and settled " + i + " boardstates in: " + (duration * (1.0) / 1000000000) + " second(s)!");
     }

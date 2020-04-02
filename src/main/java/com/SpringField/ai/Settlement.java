@@ -18,8 +18,10 @@ public class Settlement {
     }
 
     /*
-     * Information I want to calculate (purely Heuristics based for now): \ Vertex Value - Purely odds of Landing
-     * Diversity - Current Resource coverage (from player's perspective) Scarcity - How abundant resource are Distance
+     * Information I want to calculate (purely Heuristics based for now):
+     * Vertex Value - Purely odds of Landing
+     * Diversity - Current Resource coverage (from player's perspective)
+     * Scarcity - How abundant resource are Distance
      * to Port - Not important yet
      */
     public byte getBestPossibleSettle() {

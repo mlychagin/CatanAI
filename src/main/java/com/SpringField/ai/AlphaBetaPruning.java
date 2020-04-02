@@ -4,8 +4,6 @@ import com.SpringField.engine.BoardState;
 import com.SpringField.engine.BoardStateAI;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
 
 public class AlphaBetaPruning {
     private BoardStateAI state;
