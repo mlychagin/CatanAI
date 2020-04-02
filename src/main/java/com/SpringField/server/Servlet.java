@@ -3,6 +3,7 @@ package com.SpringField.server;
 import com.SpringField.engine.BoardState;
 
 import java.io.IOException;
+import java.io.Serializable;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +16,9 @@ public class Servlet extends HttpServlet {
         String requestUrl = request.getRequestURI();
         //String name = requestUrl.substring("/people/".length());
 
-        //BoardState board = new BoardState();
+        BoardState board = new BoardState(4);
+        Serializable r = board.serialize();
+        response.getOutputStream().println(r.toString());
     }
 
     @Override

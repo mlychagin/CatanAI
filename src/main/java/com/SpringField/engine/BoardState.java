@@ -43,7 +43,13 @@ public class BoardState {
     protected byte turnNumber;
     protected Random r;
 
-    protected BoardState() {
+    protected BoardState(){
+    }
+
+    public BoardState(int numPlayers) throws IOException{
+        r = new Random();
+        this.config = new BoardStateConfig(null, numPlayers, r.nextInt());
+        initialize(numPlayers);
     }
 
     public BoardState(BoardStateConfig config, int numPlayers) {
