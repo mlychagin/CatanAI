@@ -238,6 +238,14 @@ public class BoardStateTest {
         assert b.getCurrentLongestRoad() == 4;
         b.buildRoad((byte) 7);
         assert b.getCurrentLongestRoad() == 5;
+        b.buildRoad((byte) 13);
+        assert b.getCurrentLongestRoad() == 6;
+        b.buildRoad((byte) 20);
+        assert b.getCurrentLongestRoad() == 11;
+        b.buildRoad((byte) 34);
+        assert b.getCurrentLongestRoad() == 12;
+        b.buildRoad((byte) 25);
+        assert b.getCurrentLongestRoad() == 13;
         drawBoard(b);
 
 

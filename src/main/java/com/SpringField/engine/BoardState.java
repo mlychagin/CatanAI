@@ -43,14 +43,18 @@ public class BoardState {
     protected byte turnNumber;
     protected Random r;
 
+    private HashSet<Byte> seenVerticies = new HashSet<>();
+    private HashSet<Byte> seenEdges = new HashSet<>();
+
     protected BoardState(){
     }
 
-    public BoardState(int numPlayers) throws IOException{
+    public BoardState(int numPlayers) throws IOException {
         r = new Random();
         this.config = new BoardStateConfig(null, numPlayers, r.nextInt());
         initialize(numPlayers);
     }
+
 
     public BoardState(BoardStateConfig config, int numPlayers) {
         this.config = config;
@@ -181,8 +185,13 @@ public class BoardState {
             return false;
         }
         for (byte v : edgeToVertex[edgeId]) {
-            if (vertices[v].getPlayerId() == playerTurn) {
-                return true;
+            Vertex vertex = vertices[v];
+            if(vertex.isSettled()){
+                if(vertex.getPlayerId() == playerTurn){
+                    return true;
+                } else {
+                    return false;
+                }
             }
             for (byte e : vertexToEdge[v]) {
                 if (edges[e] == playerTurn) {
@@ -602,8 +611,6 @@ public class BoardState {
      * Longest Road Algorithm
      */
     private void updateLargestRoad(byte edgeId) {
-        HashSet<Byte> seenVerticies = new HashSet<>();
-        HashSet<Byte> seenEdges = new HashSet<>();
         seenEdges.add(edgeId);
         byte maxRoadLength = 1;
         for (byte n : edgeToVertex[edgeId]) {
@@ -613,23 +620,32 @@ public class BoardState {
             currentLongestRoad = maxRoadLength;
             playerWithLongestRoad = playerTurn;
         }
+        seenVerticies.clear();
+        seenEdges.clear();
+        //System.out.println("ALGORITHM FINISHED\n\n\n\n\n\n\n\n");
     }
 
     private byte transverseVertex(HashSet<Byte> seenVerticies, HashSet<Byte> seenEdges, byte vertexId, byte currentRoadLength) {
+        //System.out.println("Explore Vertex : " + vertexId);
         if(seenVerticies.contains(vertexId)){
+            //System.out.println("RETURN");
             return currentRoadLength;
         }
         seenVerticies.add(vertexId);
         Vertex v = vertices[vertexId];
         if (v.isSettled() && v.getPlayerId() != playerTurn) {
+            //System.out.println("RETURN");
             return currentRoadLength;
         }
         byte maxRoadLength = currentRoadLength;
         byte[] outgoingEdges = vertexToEdge[vertexId];
         for (byte edgeId : outgoingEdges) {
+            //System.out.println("Explore Edge : "+ edgeId);
             if (seenEdges.contains(edgeId)) {
+                //System.out.println("Edge Skipped");
                 continue;
             }
+            seenEdges.add(edgeId);
             if (edges[edgeId] == playerTurn) {
                 byte nextNodeId = -1;
                 for (byte n : edgeToVertex[edgeId]) {
@@ -638,7 +654,7 @@ public class BoardState {
                     }
                 }
                 if (nextNodeId == -1) {
-                    throw new RuntimeException("Next Node not found");
+                    throw new RuntimeException("Serious Issue Found - Contact Mikhail");
                 }
                 byte roadLength = transverseVertex(seenVerticies, seenEdges, nextNodeId, ++currentRoadLength);
                 if (roadLength > maxRoadLength) {
@@ -646,6 +662,7 @@ public class BoardState {
                 }
             }
         }
+        //System.out.println("RETURN");
         return maxRoadLength;
     }
 
