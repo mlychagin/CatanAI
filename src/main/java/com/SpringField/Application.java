@@ -3,6 +3,7 @@ package com.SpringField;
 import java.util.Arrays;
 
 import com.SpringField.engine.BoardState;
+import com.SpringField.ui.DrawBoard;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class Application {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(DrawBoard.class, args);
     }
 
     @Bean
@@ -33,4 +34,6 @@ public class Application {
 
         };
     }
+
+
 }

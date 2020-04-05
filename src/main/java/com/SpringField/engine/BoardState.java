@@ -151,7 +151,7 @@ public class BoardState {
         turnNumber = 0;
     }
 
-    private boolean inSettlementPhase() {
+    public boolean inSettlementPhase() {
         return turnNumber < players.length * 2;
     }
 

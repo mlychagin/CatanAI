@@ -126,15 +126,4 @@ public class Settlement {
             return (byte) 0;
         }
     }
-
-    /*
-     * ;)
-     */
-    private static byte getRarity(byte b) {
-        if (b <= 7) {
-            return (byte) (b - 1);
-        } else {
-            return (byte) (13 - b);
-        }
-    }
 }
