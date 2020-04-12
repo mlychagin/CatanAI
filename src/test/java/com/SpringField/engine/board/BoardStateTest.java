@@ -128,27 +128,79 @@ public class BoardStateTest {
         b.buildRoad((byte) 34);
         b.buildRoad((byte) 25);
         b.buildRoad((byte) 50);
-        for (byte i = 0; i < 54; i++) {
+        for (byte i = 0; i < 53; i++) {
             if (i != 4) {
                 assert !b.canBuildSettlement(i);
             } else {
                 assert b.canBuildSettlement(i);
             }
         }
+        b.getCurrentPlayer().addResource(HAY, (byte) 15);
+        b.getCurrentPlayer().addResource(ROCK, (byte) 15);
+        b.getCurrentPlayer().addResource(BRICK, (byte) 15);
+        b.getCurrentPlayer().addResource(SHEEP, (byte) 15);
+        b.getCurrentPlayer().addResource(WOOD, (byte) 15);
+
+        b.buildRoad((byte) 3);
+        b.buildRoad((byte) 2);
+        b.buildRoad((byte) 1);
+        b.buildRoad((byte) 0);
+        b.buildRoad((byte) 42);
+        b.buildSettlement((byte)4);
+        assert b.canBuildSettlement((byte)2);
+        b.buildSettlement((byte)2);
+        assert b.canBuildSettlement((byte)0);
+        b.buildSettlement((byte)0);
+        assert !b.canBuildSettlement((byte)31);
     }
 
     @Test
     public void canBuildCityTest() throws IOException {
         BoardState b = getBoardAfterSettlementPhase();
+        assert !b.canBuildCity((byte) 11);
+        assert !b.canBuildCity((byte) 29);
         b.getCurrentPlayer().addResource(HAY, (byte) 2);
         b.getCurrentPlayer().addResource(ROCK, (byte) 3);
-        for (byte i = 0; i < 54; i++) {
+        for (byte i = 0; i < 53; i++) {
             if (i != 11 && i != 29) {
                 assert !b.canBuildCity(i);
             } else {
-                assert b.canBuildSettlement(i);
+                assert b.canBuildCity(i);
             }
         }
+
+        b.getCurrentPlayer().addResource(HAY, (byte) 15);
+        b.getCurrentPlayer().addResource(ROCK, (byte) 15);
+        b.getCurrentPlayer().addResource(BRICK, (byte) 15);
+        b.getCurrentPlayer().addResource(SHEEP, (byte) 15);
+        b.getCurrentPlayer().addResource(WOOD, (byte) 15);
+
+        b.buildRoad((byte) 8);
+        b.buildRoad((byte) 3);
+        b.buildRoad((byte) 2);
+        b.buildRoad((byte) 1);
+        b.buildRoad((byte) 0);
+        b.buildSettlement((byte)4);
+        b.buildSettlement((byte)2);
+        b.buildSettlement((byte)0);
+
+        assert b.canBuildCity((byte) 0);
+        b.buildCity((byte) 0);
+        assert !b.canBuildCity((byte) 0);
+
+        assert b.canBuildCity((byte) 2);
+        b.buildCity((byte) 2);
+        assert !b.canBuildCity((byte) 2);
+
+        assert b.canBuildCity((byte) 4);
+        b.buildCity((byte) 4);
+        assert !b.canBuildCity((byte) 4);
+
+        assert b.canBuildCity((byte) 11);
+        b.buildCity((byte) 11);
+        assert !b.canBuildCity((byte) 11);
+        assert !b.canBuildCity((byte) 29);
+        drawBoard(b);
     }
 
     @Test
@@ -183,6 +235,15 @@ public class BoardStateTest {
         assert robbingPlayer.getResources()[WOOD] == 1;
         assert !b.canPlayRobber((byte) 4, robbedPlayerId);
         assert b.getRobberTile() == 4;
+    }
+    @Test
+    public void buyDevCardTest() throws IOException {
+        BoardState b = getBoardAfterSettlementPhase();
+        assert !b.canBuyDevCard();
+        b.getCurrentPlayer().addResource(HAY, (byte) 1);
+        b.getCurrentPlayer().addResource(ROCK, (byte) 1);
+        b.getCurrentPlayer().addResource(SHEEP, (byte) 1);
+        assert b.canBuyDevCard();
     }
 
     @Test
