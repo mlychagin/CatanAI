@@ -591,6 +591,12 @@ public class BoardState {
         if (playerTurn == playerWithLargestArmy) {
             return;
         }
+        if(playerWithLargestArmy == -1){
+            if(players[playerTurn].getKnightsPlayed() == 3){
+                playerWithLargestArmy = playerTurn;
+            }
+            return;
+        }
         if (computeArmy(playerTurn) > computeArmy(playerWithLargestArmy)) {
             playerWithLargestArmy = playerTurn;
         }

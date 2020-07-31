@@ -280,10 +280,41 @@ public class BoardStateTest {
         drawBoard(b);
 
     }
-
+    @Test
+    public void playKnightCardTest() throws IOException {
+        BoardState b = getBoardAfterSettlementPhase();
+        //can't play knight without knight card
+        assert !b.canPlayKnightCard((byte)10);
+        b.getCurrentPlayer().addResource(HAY, (byte) 15);
+        b.getCurrentPlayer().addResource(ROCK, (byte) 15);
+        b.getCurrentPlayer().addResource(SHEEP, (byte) 15);
+        byte knightCount = 0;
+        while(true){
+            if(knightCount == 3){
+                break;
+            }
+            byte added = b.buyDevCard();
+            if(added == KNIGHT){
+              knightCount++;
+            }
+        }
+        System.out.println(b.getPlayerWithLargestArmy());
+        for(int i = 0; i<4; i++){
+            b.advanceTurn();
+        }
+        System.out.println(b.getPlayerTurn());
+        b.playKnightCard((byte)10,(byte)1);
+        System.out.println(b.getPlayerWithLargestArmy());
+        b.playKnightCard((byte)7,(byte)2);
+        System.out.println(b.getPlayerWithLargestArmy());
+        b.playKnightCard((byte)17,(byte)2);
+        System.out.println(b.getPlayerWithLargestArmy());
+        //POSSIBLE BUG game will not let you rob players all the time
+    }
     private void addResourcesForRoad(Player p, byte numRoads) {
         p.addResource(WOOD, numRoads);
         p.addResource(BRICK, numRoads);
     }
-
 }
+
+
