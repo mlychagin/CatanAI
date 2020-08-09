@@ -23,6 +23,7 @@ public class BoardState {
     protected byte[] resourceCardPool;
     protected byte[] devCardPool;
     protected byte[] devCardsAcquiredThisTurn;
+    protected byte[] longestRoads;
     protected byte playerWithLargestArmy;
     protected byte playerWithLongestRoad;
     protected byte currentLongestRoad;
@@ -30,7 +31,10 @@ public class BoardState {
     protected byte robberTile;
     protected byte turnNumber;
     protected Random r;
-    private HashSet<Byte> seenVerticies = new HashSet<>();
+
+    /*
+     * Longest Road Helpers
+     */
     private HashSet<Byte> seenEdges = new HashSet<>();
 
     protected BoardState() {
@@ -141,9 +145,11 @@ public class BoardState {
         }
         resourceCardPool = new byte[] { DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT,
                 DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT, DEFAULT_RESOURCE_COUNT };
-        devCardPool = new byte[] { DEFAULT_NUM_KNIGHT, DEFAULT_NUM_VICTORY, DEFAULT_NUM_ROAD_BUILDING,
-                DEFAULT_NUM_MONOPOLY, DEFAULT_NUM_YEAR_OF_PLENTY };
-        devCardsAcquiredThisTurn = new byte[] { 0, 0, 0, 0 };
+        devCardPool =
+                new byte[] { DEFAULT_NUM_KNIGHT, DEFAULT_NUM_VICTORY, DEFAULT_NUM_ROAD_BUILDING, DEFAULT_NUM_MONOPOLY,
+                        DEFAULT_NUM_YEAR_OF_PLENTY };
+        devCardsAcquiredThisTurn = new byte[numPlayers];
+        longestRoads = new byte[numPlayers];
         playerWithLargestArmy = UNASSIGNED_PLAYER;
         playerWithLongestRoad = UNASSIGNED_PLAYER;
         currentLongestRoad = 0;
@@ -329,7 +335,14 @@ public class BoardState {
         Player p = getCurrentPlayer();
         edges[edgeId] = playerTurn;
         p.buyRoad(pay);
-        updateLargestRoad(edgeId);
+        byte roadLength = getLongestRoad(playerTurn, edgeId);
+        if (roadLength > currentLongestRoad) {
+            currentLongestRoad = roadLength;
+            playerWithLongestRoad = playerTurn;
+        }
+        if (roadLength > longestRoads[playerTurn]) {
+            longestRoads[playerTurn] = roadLength;
+        }
         if (pay) {
             resourceCardPool[WOOD]++;
             resourceCardPool[BRICK]++;
@@ -348,6 +361,7 @@ public class BoardState {
         if (v.getPort() != UNASSIGNED_PORT) {
             p.addPort(v.getPort());
         }
+        updateLargestRoadSettlement(vertexId);
         if (!inSettlementPhase()) {
             resourceCardPool[WOOD]++;
             resourceCardPool[BRICK]++;
@@ -563,14 +577,14 @@ public class BoardState {
                         Player p = players[v.getPlayerId()];
                         byte resourceAmount;
                         switch (v.getBuilding()) {
-                        case SETTLEMENT:
-                            resourceAmount = 1;
-                            break;
-                        case CITY:
-                            resourceAmount = 2;
-                            break;
-                        default:
-                            throw new RuntimeException("Invalid Transaction");
+                            case SETTLEMENT:
+                                resourceAmount = 1;
+                                break;
+                            case CITY:
+                                resourceAmount = 2;
+                                break;
+                            default:
+                                throw new RuntimeException("Invalid Transaction");
                         }
                         if (resourceCardPool[resourceType] < resourceAmount) {
                             resourceAmount = resourceCardPool[resourceType];
@@ -605,61 +619,84 @@ public class BoardState {
     /*
      * Longest Road Algorithm
      */
-    private void updateLargestRoad(byte edgeId) {
-        seenEdges.add(edgeId);
-        byte maxRoadLength = 1;
-        for (byte n : edgeToVertex[edgeId]) {
-            maxRoadLength += transverseVertex(seenVerticies, seenEdges, n, (byte) 0);
-        }
-        if (maxRoadLength > currentLongestRoad) {
-            currentLongestRoad = maxRoadLength;
-            playerWithLongestRoad = playerTurn;
-        }
-        seenVerticies.clear();
-        seenEdges.clear();
-        // System.out.println("ALGORITHM FINISHED\n\n\n\n\n\n\n\n");
-    }
-
-    private byte transverseVertex(HashSet<Byte> seenVerticies, HashSet<Byte> seenEdges, byte vertexId,
-            byte currentRoadLength) {
-        // System.out.println("Explore Vertex : " + vertexId);
-        if (seenVerticies.contains(vertexId)) {
-            // System.out.println("RETURN");
-            return currentRoadLength;
-        }
-        seenVerticies.add(vertexId);
-        Vertex v = vertices[vertexId];
-        if (v.isSettled() && v.getPlayerId() != playerTurn) {
-            // System.out.println("RETURN");
-            return currentRoadLength;
-        }
-        byte maxRoadLength = currentRoadLength;
-        byte[] outgoingEdges = vertexToEdge[vertexId];
-        for (byte edgeId : outgoingEdges) {
-            // System.out.println("Explore Edge : "+ edgeId);
-            if (seenEdges.contains(edgeId)) {
-                // System.out.println("Edge Skipped");
-                continue;
-            }
-            seenEdges.add(edgeId);
-            if (edges[edgeId] == playerTurn) {
-                byte nextNodeId = -1;
-                for (byte n : edgeToVertex[edgeId]) {
-                    if (n != vertexId) {
-                        nextNodeId = n;
+    private void updateLargestRoadSettlement(byte vertexId) {
+        byte[] adjacentEdges = vertexToEdge[vertexId];
+        if (adjacentEdges.length == 3) {
+            if (adjacentEnemyRoads(adjacentEdges, (byte) 0, (byte) 1) || adjacentEnemyRoads(adjacentEdges, (byte) 0,
+                    (byte) 2) || adjacentEnemyRoads(adjacentEdges, (byte) 1, (byte) 2)) {
+                byte enemyPlayer = -1;
+                for (byte edge : vertexToEdge[vertexId]) {
+                    if (edges[edge] != playerTurn) {
+                        enemyPlayer = edges[edge];
+                        break;
                     }
                 }
-                if (nextNodeId == -1) {
-                    throw new RuntimeException("Serious Issue Found - Contact Mikhail");
+                byte longestRoad = 0;
+                for (int i = 0; i < edges.length; i++) {
+                    if (edges[i] == enemyPlayer) {
+                        byte roadLength = getLongestRoad(enemyPlayer, (byte) i);
+                        if (roadLength > longestRoad) {
+                            longestRoad = roadLength;
+                        }
+                    }
                 }
-                byte roadLength = transverseVertex(seenVerticies, seenEdges, nextNodeId, ++currentRoadLength);
-                if (roadLength > maxRoadLength) {
-                    maxRoadLength = roadLength;
+                longestRoads[enemyPlayer] = longestRoad;
+                if (playerWithLongestRoad == enemyPlayer && longestRoad != currentLongestRoad) {
+                    currentLongestRoad = longestRoad;
+                    for (int i = 0; i < longestRoads.length; i++) {
+                        if (longestRoads[i] > currentLongestRoad) {
+                            currentLongestRoad = longestRoads[i];
+                            playerWithLongestRoad = (byte) i;
+                        }
+                    }
                 }
             }
         }
-        // System.out.println("RETURN");
-        return maxRoadLength;
+    }
+
+    private boolean adjacentEnemyRoads(byte[] adjacentEdges, byte index1, byte index2) {
+        byte e1Status = edges[adjacentEdges[index1]];
+        return (e1Status != playerTurn && e1Status != UNASSIGNED_EDGE) && (e1Status == edges[adjacentEdges[index2]]);
+    }
+
+    private byte getLongestRoad(byte playerId, byte edgeId) {
+        seenEdges.add(edgeId);
+        byte longestRoad = 1;
+        for (byte vertexId : edgeToVertex[edgeId]) {
+            longestRoad += transverseVertex(playerId, vertexId, (byte) 0);
+        }
+        seenEdges.clear();
+        return longestRoad;
+    }
+
+    private byte transverseVertex(byte playerId, byte vertexId, byte depth) {
+        byte maxDepth = depth;
+        Vertex v = vertices[vertexId];
+        if (v.isSettled() && v.getPlayerId() != playerId) {
+            return depth;
+        }
+        for (byte adjacentEdgeId : vertexToEdge[vertexId]) {
+            if (edges[adjacentEdgeId] != playerId || seenEdges.contains(adjacentEdgeId)) {
+                continue;
+            }
+            seenEdges.add(adjacentEdgeId);
+            byte intermediateDepth = transverseEdge(playerId, adjacentEdgeId, (byte) (depth + 1));
+            if (intermediateDepth > maxDepth) {
+                maxDepth = intermediateDepth;
+            }
+        }
+        return maxDepth;
+    }
+
+    private byte transverseEdge(byte playerId, byte edgeId, byte depth) {
+        byte maxDepth = depth;
+        for (byte vertexId : edgeToVertex[edgeId]) {
+            byte intermediateDepth = transverseVertex(playerId, vertexId, depth);
+            if (intermediateDepth > maxDepth) {
+                maxDepth = intermediateDepth;
+            }
+        }
+        return maxDepth;
     }
 
     public byte computeVictoryPoints(byte playerId) {
@@ -728,8 +765,7 @@ public class BoardState {
                 playerWithLargestArmy, playerWithLongestRoad, currentLongestRoad, playerTurn, robberTile, turnNumber);
     }
 
-    @Override
-    public boolean equals(Object o) {
+    @Override public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -762,8 +798,7 @@ public class BoardState {
         return Arrays.equals(devCardsAcquiredThisTurn, that.devCardsAcquiredThisTurn);
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
         int result = Arrays.hashCode(players);
         result = 31 * result + Arrays.hashCode(vertices);
         result = 31 * result + Arrays.hashCode(edges);

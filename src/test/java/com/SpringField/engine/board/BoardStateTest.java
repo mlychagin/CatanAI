@@ -152,7 +152,6 @@ public class BoardStateTest {
         assert b.canBuildSettlement((byte)0);
         b.buildSettlement((byte)0);
         assert !b.canBuildSettlement((byte)31);
-        drawBoard(b);
     }
 
     @Test
@@ -201,7 +200,6 @@ public class BoardStateTest {
         b.buildCity((byte) 11);
         assert !b.canBuildCity((byte) 11);
         assert !b.canBuildCity((byte) 29);
-        drawBoard(b);
     }
 
     @Test
@@ -277,8 +275,16 @@ public class BoardStateTest {
         assert b.getCurrentLongestRoad() == 12;
         b.buildRoad((byte) 25);
         assert b.getCurrentLongestRoad() == 13;
-        drawBoard(b);
-
+        b.advanceTurn();
+        b.advanceTurn();
+        b.advanceTurn();
+        p = b.getCurrentPlayer();
+        addResourcesForRoad(p, (byte) 10);
+        addResourcesForSettlement(p, (byte) 5);
+        b.buildRoad((byte) 44);
+        b.buildRoad((byte) 43);
+        b.buildSettlement((byte) 31);
+        assert b.getCurrentLongestRoad() == 9;
     }
     @Test
     public void playKnightCardTest() throws IOException {
@@ -315,6 +321,14 @@ public class BoardStateTest {
         p.addResource(WOOD, numRoads);
         p.addResource(BRICK, numRoads);
     }
+
+    private void addResourcesForSettlement(Player p, byte numSettlements) {
+        p.addResource(WOOD, numSettlements);
+        p.addResource(BRICK, numSettlements);
+        p.addResource(SHEEP, numSettlements);
+        p.addResource(HAY, numSettlements);
+    }
+
 }
 
 

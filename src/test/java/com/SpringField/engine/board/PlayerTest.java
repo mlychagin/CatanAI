@@ -82,24 +82,30 @@ public class PlayerTest {
     @Test
     public void maxRoadBuyTest() {
         Player p = new Player();
-        p.addResource(WOOD, (byte) 1);
-        p.addResource(BRICK, (byte) 1);
+        p.addResource(WOOD, DEFAULT_ROAD_COUNT);
+        p.addResource(BRICK, DEFAULT_ROAD_COUNT);
         for (int i = 0; i < DEFAULT_ROAD_COUNT; i++) {
-            p.buyRoad(false);
+            p.buyRoad(i % 2 == 0);
         }
-        assert p.canBuyRoad();
+        assert p.getResources()[WOOD] > 0;
+        assert p.getResources()[BRICK] > 0;
+        assert !p.canBuyRoad();
     }
 
     @Test
     public void maxSettlementBuyTest() {
         Player p = new Player();
-        p.addResource(WOOD, (byte) (1 + DEFAULT_SETTLEMENT_COUNT));
-        p.addResource(BRICK, (byte) (1 + DEFAULT_SETTLEMENT_COUNT));
-        p.addResource(SHEEP, (byte) (1 + DEFAULT_SETTLEMENT_COUNT));
-        p.addResource(HAY, (byte) (1 + DEFAULT_SETTLEMENT_COUNT));
+        p.addResource(WOOD, DEFAULT_SETTLEMENT_COUNT);
+        p.addResource(BRICK, DEFAULT_SETTLEMENT_COUNT);
+        p.addResource(SHEEP, DEFAULT_SETTLEMENT_COUNT);
+        p.addResource(HAY, DEFAULT_SETTLEMENT_COUNT);
         for (int i = 0; i < DEFAULT_SETTLEMENT_COUNT; i++) {
-            p.buySettlement(true);
+            p.buySettlement(i % 2 == 0);
         }
+        assert p.getResources()[WOOD] > 0;
+        assert p.getResources()[BRICK] > 0;
+        assert p.getResources()[SHEEP] > 0;
+        assert p.getResources()[HAY] > 0;
         assert !p.canBuySettlement();
     }
 
